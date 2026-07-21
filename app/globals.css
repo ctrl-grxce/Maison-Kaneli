@@ -1,0 +1,259 @@
+@import "tailwindcss";
+
+@theme {
+  /* ── Palette Maison Kanali ─────────────────────────────── */
+  --color-ivory: #fdfbf7;
+  --color-sand: #f4ede3;
+  --color-sand-deep: #e7dccc;
+  --color-blush: #f7eae3;
+  --color-blush-deep: #edd6cb;
+  --color-bronze: #a9744f;
+  --color-bronze-dark: #8a5c3d;
+  --color-gold: #c2a05f;
+  --color-gold-soft: #d9c294;
+  --color-espresso: #2e241c;
+  --color-taupe: #80705f;
+
+  /* ── Typographies ──────────────────────────────────────── */
+  --font-display: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
+  --font-sans: var(--font-jost), "Jost", "Segoe UI", sans-serif;
+
+  --ease-lux: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-ivory);
+    color: var(--color-espresso);
+    font-family: var(--font-sans);
+    font-weight: 300;
+    letter-spacing: 0.01em;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background-color: var(--color-bronze);
+    color: var(--color-ivory);
+  }
+
+  :focus-visible {
+    outline: 1.5px solid var(--color-bronze);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+}
+
+@layer components {
+  /* ── Étiquette en capitales espacées ───────────────────── */
+  .overline-label {
+    font-family: var(--font-sans);
+    font-size: 0.6875rem;
+    font-weight: 400;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--color-bronze);
+  }
+
+  /* ── Boutons ───────────────────────────────────────────── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.625rem;
+    min-height: 3rem;
+    padding: 0.875rem 1.875rem;
+    border-radius: 2px;
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    font-weight: 400;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    transition:
+      background-color 0.35s var(--ease-lux),
+      border-color 0.35s var(--ease-lux),
+      color 0.35s var(--ease-lux),
+      transform 0.35s var(--ease-lux);
+  }
+
+  .btn:active {
+    transform: scale(0.985);
+  }
+
+  .btn-primary {
+    background-color: var(--color-bronze);
+    color: var(--color-ivory);
+  }
+
+  .btn-primary:hover {
+    background-color: var(--color-bronze-dark);
+  }
+
+  .btn-outline {
+    border: 1px solid color-mix(in srgb, var(--color-espresso) 35%, transparent);
+    color: var(--color-espresso);
+    background: transparent;
+  }
+
+  .btn-outline:hover {
+    border-color: var(--color-espresso);
+    background-color: color-mix(in srgb, var(--color-espresso) 4%, transparent);
+  }
+
+  .btn-dark {
+    background-color: var(--color-espresso);
+    color: var(--color-ivory);
+  }
+
+  .btn-dark:hover {
+    background-color: #4a3b2e;
+  }
+
+  /* ── Lien souligné animé ───────────────────────────────── */
+  .link-line {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-espresso);
+    padding-bottom: 0.375rem;
+  }
+
+  .link-line::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 1px;
+    width: 100%;
+    background: currentColor;
+    transform: scaleX(0.35);
+    transform-origin: left;
+    opacity: 0.4;
+    transition:
+      transform 0.5s var(--ease-lux),
+      opacity 0.5s var(--ease-lux);
+  }
+
+  .link-line:hover::after {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+
+  /* ── Champs de formulaire ──────────────────────────────── */
+  .field {
+    width: 100%;
+    min-height: 3.25rem;
+    padding: 0.875rem 1rem;
+    background-color: #fff;
+    border: 1px solid var(--color-sand-deep);
+    border-radius: 2px;
+    font-family: var(--font-sans);
+    font-size: 0.9375rem;
+    font-weight: 300;
+    color: var(--color-espresso);
+    transition: border-color 0.3s var(--ease-lux);
+  }
+
+  .field::placeholder {
+    color: color-mix(in srgb, var(--color-taupe) 65%, transparent);
+  }
+
+  .field:hover {
+    border-color: color-mix(in srgb, var(--color-bronze) 45%, transparent);
+  }
+
+  .field:focus {
+    outline: none;
+    border-color: var(--color-bronze);
+  }
+
+  .field-label {
+    display: block;
+    font-size: 0.6875rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-taupe);
+    margin-bottom: 0.5rem;
+  }
+
+  .field-error {
+    border-color: #b3543f;
+  }
+
+  /* ── Apparitions au scroll ─────────────────────────────── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(18px);
+    transition:
+      opacity 0.8s var(--ease-lux),
+      transform 0.8s var(--ease-lux);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+
+  .reveal.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+
+  /* ── Halo d'ambiance ───────────────────────────────────── */
+  .halo-blush {
+    background:
+      radial-gradient(
+        42rem 42rem at 82% 12%,
+        color-mix(in srgb, var(--color-blush-deep) 55%, transparent),
+        transparent 65%
+      ),
+      radial-gradient(
+        36rem 36rem at 8% 92%,
+        color-mix(in srgb, var(--color-sand) 80%, transparent),
+        transparent 70%
+      );
+  }
+
+  .halo-gold {
+    background:
+      radial-gradient(
+        40rem 40rem at 85% 8%,
+        color-mix(in srgb, var(--color-gold-soft) 38%, transparent),
+        transparent 65%
+      ),
+      radial-gradient(
+        34rem 34rem at 10% 95%,
+        color-mix(in srgb, var(--color-sand) 85%, transparent),
+        transparent 70%
+      );
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display);
+  }
+
+  /* Arche — motif signature de la maison */
+  .arch {
+    border-radius: 999px 999px 2px 2px;
+    overflow: hidden;
+  }
+
+  .hairline {
+    height: 1px;
+    background-color: var(--color-sand-deep);
+  }
+}
