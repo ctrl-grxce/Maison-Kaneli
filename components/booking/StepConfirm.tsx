@@ -45,7 +45,7 @@ export function StepConfirm({
         <dl className="divide-y divide-sand-deep/70 px-5">
           {mode === "prestation" && service ? (
             <>
-              <Row label="Maison" value={BRAND_LABELS[service.brand]} />
+              <Row label="Pôle" value={BRAND_LABELS[service.brand]} />
               <Row label="Prestation" value={service.name} />
               <Row label="Durée" value={formatDuration(service.durationMin)} />
               <Row label="Tarif" value={service.price} />

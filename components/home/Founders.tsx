@@ -39,8 +39,9 @@ export function Founders() {
               Derrière Maison Kanali, il y a Viminde Kandy — fondatrice et
               responsable du pôle beauté, forte de plus de huit ans de métier —
               et Viminde Nafi, co-fondatrice et associée stratégique. Chacune à
-              la tête de sa maison, Kandylove Beauty et Naftali, elles ont
-              imaginé ensemble un lieu où l&apos;exigence rencontre la douceur.
+              la tête de son pôle, Kandylove Beauty pour la beauté et Naftali
+              pour le regard, elles ont imaginé ensemble un lieu où
+              l&apos;exigence rencontre la douceur.
             </p>
           </Reveal>
           <Reveal delay={270}>

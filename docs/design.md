@@ -55,7 +55,7 @@ résolutions) ; les fichiers logos fournis sont utilisés dans les pages.
 ## 3. Arborescence (multi-pages, pas de scroll infini)
 
 ```
-/                    Accueil — hero, les deux maisons, prestations phares,
+/                    Accueil — hero, les deux pôles, prestations phares,
                      l'expérience (sur RDV), fondatrices, bandeau CTA
 /kandylove           Kandylove Beauty — onglerie (carte tarifaire) + maquillage
 /naftali             Naftali — extensions de cils (ivoire & or)

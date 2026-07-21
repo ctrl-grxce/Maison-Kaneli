@@ -46,10 +46,11 @@ npx vercel deploy --prod --yes   # déployer en production
 
 ## Rappels de contenu (validés le 21–22/07)
 
-- Deux professionnelles, chacune CEO de sa maison : **Viminde Kandy**
-  (fondatrice, responsable du pôle beauté, CEO Kandylove Beauty, 8+ ans de
-  métier) et **Viminde Nafi** (co-fondatrice, associée stratégique, CEO
-  Naftali). Ensemble : « un lieu où l'exigence rencontre la douceur ».
+- **UNE maison, deux pôles** (pas « deux maisons sœurs ») : **Viminde Kandy**
+  (fondatrice, CEO Kandylove Beauty, pôle beauté — ongles & maquillage, 8+ ans
+  de métier) et **Viminde Nafi** (co-fondatrice, associée stratégique, CEO
+  Naftali, pôle regard — cils). Ensemble : « un lieu où l'exigence rencontre la
+  douceur ».
 - Horaires : lundi–samedi, 10h–17h — sur rendez-vous uniquement.
 - Réservations : pas de 30 min, 90 min de délai le jour même, horizon 60 jours
   ([lib/config.ts](lib/config.ts)).

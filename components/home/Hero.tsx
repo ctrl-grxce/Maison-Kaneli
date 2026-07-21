@@ -22,8 +22,8 @@ export function Hero() {
           </Reveal>
           <Reveal delay={180}>
             <p className="mt-6 max-w-md text-[0.9375rem] leading-relaxed text-taupe">
-              Ongles, maquillage, regard : deux maisons d&apos;excellence vous
-              reçoivent sur rendez-vous, dans un écrin pensé pour vous.
+              Ongles, maquillage, regard : deux expertes vous reçoivent sur
+              rendez-vous, dans un écrin pensé pour vous.
             </p>
           </Reveal>
           <Reveal delay={270}>

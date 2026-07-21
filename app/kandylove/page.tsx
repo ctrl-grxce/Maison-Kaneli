@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { servicesByCategory } from "@/lib/services";
+import { getService, servicesByCategory } from "@/lib/services";
 import { PageHero } from "@/components/ui/PageHero";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { ServiceMenu } from "@/components/ui/ServiceMenu";
@@ -13,21 +13,40 @@ import { ArrowRightIcon, SparkleIcon } from "@/components/ui/icons";
 export const metadata: Metadata = {
   title: "Kandylove Beauty — Onglerie & Maquillage",
   description:
-    "Prothésie ongulaire (pose gel, remplissage, nail art) et maquillage professionnel (mariée, naturel, full face) par Kandylove Beauty, à Saint-Quentin. Sur rendez-vous.",
+    "Prothésie ongulaire (pose gel, remplissage, nail art) et maquillage professionnel (mariée, naturel, full face) par Kandylove Beauty, le pôle beauté de Maison Kanali à Saint-Quentin.",
 };
+
+/* Regroupement du maquillage — même logique que le flyer TARIF. */
+const MAQUILLAGE_GROUPES = [
+  { label: "Mariée", ids: ["mariee-essai", "mariee-jour-j"] },
+  { label: "Maquillage naturel", ids: ["naturel-basic", "naturel-liner", "classic-yeux"] },
+  { label: "Full face", ids: ["full-teint-levres", "full-yeux-charges", "shooting"] },
+] as const;
+
+const CHIP_CLASS =
+  "inline-flex h-10 items-center rounded-full border border-bronze/40 bg-white/80 px-5 text-[0.66rem] tracking-[0.18em] text-bronze uppercase transition-colors duration-300 hover:bg-bronze hover:text-ivory";
 
 export default function KandylovePage() {
   return (
     <>
       <PageHero
-        overline="La maison fondatrice · depuis plus de 8 ans"
+        overline="Le pôle beauté · depuis plus de 8 ans"
         title={
           <>
             Kandylove <em className="text-bronze">Beauty</em>
           </>
         }
-        intro="Des mains impeccables, un teint sublimé : la maison fondatrice de Maison Kanali cultive l'art de la prothésie ongulaire et du maquillage professionnel."
-      />
+        intro="Des mains impeccables, un teint sublimé : le pôle beauté de Maison Kanali, dirigé par Viminde Kandy, cultive l'art de la prothésie ongulaire et du maquillage professionnel."
+      >
+        <div className="mt-8 flex flex-wrap justify-center gap-2.5">
+          <a href="#onglerie" className={CHIP_CLASS}>
+            Prothésie ongulaire
+          </a>
+          <a href="#maquillage" className={CHIP_CLASS}>
+            Maquillage
+          </a>
+        </div>
+      </PageHero>
 
       {/* ── Onglerie ─────────────────────────────────────────────────────── */}
       <section id="onglerie" className="scroll-mt-20">
@@ -94,7 +113,18 @@ export default function KandylovePage() {
             </Reveal>
           </div>
           <div>
-            <ServiceMenu services={servicesByCategory("maquillage")} />
+            {MAQUILLAGE_GROUPES.map((groupe, index) => (
+              <div key={groupe.label} className={index > 0 ? "mt-10" : undefined}>
+                <Reveal>
+                  <p className="overline-label mb-3">{groupe.label}</p>
+                </Reveal>
+                <ServiceMenu
+                  services={groupe.ids
+                    .map((id) => getService(id))
+                    .filter((service) => service !== undefined)}
+                />
+              </div>
+            ))}
             <Reveal delay={150}>
               <p className="mt-6 flex items-start gap-3 text-sm leading-relaxed text-taupe">
                 <SparkleIcon width={17} height={17} className="mt-0.5 shrink-0 text-bronze" />

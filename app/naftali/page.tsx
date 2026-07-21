@@ -46,7 +46,7 @@ export default function NaftaliPage() {
             <em className="text-gold">Naftali</em>
           </>
         }
-        intro="La maison du regard de Maison Kanali, dirigée par sa fondatrice Viminde Nafi : du cil à cil le plus naturel au volume russe le plus couture."
+        intro="Le pôle regard de Maison Kanali, dirigé par sa fondatrice Viminde Nafi : du cil à cil le plus naturel au volume russe le plus couture."
       />
 
       {/* ── Carte des poses ──────────────────────────────────────────────── */}

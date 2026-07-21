@@ -128,7 +128,7 @@ export async function sendBookingEmails(data: BookingEmailData): Promise<void> {
   const detailRows =
     row("Référence", data.reference, true) +
     row("Prestation", escapeHtml(data.serviceName), true) +
-    row("Maison", escapeHtml(data.brandLabel)) +
+    row("Pôle", escapeHtml(data.brandLabel)) +
     row("Date", escapeHtml(dateLabel), true) +
     row("Durée", formatDuration(data.durationMin)) +
     row("Tarif", escapeHtml(data.price));

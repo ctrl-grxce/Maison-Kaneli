@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Service } from "@/lib/services";
 import { formatDuration, cn } from "@/lib/utils";
 import { Reveal } from "./Reveal";
-import { ArrowRightIcon } from "./icons";
+import { ClockIcon } from "./icons";
 
 interface ServiceMenuProps {
   services: Service[];
@@ -11,57 +11,61 @@ interface ServiceMenuProps {
   className?: string;
 }
 
-/** Carte tarifaire — lignes élégantes avec durée, tarif et réservation. */
+/**
+ * Carte tarifaire — lecture immédiate : nom + description à gauche,
+ * prix bien visible et bouton Réserver à droite.
+ */
 export function ServiceMenu({
   services,
   accent = "bronze",
   className,
 }: ServiceMenuProps) {
-  const accentText = accent === "gold" ? "text-gold" : "text-bronze";
+  const gold = accent === "gold";
 
   return (
-    <ul className={cn("divide-y divide-sand-deep/80 border-y border-sand-deep", className)}>
+    <ul
+      className={cn(
+        "divide-y divide-sand-deep/80 border-y border-sand-deep",
+        className,
+      )}
+    >
       {services.map((service, index) => (
         <Reveal key={service.id} delay={Math.min(index, 4) * 70}>
-          <li className="group py-5 md:py-6">
-            <div className="flex items-baseline justify-between gap-4">
+          <li className="flex items-start justify-between gap-5 py-6 sm:gap-8">
+            <div className="min-w-0">
               <h3 className="font-display text-xl leading-snug font-medium md:text-[1.4rem]">
                 {service.name}
               </h3>
-              <span
-                aria-hidden
-                className="hairline hidden min-w-8 flex-1 self-center opacity-70 sm:block"
-              />
+              <p className="mt-1.5 max-w-md text-sm leading-relaxed text-taupe">
+                {service.description}
+              </p>
+              <span className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-sand-deep bg-white px-3 py-1 text-[0.62rem] tracking-[0.14em] text-taupe uppercase">
+                <ClockIcon width={13} height={13} aria-hidden />
+                {formatDuration(service.durationMin)}
+              </span>
+            </div>
+
+            <div className="flex shrink-0 flex-col items-end gap-3 text-right">
               <p
                 className={cn(
-                  "font-display text-lg whitespace-nowrap md:text-xl",
-                  accentText,
+                  "font-display text-xl leading-none whitespace-nowrap md:text-2xl",
+                  gold ? "text-gold" : "text-bronze",
                 )}
               >
                 {service.price}
               </p>
-            </div>
-            <div className="mt-1.5 flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
-              <p className="max-w-xl text-sm leading-relaxed text-taupe">
-                {service.description}
-              </p>
-              <div className="flex items-center gap-5 whitespace-nowrap">
-                <span className="text-[0.68rem] tracking-[0.18em] text-taupe uppercase">
-                  {formatDuration(service.durationMin)}
-                </span>
-                <Link
-                  href={`/rendez-vous?service=${service.id}`}
-                  className={cn("link-line", accentText)}
-                  aria-label={`Réserver : ${service.name}`}
-                >
-                  Réserver
-                  <ArrowRightIcon
-                    width={13}
-                    height={13}
-                    className="transition-transform duration-500 group-hover:translate-x-1"
-                  />
-                </Link>
-              </div>
+              <Link
+                href={`/rendez-vous?service=${service.id}`}
+                aria-label={`Réserver : ${service.name}`}
+                className={cn(
+                  "inline-flex h-10 items-center justify-center rounded-[2px] border px-5 text-[0.66rem] tracking-[0.18em] uppercase transition-colors duration-300",
+                  gold
+                    ? "border-gold/55 text-gold hover:bg-gold hover:text-ivory"
+                    : "border-bronze/50 text-bronze hover:bg-bronze hover:text-ivory",
+                )}
+              >
+                Réserver
+              </Link>
             </div>
           </li>
         </Reveal>

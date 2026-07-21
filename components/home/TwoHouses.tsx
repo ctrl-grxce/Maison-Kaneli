@@ -10,13 +10,13 @@ export function TwoHouses() {
       <div className="mx-auto max-w-6xl px-4 py-16 md:px-8 md:py-24">
         <SectionHeading
           align="center"
-          overline="Deux maisons, un même écrin"
+          overline="Une maison, deux pôles"
           title={
             <>
               L&apos;excellence a <em className="text-bronze">deux signatures</em>
             </>
           }
-          intro="Kandylove Beauty, dédiée aux ongles et au maquillage, et Naftali, consacrée au regard : deux expertises, portées chacune par sa fondatrice."
+          intro="Sous un même toit, deux pôles d'expertise : Kandylove Beauty pour les ongles et le maquillage, Naftali pour le regard — chacun porté par sa professionnelle."
         />
 
         <div className="mt-12 grid gap-6 md:mt-16 md:grid-cols-2">
@@ -35,7 +35,7 @@ export function TwoHouses() {
                   className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
                 />
               </div>
-              <p className="overline-label mt-8">La maison fondatrice</p>
+              <p className="overline-label mt-8">Le pôle beauté · par Viminde Kandy</p>
               <h3 className="font-display mt-3 text-3xl font-medium">
                 Kandylove Beauty
               </h3>
@@ -71,11 +71,11 @@ export function TwoHouses() {
                   className="w-56 object-contain mix-blend-multiply transition-transform duration-700 group-hover:scale-[1.05]"
                 />
               </div>
-              <p className="overline-label mt-8 text-gold">By Maison Kanali</p>
+              <p className="overline-label mt-8 text-gold">Le pôle regard · par Viminde Nafi</p>
               <h3 className="font-display mt-3 text-3xl font-medium">Naftali</h3>
               <p className="mt-3 text-sm leading-relaxed text-taupe">
-                La maison du regard : extensions de cils posées à la perfection,
-                du cil à cil délicat au volume russe le plus aérien.
+                L&apos;art du regard : extensions de cils posées à la
+                perfection, du cil à cil délicat au volume russe le plus aérien.
               </p>
               <span className="link-line mt-7 text-gold">
                 Découvrir

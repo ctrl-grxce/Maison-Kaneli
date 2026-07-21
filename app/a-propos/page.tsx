@@ -95,10 +95,10 @@ export default function AboutPage() {
               </p>
               <p>
                 Maison Kanali est la suite naturelle de cette aventure : un
-                showroom pensé comme un écrin, où l&apos;activité historique des
-                ongles et du maquillage rencontre Naftali, la maison du regard,
-                et où les formations professionnelles trouvent leur salle de
-                classe.
+                showroom pensé comme un écrin, où le pôle beauté historique —
+                ongles et maquillage — rencontre Naftali, le pôle dédié au
+                regard, et où les formations professionnelles trouvent leur
+                salle de classe.
               </p>
               <p>
                 Le tout, sur rendez-vous uniquement — pour un accueil
@@ -121,7 +121,7 @@ export default function AboutPage() {
                 Deux fondatrices, <em className="text-bronze">deux expertises</em>
               </>
             }
-            intro="Chacune dirige sa maison ; ensemble, elles ont imaginé un lieu où l'exigence rencontre la douceur."
+            intro="Chacune dirige son pôle ; ensemble, elles ont imaginé un lieu où l'exigence rencontre la douceur."
           />
           <div className="mx-auto mt-12 grid max-w-3xl gap-6 sm:grid-cols-2">
             <Reveal delay={100}>
@@ -147,9 +147,9 @@ export default function AboutPage() {
                 </p>
                 <div className="hairline mx-auto my-5 w-10 bg-gold/60" />
                 <p className="text-sm leading-relaxed text-taupe">
-                  Associée stratégique et regard de la maison. À la tête de
-                  Naftali, elle développe l&apos;univers des extensions de cils
-                  et la vision de Maison Kanali.
+                  Associée stratégique, à la tête de Naftali — le pôle regard de
+                  la maison — elle développe l&apos;univers des extensions de
+                  cils et la vision de Maison Kanali.
                 </p>
               </div>
             </Reveal>
