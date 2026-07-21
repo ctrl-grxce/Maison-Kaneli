@@ -118,22 +118,24 @@ export default function AboutPage() {
             overline="Les fondatrices"
             title={
               <>
-                Deux sœurs, <em className="text-bronze">deux forces</em>
+                Deux fondatrices, <em className="text-bronze">deux expertises</em>
               </>
             }
+            intro="Chacune dirige sa maison ; ensemble, elles ont imaginé un lieu où l'exigence rencontre la douceur."
           />
           <div className="mx-auto mt-12 grid max-w-3xl gap-6 sm:grid-cols-2">
             <Reveal delay={100}>
               <div className="h-full border border-sand-deep bg-white p-8 text-center">
                 <p className="font-display text-2xl font-medium">Viminde Kandy</p>
                 <p className="overline-label mt-2 text-[0.62rem]">
-                  Fondatrice & gérante · pôle beauté
+                  Fondatrice · CEO Kandylove Beauty
                 </p>
                 <div className="hairline mx-auto my-5 w-10 bg-bronze/50" />
                 <p className="text-sm leading-relaxed text-taupe">
-                  L&apos;âme de Kandylove Beauty. Prothésiste ongulaire et
-                  maquilleuse professionnelle, elle veille sur chaque prestation
-                  et forme la nouvelle génération.
+                  Responsable du pôle beauté, forte de plus de huit ans de
+                  métier. Prothésiste ongulaire et maquilleuse professionnelle,
+                  elle veille sur chaque prestation et forme la nouvelle
+                  génération.
                 </p>
               </div>
             </Reveal>
@@ -141,13 +143,13 @@ export default function AboutPage() {
               <div className="h-full border border-sand-deep bg-white p-8 text-center">
                 <p className="font-display text-2xl font-medium">Viminde Nafi</p>
                 <p className="overline-label mt-2 text-[0.62rem] text-gold">
-                  Co-fondatrice & associée stratégique
+                  Co-fondatrice · CEO Naftali
                 </p>
                 <div className="hairline mx-auto my-5 w-10 bg-gold/60" />
                 <p className="text-sm leading-relaxed text-taupe">
-                  Le regard de la maison. À la tête de Naftali, elle développe
-                  l&apos;univers des extensions de cils et la vision stratégique
-                  de Maison Kanali.
+                  Associée stratégique et regard de la maison. À la tête de
+                  Naftali, elle développe l&apos;univers des extensions de cils
+                  et la vision de Maison Kanali.
                 </p>
               </div>
             </Reveal>

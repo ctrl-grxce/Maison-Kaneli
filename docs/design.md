@@ -13,7 +13,7 @@ Deux univers sous un même toit :
 
 | | Kandylove Beauty | Naftali |
 |---|---|---|
-| Rôle | Activité principale (8+ ans) | Marque sœur « by Maison Kanali » |
+| Rôle | Activité principale (8+ ans) — CEO : Viminde Kandy | « By Maison Kanali » — CEO : Viminde Nafi |
 | Métiers | Prothésie ongulaire, maquillage | Extensions de cils |
 | Formations | Onglerie (coaching privé 2 jours) | Extensions de cils |
 | Codes visuels | Terracotta, rose pâle | Ivoire, or |

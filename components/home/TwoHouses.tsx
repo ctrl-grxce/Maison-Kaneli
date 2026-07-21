@@ -16,7 +16,7 @@ export function TwoHouses() {
               L&apos;excellence a <em className="text-bronze">deux signatures</em>
             </>
           }
-          intro="Kandylove Beauty, la maison fondatrice dédiée aux ongles et au maquillage, et Naftali, sa maison sœur consacrée au regard."
+          intro="Kandylove Beauty, dédiée aux ongles et au maquillage, et Naftali, consacrée au regard : deux expertises, portées chacune par sa fondatrice."
         />
 
         <div className="mt-12 grid gap-6 md:mt-16 md:grid-cols-2">
