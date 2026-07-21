@@ -110,8 +110,8 @@ export default async function ConfirmationPage({ searchParams }: PageProps) {
 
         <p className="mt-7 max-w-md text-sm leading-relaxed text-taupe">
           {isFormation
-            ? "Maison Kanali vous recontacte très vite pour convenir des dates et des modalités. Un email récapitulatif vous a été adressé."
-            : "Maison Kanali vous confirmera ce rendez-vous très prochainement. Un email récapitulatif vous a été adressé."}
+            ? "Votre demande est bien enregistrée : Maison Kanali vous recontacte très vite, par email ou par téléphone, pour convenir des dates et des modalités."
+            : "Votre créneau est bien enregistré : Maison Kanali vous confirmera ce rendez-vous très prochainement, par email ou par téléphone."}
         </p>
 
         <div className="mt-9 flex flex-col gap-3 sm:flex-row">
