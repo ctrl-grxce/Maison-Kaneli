@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getService } from "@/lib/services";
 import { getSupabase } from "@/lib/supabase-server";
 import { clientIp, rateLimit, RATE_LIMIT_MESSAGE } from "@/lib/rate-limit";
+import { allBlocked, throttleFactor, LOCKDOWN_MESSAGE } from "@/lib/lockdown";
 import {
   buildSlots,
   isBookableDate,
@@ -14,7 +15,14 @@ export const dynamic = "force-dynamic";
 
 /** GET /api/availability?date=YYYY-MM-DD&serviceId=… */
 export async function GET(request: Request) {
-  if (!rateLimit("availability", clientIp(request), 60, 60_000)) {
+  // Étage 3 (cadenas total) : plus aucune lecture des données.
+  if (allBlocked()) {
+    return NextResponse.json({ error: LOCKDOWN_MESSAGE }, { status: 503 });
+  }
+  // Le rate limit se durcit automatiquement quand la vigilance monte.
+  if (
+    !rateLimit("availability", clientIp(request), Math.ceil(60 / throttleFactor()), 60_000)
+  ) {
     return NextResponse.json({ error: RATE_LIMIT_MESSAGE }, { status: 429 });
   }
 

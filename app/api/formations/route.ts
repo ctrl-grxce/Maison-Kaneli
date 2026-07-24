@@ -9,15 +9,22 @@ import {
   rateLimit,
   RATE_LIMIT_MESSAGE,
 } from "@/lib/rate-limit";
+import { writesBlocked, throttleFactor, LOCKDOWN_MESSAGE } from "@/lib/lockdown";
 
 export const dynamic = "force-dynamic";
 
 /** POST /api/formations — demande d'inscription à une formation. */
 export async function POST(request: Request) {
+  // Étage 2+ (verrou écritures) : aucune nouvelle demande n'entre en base.
+  if (writesBlocked()) {
+    return NextResponse.json({ error: LOCKDOWN_MESSAGE }, { status: 503 });
+  }
   if (!isSameOrigin(request)) {
     return NextResponse.json({ error: "Origine non autorisée." }, { status: 403 });
   }
-  if (!rateLimit("formations", clientIp(request), 5, 10 * 60_000)) {
+  if (
+    !rateLimit("formations", clientIp(request), Math.max(1, Math.ceil(5 / throttleFactor())), 10 * 60_000)
+  ) {
     return NextResponse.json({ error: RATE_LIMIT_MESSAGE }, { status: 429 });
   }
 
