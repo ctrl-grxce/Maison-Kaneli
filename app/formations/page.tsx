@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { FORMATIONS } from "@/lib/services";
 import { cn } from "@/lib/utils";
 import { PageHero } from "@/components/ui/PageHero";
 import { Reveal } from "@/components/ui/Reveal";
+import { SectionHeading } from "@/components/ui/SectionHeading";
 import { MobileBookBar } from "@/components/layout/MobileBookBar";
 import { CheckIcon, DiplomaIcon } from "@/components/ui/icons";
 
@@ -165,6 +167,89 @@ export default function FormationsPage() {
             l&apos;inscription.
           </p>
         </Reveal>
+      </section>
+
+      {/* ── La formation en images ───────────────────────────────────────── */}
+      <section className="border-t border-sand-deep/70 bg-sand">
+        <div className="mx-auto max-w-6xl px-4 py-14 md:px-8 md:py-20">
+          <SectionHeading
+            align="center"
+            overline="La formation en images"
+            title={
+              <>
+                Apprendre, pratiquer, <em className="text-bronze">réussir</em>
+              </>
+            }
+            intro="Un coaching privé, au plus près du geste — et des élèves qui repartent avec un vrai savoir-faire entre les mains."
+          />
+
+          <div className="mx-auto mt-12 grid max-w-4xl gap-5 md:grid-cols-[1.15fr_1fr]">
+            <Reveal>
+              <figure className="h-full">
+                <div className="relative aspect-[3/4] h-full w-full overflow-hidden rounded-t-full border border-sand-deep/70">
+                  <Image
+                    src="/images/formation-kandy.jpg"
+                    alt="Viminde Kandy guide une élève pendant une formation onglerie"
+                    fill
+                    sizes="(max-width: 768px) 90vw, 30rem"
+                    className="object-cover"
+                  />
+                </div>
+                <figcaption className="mt-3 text-center text-[0.65rem] tracking-[0.2em] text-taupe uppercase">
+                  Kandy et son élève, en coaching privé
+                </figcaption>
+              </figure>
+            </Reveal>
+
+            <div className="grid gap-5">
+              <Reveal delay={120}>
+                <figure>
+                  <div className="relative aspect-[16/9] overflow-hidden rounded-[2px] border border-sand-deep/70">
+                    <Image
+                      src="/images/eleve-rose.jpg"
+                      alt="Pose rose amande réalisée par une élève en formation"
+                      fill
+                      sizes="(max-width: 768px) 90vw, 24rem"
+                      className="object-cover"
+                    />
+                  </div>
+                  <figcaption className="mt-3 text-center text-[0.65rem] tracking-[0.2em] text-taupe uppercase">
+                    Réalisation d&apos;élève — rose amande
+                  </figcaption>
+                </figure>
+              </Reveal>
+              <Reveal delay={220}>
+                <figure>
+                  <div className="relative aspect-[16/9] overflow-hidden rounded-[2px] border border-sand-deep/70">
+                    <Image
+                      src="/images/eleve-pois.jpg"
+                      alt="French à pois réalisée par une élève en formation"
+                      fill
+                      sizes="(max-width: 768px) 90vw, 24rem"
+                      className="object-cover object-[50%_62%]"
+                    />
+                  </div>
+                  <figcaption className="mt-3 text-center text-[0.65rem] tracking-[0.2em] text-taupe uppercase">
+                    Réalisation d&apos;élève — french à pois
+                  </figcaption>
+                </figure>
+              </Reveal>
+            </div>
+          </div>
+
+          <Reveal delay={200}>
+            <blockquote className="mx-auto mt-12 max-w-2xl text-center">
+              <p className="font-display text-2xl leading-snug font-medium text-balance md:text-3xl">
+                «&nbsp;Je transmets mon savoir-faire à celles qui veulent un
+                métier <em className="text-bronze">passionnant</em> entre leurs
+                mains.&nbsp;»
+              </p>
+              <footer className="mt-4 text-[0.68rem] tracking-[0.2em] text-taupe uppercase">
+                Viminde Kandy · Fondatrice de Maison Kanali
+              </footer>
+            </blockquote>
+          </Reveal>
+        </div>
       </section>
       <MobileBookBar />
     </>

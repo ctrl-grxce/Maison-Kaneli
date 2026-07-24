@@ -211,6 +211,75 @@
     }
   }
 
+  /* ── Séquence de bienvenue (hero d'accueil) ────────────── */
+  .hero-fade {
+    animation: hero-rise 0.9s var(--ease-lux) both;
+  }
+
+  .hero-mask {
+    display: block;
+    overflow: hidden;
+  }
+
+  .hero-line {
+    display: block;
+    animation: hero-line 0.95s var(--ease-lux) both;
+  }
+
+  .hero-frame {
+    animation: hero-frame 1.2s var(--ease-lux) both;
+  }
+
+  .hero-rule {
+    transform-origin: left;
+    animation: hero-rule 0.9s var(--ease-lux) both;
+  }
+
+  .hero-float {
+    animation: hero-soft-float 5.5s ease-in-out infinite alternate;
+  }
+
+  /* Effet Ken Burns — appliqué à l'image active du carrousel */
+  .kenburns {
+    animation: hero-kenburns 8.5s linear both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-fade,
+    .hero-line,
+    .hero-frame,
+    .hero-rule,
+    .hero-float,
+    .kenburns {
+      animation: none;
+    }
+  }
+
+  /* ── Ruban de réalisations ─────────────────────────────── */
+  .marquee {
+    overflow: hidden;
+  }
+
+  .marquee-track {
+    display: flex;
+    width: max-content;
+    animation: marquee-scroll 48s linear infinite;
+  }
+
+  .marquee:hover .marquee-track {
+    animation-play-state: paused;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .marquee {
+      overflow-x: auto;
+    }
+
+    .marquee-track {
+      animation: none;
+    }
+  }
+
   /* ── Halo d'ambiance ───────────────────────────────────── */
   .halo-blush {
     background:
@@ -238,6 +307,73 @@
         color-mix(in srgb, var(--color-sand) 85%, transparent),
         transparent 70%
       );
+  }
+}
+
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes hero-line {
+  from {
+    transform: translateY(108%);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes hero-frame {
+  from {
+    opacity: 0;
+    transform: scale(0.975);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes hero-rule {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes hero-kenburns {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.08);
+  }
+}
+
+@keyframes hero-soft-float {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
   }
 }
 

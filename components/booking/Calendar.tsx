@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 import { OPENING } from "@/lib/config";
+import { addDays, isBookableDate, parisNow } from "@/lib/availability";
 import { ChevronLeftIcon, ChevronRightIcon } from "@/components/ui/icons";
 
 interface CalendarProps {
@@ -24,17 +25,12 @@ function toIso(year: number, month: number, day: number): string {
   return `${year}-${pad(month + 1)}-${pad(day)}`;
 }
 
-/** Calendrier mensuel — dimanches fermés, passé et horizon désactivés. */
+/** Calendrier mensuel — dimanches fermés, passé et horizon désactivés.
+ *  Toutes les dates sont calculées en heure de Paris, comme côté serveur. */
 export function Calendar({ selected, onSelect }: CalendarProps) {
-  const today = new Date();
-  const todayIso = toIso(today.getFullYear(), today.getMonth(), today.getDate());
-  const horizon = new Date(today);
-  horizon.setDate(horizon.getDate() + OPENING.horizonDays);
-  const horizonIso = toIso(
-    horizon.getFullYear(),
-    horizon.getMonth(),
-    horizon.getDate(),
-  );
+  // Figé au premier rendu : la référence « aujourd'hui » du showroom.
+  const [todayIso] = useState(() => parisNow().date);
+  const horizonIso = addDays(todayIso, OPENING.horizonDays);
 
   const initial = selected ?? todayIso;
   const [view, setView] = useState({
@@ -52,12 +48,17 @@ export function Calendar({ selected, onSelect }: CalendarProps) {
     ];
   }, [view]);
 
+  const todayYear = Number(todayIso.slice(0, 4));
+  const todayMonth = Number(todayIso.slice(5, 7)) - 1;
+  const horizonYear = Number(horizonIso.slice(0, 4));
+  const horizonMonth = Number(horizonIso.slice(5, 7)) - 1;
+
   const canGoPrev =
-    view.year > today.getFullYear() ||
-    (view.year === today.getFullYear() && view.month > today.getMonth());
+    view.year > todayYear ||
+    (view.year === todayYear && view.month > todayMonth);
   const canGoNext =
-    view.year < horizon.getFullYear() ||
-    (view.year === horizon.getFullYear() && view.month < horizon.getMonth());
+    view.year < horizonYear ||
+    (view.year === horizonYear && view.month < horizonMonth);
 
   const shift = (delta: number) => {
     setView(({ year, month }) => {
@@ -106,9 +107,7 @@ export function Calendar({ selected, onSelect }: CalendarProps) {
             return <span key={`blank-${index}`} aria-hidden />;
           }
           const iso = toIso(view.year, view.month, day);
-          const weekday = new Date(view.year, view.month, day).getDay();
-          const disabled =
-            weekday === 0 || iso < todayIso || iso > horizonIso;
+          const disabled = !isBookableDate(iso, todayIso);
           const isSelected = iso === selected;
           const isToday = iso === todayIso;
 

@@ -5,6 +5,12 @@ import { getSupabase } from "@/lib/supabase-server";
 import { bookingSchema } from "@/lib/validation";
 import { sendBookingEmails } from "@/lib/email";
 import {
+  clientIp,
+  isSameOrigin,
+  rateLimit,
+  RATE_LIMIT_MESSAGE,
+} from "@/lib/rate-limit";
+import {
   isBookableDate,
   minutesToTime,
   parisNow,
@@ -15,6 +21,13 @@ export const dynamic = "force-dynamic";
 
 /** POST /api/bookings — enregistre un rendez-vous puis notifie par email. */
 export async function POST(request: Request) {
+  if (!isSameOrigin(request)) {
+    return NextResponse.json({ error: "Origine non autorisée." }, { status: 403 });
+  }
+  if (!rateLimit("bookings", clientIp(request), 5, 10 * 60_000)) {
+    return NextResponse.json({ error: RATE_LIMIT_MESSAGE }, { status: 429 });
+  }
+
   let payload: unknown;
   try {
     payload = await request.json();

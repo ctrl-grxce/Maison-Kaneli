@@ -115,7 +115,7 @@ export function BookingWizard({
 
   const handleContinue = () => {
     if (stepKey === "details") {
-      const nextErrors = validateDetails(details);
+      const nextErrors = validateDetails(details, mode);
       setErrors(nextErrors);
       if (Object.keys(nextErrors).length > 0) return;
     }
@@ -169,11 +169,12 @@ export function BookingWizard({
       if (response.status === 409) {
         setTime(null);
         setSubmitting(false);
+        goTo(1); // retour au choix du créneau, disponibilités rafraîchies
+        // Après goTo : sinon la navigation effacerait ce message.
         setSubmitError(
           payload?.error ??
             "Ce créneau vient d'être réservé. Merci d'en choisir un autre.",
         );
-        goTo(1); // retour au choix du créneau, disponibilités rafraîchies
         return;
       }
 

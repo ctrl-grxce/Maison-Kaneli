@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { cn, formatDateFr, formatTimeFr } from "@/lib/utils";
 import type { Service } from "@/lib/services";
-import type { Slot } from "@/lib/availability";
+import { parisNow, type Slot } from "@/lib/availability";
 import { Calendar } from "./Calendar";
 
 interface StepScheduleProps {
@@ -102,9 +102,19 @@ export function StepSchedule({
             </p>
           ) : slots && available.length === 0 ? (
             <p className="py-10 text-center text-sm leading-relaxed text-taupe">
-              Cette journée est déjà complète.
-              <br />
-              Merci de choisir une autre date.
+              {date === parisNow().date ? (
+                <>
+                  Plus de créneaux disponibles aujourd&apos;hui.
+                  <br />
+                  Merci de choisir une autre date.
+                </>
+              ) : (
+                <>
+                  Cette journée est déjà complète.
+                  <br />
+                  Merci de choisir une autre date.
+                </>
+              )}
             </p>
           ) : (
             <>

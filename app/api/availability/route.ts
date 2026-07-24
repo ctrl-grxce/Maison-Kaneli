@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getService } from "@/lib/services";
 import { getSupabase } from "@/lib/supabase-server";
+import { clientIp, rateLimit, RATE_LIMIT_MESSAGE } from "@/lib/rate-limit";
 import {
   buildSlots,
   isBookableDate,
@@ -13,6 +14,10 @@ export const dynamic = "force-dynamic";
 
 /** GET /api/availability?date=YYYY-MM-DD&serviceId=… */
 export async function GET(request: Request) {
+  if (!rateLimit("availability", clientIp(request), 60, 60_000)) {
+    return NextResponse.json({ error: RATE_LIMIT_MESSAGE }, { status: 429 });
+  }
+
   const { searchParams } = new URL(request.url);
   const date = searchParams.get("date") ?? "";
   const serviceId = searchParams.get("serviceId") ?? "";

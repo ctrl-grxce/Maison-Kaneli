@@ -15,8 +15,14 @@ export interface ContactDetails {
 
 export type DetailsErrors = Partial<Record<keyof ContactDetails, string>>;
 
-export function validateDetails(details: ContactDetails): DetailsErrors {
+export function validateDetails(
+  details: ContactDetails,
+  mode: BookingMode = "prestation",
+): DetailsErrors {
   const errors: DetailsErrors = {};
+  const phone = details.phone.trim();
+  const notesLimit = mode === "formation" ? 800 : 500;
+
   if (details.firstName.trim().length < 2) {
     errors.firstName = "Votre prénom est requis.";
   }
@@ -26,11 +32,14 @@ export function validateDetails(details: ContactDetails): DetailsErrors {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(details.email.trim())) {
     errors.email = "Une adresse email valide est requise.";
   }
-  if (!/^[+0-9 ().-]{6,20}$/.test(details.phone.trim())) {
+  if (
+    !/^[+0-9 ().-]{6,20}$/.test(phone) ||
+    (phone.match(/\d/g) ?? []).length < 6
+  ) {
     errors.phone = "Un numéro de téléphone valide est requis.";
   }
-  if (details.notes.length > 500) {
-    errors.notes = "500 caractères maximum.";
+  if (details.notes.length > notesLimit) {
+    errors.notes = `${notesLimit} caractères maximum.`;
   }
   return errors;
 }

@@ -25,7 +25,7 @@ export default async function BookingPage({ searchParams }: PageProps) {
               Prendre <em className="text-bronze">rendez-vous</em>
             </h1>
             <p className="mt-4 text-[0.9375rem] leading-relaxed text-taupe">
-              Quatre petites étapes, et votre moment est réservé.
+              Quelques étapes, et votre moment est réservé.
             </p>
           </div>
         </Reveal>

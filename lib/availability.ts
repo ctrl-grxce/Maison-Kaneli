@@ -62,7 +62,7 @@ export function isOpenDay(isoDate: string): boolean {
   return (OPENING.openDays as readonly number[]).includes(dayOfWeek(isoDate));
 }
 
-function addDays(isoDate: string, days: number): string {
+export function addDays(isoDate: string, days: number): string {
   const [y, m, d] = isoDate.split("-").map(Number);
   const date = new Date(Date.UTC(y, m - 1, d + days));
   return date.toISOString().slice(0, 10);

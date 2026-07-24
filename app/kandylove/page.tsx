@@ -64,8 +64,8 @@ export default function KandylovePage() {
             <Reveal delay={150}>
               <div className="arch relative mt-10 hidden aspect-[4/5] max-w-[19rem] border border-sand-deep/60 md:block">
                 <Image
-                  src="/images/carte-ongles.jpg"
-                  alt="Pose gel — Kandylove Beauty"
+                  src="/images/realisation-strass.jpg"
+                  alt="French strass émeraude — réalisation Kandylove Beauty"
                   fill
                   sizes="19rem"
                   className="object-cover"
@@ -84,6 +84,62 @@ export default function KandylovePage() {
               </p>
             </Reveal>
           </div>
+        </div>
+      </section>
+
+      {/* ── Réalisations ─────────────────────────────────────────────────── */}
+      <section className="border-t border-sand-deep/70 bg-blush/40">
+        <div className="mx-auto max-w-6xl px-4 py-14 md:px-8 md:py-20">
+          <SectionHeading
+            align="center"
+            overline="Réalisations"
+            title={
+              <>
+                La signature Kandylove, <em className="text-bronze">en images</em>
+              </>
+            }
+            intro="Quelques poses réalisées au showroom — chaque main est différente, chaque pose est unique."
+          />
+          <div className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-3 md:mt-14 lg:grid-cols-5">
+            {(
+              [
+                { src: "/images/realisation-brun.jpg", alt: "Pose gel brun glacé", arch: true },
+                { src: "/images/realisation-rouge.jpg", alt: "Manucure rouge signature", arch: false },
+                { src: "/images/realisation-french.jpg", alt: "French manucure", arch: true },
+                { src: "/images/realisation-strass.jpg", alt: "French strass émeraude", arch: false },
+                { src: "/images/realisation-neon.jpg", alt: "Nail art néon & feuille d'or", arch: true },
+              ] as const
+            ).map((photo, index) => (
+              <Reveal key={photo.src} delay={index * 90}>
+                <figure
+                  className={`relative aspect-[3/4] overflow-hidden border border-sand-deep/70 ${
+                    photo.arch ? "rounded-t-full" : "rounded-[2px]"
+                  }`}
+                >
+                  <Image
+                    src={photo.src}
+                    alt={photo.alt}
+                    fill
+                    sizes="(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 14rem"
+                    className="object-cover transition-transform duration-700 hover:scale-[1.05]"
+                  />
+                </figure>
+              </Reveal>
+            ))}
+          </div>
+          <Reveal delay={200}>
+            <p className="mt-8 text-center text-[0.68rem] tracking-[0.2em] text-taupe uppercase">
+              Retrouvez chaque nouveauté sur{" "}
+              <a
+                href="https://instagram.com/kandylovebeauty"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-bronze hover:underline"
+              >
+                @kandylovebeauty
+              </a>
+            </p>
+          </Reveal>
         </div>
       </section>
 

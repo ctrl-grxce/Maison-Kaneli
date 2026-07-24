@@ -3,11 +3,24 @@ import { getFormation } from "@/lib/services";
 import { getSupabase } from "@/lib/supabase-server";
 import { formationRequestSchema } from "@/lib/validation";
 import { sendFormationEmails } from "@/lib/email";
+import {
+  clientIp,
+  isSameOrigin,
+  rateLimit,
+  RATE_LIMIT_MESSAGE,
+} from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
 /** POST /api/formations — demande d'inscription à une formation. */
 export async function POST(request: Request) {
+  if (!isSameOrigin(request)) {
+    return NextResponse.json({ error: "Origine non autorisée." }, { status: 403 });
+  }
+  if (!rateLimit("formations", clientIp(request), 5, 10 * 60_000)) {
+    return NextResponse.json({ error: RATE_LIMIT_MESSAGE }, { status: 429 });
+  }
+
   let payload: unknown;
   try {
     payload = await request.json();

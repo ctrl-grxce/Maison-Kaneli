@@ -132,8 +132,9 @@ export default function AboutPage() {
                 </p>
                 <div className="hairline mx-auto my-5 w-10 bg-bronze/50" />
                 <p className="text-sm leading-relaxed text-taupe">
-                  Responsable du pôle beauté, forte de plus de huit ans de
-                  métier. Prothésiste ongulaire et maquilleuse professionnelle,
+                  Responsable du pôle beauté : cinq fois diplômée en onglerie,
+                  plus de huit ans de métier, formée par les meilleurs de
+                  Paris. Prothésiste ongulaire et maquilleuse professionnelle,
                   elle veille sur chaque prestation et forme la nouvelle
                   génération.
                 </p>
@@ -155,6 +156,70 @@ export default function AboutPage() {
             </Reveal>
           </div>
         </div>
+      </section>
+
+      {/* ── Le parcours de Kandy ─────────────────────────────────────────── */}
+      <section className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-14 md:grid-cols-[1.1fr_0.9fr] md:gap-16 md:px-8 md:py-20">
+        <div className="order-2 md:order-1">
+          <Reveal>
+            <p className="overline-label">Le parcours de Kandy</p>
+          </Reveal>
+          <Reveal delay={90}>
+            <h2 className="font-display mt-4 text-3xl leading-[1.12] font-medium text-balance md:text-[2.4rem]">
+              Ambitieuse, résiliente —{" "}
+              <em className="text-bronze">cinq fois diplômée</em>
+            </h2>
+          </Reveal>
+          <Reveal delay={180}>
+            <div className="mt-6 space-y-4 text-[0.9375rem] leading-relaxed text-taupe">
+              <p>
+                Ambitieuse et résiliente, Viminde Kandy est diplômée cinq fois
+                dans l&apos;univers de l&apos;onglerie. Huit années
+                d&apos;expérience et une formation auprès des meilleurs de
+                Paris — aux côtés de sa mentore Romina Chiriac — ont forgé sa
+                signature : des gestes précis, des finitions impeccables.
+              </p>
+              <p>
+                Aux ongles des mains et des pieds s&apos;ajoute désormais le
+                maquillage, qu&apos;elle pratique depuis un an. Et parce
+                qu&apos;un savoir-faire se partage, elle forme celles qui
+                veulent, à leur tour, faire de cette passion un métier.
+              </p>
+            </div>
+          </Reveal>
+          <Reveal delay={270}>
+            <blockquote className="mt-8 border-l-2 border-bronze/40 pl-5">
+              <p className="font-display text-xl leading-snug font-medium italic md:text-2xl">
+                «&nbsp;Je suis honorée de sublimer vos ongles — et de
+                transmettre mon savoir-faire à celles qui veulent un métier
+                passionnant entre leurs mains.&nbsp;»
+              </p>
+              <footer className="mt-3 text-[0.68rem] tracking-[0.2em] text-taupe uppercase">
+                Viminde Kandy · Kandylove Beauty
+              </footer>
+            </blockquote>
+          </Reveal>
+        </div>
+        <Reveal delay={150} className="order-1 md:order-2">
+          <figure className="relative mx-auto max-w-[22rem]">
+            <div
+              aria-hidden
+              className="absolute -top-4 -right-4 h-full w-full border border-bronze/30"
+            />
+            <div className="arch relative aspect-[3/4] border border-sand-deep">
+              <Image
+                src="/images/formation-kandy.jpg"
+                alt="Viminde Kandy transmet son savoir-faire à une élève"
+                fill
+                sizes="(max-width: 768px) 88vw, 22rem"
+                className="object-cover"
+              />
+            </div>
+            <figcaption className="mt-3 text-center text-[0.65rem] tracking-[0.2em] text-taupe uppercase">
+              La transmission, au cœur de la maison
+            </figcaption>
+          </figure>
+        </Reveal>
       </section>
 
       {/* ── Valeurs ──────────────────────────────────────────────────────── */}

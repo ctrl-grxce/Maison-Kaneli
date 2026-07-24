@@ -11,7 +11,11 @@ const phone = z
   .trim()
   .min(6, "Numéro de téléphone invalide")
   .max(20, "Numéro de téléphone invalide")
-  .regex(/^[+0-9 ().-]+$/, "Numéro de téléphone invalide");
+  .regex(/^[+0-9 ().-]+$/, "Numéro de téléphone invalide")
+  .refine(
+    (value) => (value.match(/\d/g) ?? []).length >= 6,
+    "Numéro de téléphone invalide",
+  );
 
 const name = (label: string) =>
   z

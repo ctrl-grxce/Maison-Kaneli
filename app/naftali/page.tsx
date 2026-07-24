@@ -64,8 +64,8 @@ export default function NaftaliPage() {
           <Reveal delay={150}>
             <div className="relative mt-10 hidden aspect-[4/5] max-w-[19rem] overflow-hidden rounded-t-full border border-gold/30 md:block">
               <Image
-                src="/images/carte-cils.jpg"
-                alt="Extensions de cils — Naftali"
+                src="/images/cils-regard.jpg"
+                alt="Regard sublimé — extensions de cils Naftali"
                 fill
                 sizes="19rem"
                 className="object-cover"
@@ -74,6 +74,53 @@ export default function NaftaliPage() {
           </Reveal>
         </div>
         <ServiceMenu services={servicesByCategory("cils")} accent="gold" />
+      </section>
+
+      {/* ── Le geste ─────────────────────────────────────────────────────── */}
+      <section className="mx-auto max-w-6xl px-4 pb-14 md:px-8 md:pb-20">
+        <SectionHeading
+          align="center"
+          overline="Dans l'atelier regard"
+          title={
+            <>
+              Le geste, <em className="text-gold">en précision</em>
+            </>
+          }
+          intro="Cil après cil, à la pince, dans le plus grand calme : la pose Naftali est un travail d'orfèvre."
+        />
+        <div className="mx-auto mt-12 grid max-w-3xl gap-5 sm:grid-cols-2">
+          {(
+            [
+              {
+                src: "/images/cils-pose.jpg",
+                alt: "Pose d'extensions de cils sur patch — Naftali",
+                caption: "La pose, en douceur",
+              },
+              {
+                src: "/images/cils-precision.jpg",
+                alt: "Travail à la pince, cil après cil — Naftali",
+                caption: "Cil après cil, à la pince",
+              },
+            ] as const
+          ).map((photo, index) => (
+            <Reveal key={photo.src} delay={index * 130}>
+              <figure>
+                <div className="relative aspect-[5/4] overflow-hidden rounded-[2px] border border-gold/25">
+                  <Image
+                    src={photo.src}
+                    alt={photo.alt}
+                    fill
+                    sizes="(max-width: 640px) 90vw, 24rem"
+                    className="object-cover transition-transform duration-700 hover:scale-[1.05]"
+                  />
+                </div>
+                <figcaption className="mt-3 text-center text-[0.65rem] tracking-[0.2em] text-taupe uppercase">
+                  {photo.caption}
+                </figcaption>
+              </figure>
+            </Reveal>
+          ))}
+        </div>
       </section>
 
       {/* ── Le rituel ────────────────────────────────────────────────────── */}

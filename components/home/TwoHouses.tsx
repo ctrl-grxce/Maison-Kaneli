@@ -28,11 +28,11 @@ export function TwoHouses() {
             >
               <div className="relative h-40 overflow-hidden rounded-t-full border border-blush-deep/70 md:h-48">
                 <Image
-                  src="/images/carte-ongles.jpg"
-                  alt="Prothésie ongulaire — Kandylove Beauty"
+                  src="/images/realisation-brun.jpg"
+                  alt="Pose gel brun glacé — réalisation Kandylove Beauty"
                   fill
                   sizes="(max-width: 768px) 90vw, 34rem"
-                  className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                  className="object-cover object-[50%_35%] transition-transform duration-700 group-hover:scale-[1.04]"
                 />
               </div>
               <p className="overline-label mt-8">Le pôle beauté · par Viminde Kandy</p>

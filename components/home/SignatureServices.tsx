@@ -7,8 +7,8 @@ import { ArrowRightIcon } from "@/components/ui/icons";
 const SIGNATURES = [
   {
     serviceId: "pose-complete",
-    image: "/images/carte-ongles.jpg",
-    alt: "Pose complète gel",
+    image: "/images/realisation-french.jpg",
+    alt: "Pose complète gel — french manucure",
     house: "Kandylove Beauty",
     name: "Pose complète gel",
     price: "À partir de 50 €",
@@ -25,7 +25,7 @@ const SIGNATURES = [
   },
   {
     serviceId: "volume-russe",
-    image: "/images/carte-cils.jpg",
+    image: "/images/cils-regard.jpg",
     alt: "Extensions de cils volume russe",
     house: "Naftali",
     name: "Volume russe",
