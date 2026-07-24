@@ -7,7 +7,7 @@ Kanali ») pour repartir exactement d'ici.*
 
 | Élément | État |
 |---|---|
-| Site en production | ✅ https://maison-kanali.vercel.app |
+| Site en production | ✅ https://maison-kanali.vercel.app — version du 24/07 déployée et vérifiée (API testée en prod) |
 | Code source | ✅ https://github.com/ctrl-grxce/Maison-Kaneli (dossier local : `C:\Users\gradi\maison-kanali`) |
 | Base de données | ✅ Supabase `maison-kanali` (eu-west-3, gratuit) — tables `bookings` + `formation_requests`, anti-chevauchement testé |
 | Réservation en ligne | ✅ Testée de bout en bout — incohérences corrigées le 24/07 (bug créneau pris, fuseau Paris, validation téléphone…) |
@@ -20,11 +20,13 @@ Kanali ») pour repartir exactement d'ici.*
 
 ## ✋ À faire à la reprise (dans l'ordre)
 
-1. **Déployer en production** si ce n'est pas déjà fait (`npx vercel deploy
-   --prod --yes`) puis vérifier le site en ligne. Après un déploiement réussi,
-   les anciennes variables `NEXT_PUBLIC_SUPABASE_URL` et
-   `NEXT_PUBLIC_SUPABASE_ANON_KEY` peuvent être supprimées de Vercel
-   (elles ne servent plus que de secours).
+1. **Ménage optionnel sur Vercel** : les anciennes variables
+   `NEXT_PUBLIC_SUPABASE_URL` et `NEXT_PUBLIC_SUPABASE_ANON_KEY` peuvent être
+   supprimées (Dashboard → Settings → Environment Variables) — le site
+   utilise désormais `SUPABASE_URL`/`SUPABASE_KEY`, déployé et vérifié le
+   24/07. ⚠️ Ne jamais ajouter une variable Vercel via un pipe PowerShell
+   (ça insère un BOM invisible qui casse l'API) — passer par le dashboard ou
+   `printf` sous Git Bash.
 2. **Activer les emails** : compte gratuit sur resend.com → API Key, puis dans
    Vercel → Settings → Environment Variables : `RESEND_API_KEY` +
    `BOOKING_EMAIL_TO` (l'adresse qui reçoit les rendez-vous) → Redeploy.
