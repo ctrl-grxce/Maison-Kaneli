@@ -115,28 +115,27 @@ export default function AboutPage() {
         <div className="mx-auto max-w-6xl px-4 py-14 md:px-8 md:py-20">
           <SectionHeading
             align="center"
-            overline="Les fondatrices"
+            overline="Les co-fondatrices"
             title={
               <>
-                Deux fondatrices, <em className="text-bronze">deux expertises</em>
+                Deux co-fondatrices, <em className="text-bronze">deux marques</em>
               </>
             }
-            intro="Une seule et même maison : Kandylove Beauty et Naftali n'en sont pas deux enseignes, mais les deux pôles. Chacune est CEO du sien ; ensemble, elles ont imaginé un lieu où l'exigence rencontre la douceur."
+            intro="Maison Kanali, elles l'ont créée ensemble : Viminde Kandy et Viminde Nafi en sont toutes deux co-fondatrices. Sous ce même toit, chacune dirige sa propre marque — Kandylove Beauty pour la beauté, Naftali pour le regard."
           />
           <div className="mx-auto mt-12 grid max-w-3xl gap-6 sm:grid-cols-2">
             <Reveal delay={100}>
               <div className="h-full border border-sand-deep bg-white p-8 text-center">
                 <p className="font-display text-2xl font-medium">Viminde Kandy</p>
                 <p className="overline-label mt-2 text-[0.62rem]">
-                  Fondatrice · CEO du pôle beauté, Kandylove Beauty
+                  Co-fondatrice de Maison Kanali
                 </p>
                 <div className="hairline mx-auto my-5 w-10 bg-bronze/50" />
                 <p className="text-sm leading-relaxed text-taupe">
-                  Responsable du pôle beauté : cinq fois diplômée en onglerie,
-                  plus de huit ans de métier, formée par les meilleurs de
-                  Paris. Prothésiste ongulaire et maquilleuse professionnelle,
-                  elle veille sur chaque prestation et forme la nouvelle
-                  génération.
+                  Fondatrice de Kandylove Beauty, elle dirige le pôle beauté —
+                  ongles &amp; maquillage. Cinq fois diplômée en onglerie, plus
+                  de huit ans de métier, formée par les meilleurs de Paris, elle
+                  veille sur chaque prestation et forme la nouvelle génération.
                 </p>
               </div>
             </Reveal>
@@ -144,13 +143,13 @@ export default function AboutPage() {
               <div className="h-full border border-sand-deep bg-white p-8 text-center">
                 <p className="font-display text-2xl font-medium">Viminde Nafi</p>
                 <p className="overline-label mt-2 text-[0.62rem] text-gold">
-                  Co-fondatrice · CEO du pôle regard, Naftali
+                  Co-fondatrice de Maison Kanali
                 </p>
                 <div className="hairline mx-auto my-5 w-10 bg-gold/60" />
                 <p className="text-sm leading-relaxed text-taupe">
-                  Associée stratégique, à la tête de Naftali — le pôle regard de
-                  la maison — elle développe l&apos;univers des extensions de
-                  cils et la vision de Maison Kanali.
+                  Fondatrice de Naftali, elle dirige le pôle regard — l&apos;art
+                  des extensions de cils, du cil à cil délicat au volume russe le
+                  plus aérien.
                 </p>
               </div>
             </Reveal>

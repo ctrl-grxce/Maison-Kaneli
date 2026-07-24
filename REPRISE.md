@@ -67,11 +67,14 @@ npx vercel deploy --prod --yes   # déployer en production
 
 ## Rappels de contenu (validés les 21–24/07)
 
-- **UNE maison, deux pôles** (pas « deux maisons sœurs ») : **Viminde Kandy**
-  (fondatrice, CEO Kandylove Beauty, pôle beauté — ongles & maquillage, 8+ ans
-  de métier, 5 diplômes, mentore : Romina Chiriac) et **Viminde Nafi**
-  (co-fondatrice, associée stratégique, CEO Naftali, pôle regard — cils).
-  Ensemble : « un lieu où l'exigence rencontre la douceur ».
+- **UNE maison, deux pôles.** ⚠️ Structure validée par Nafi le 24/07, à ne
+  plus jamais se tromper : **les DEUX sont co-fondatrices de Maison Kanali**
+  (elles l'ont créée ensemble) ; **chacune est fondatrice de sa PROPRE
+  marque** — Viminde Kandy → Kandylove Beauty (pôle beauté : ongles &
+  maquillage, 8+ ans, 5 diplômes, mentore Romina Chiriac), Viminde Nafi →
+  Naftali (pôle regard : cils). Ce ne sont PAS deux entreprises différentes.
+  Ne pas dire « associée stratégique » ni présenter Kandy comme LA seule
+  fondatrice. Instagram : @kandylovebeauty et **@naf.lashes**.
 - Horaires : lundi–samedi, 10h–17h — sur rendez-vous uniquement.
 - Réservations : pas de 30 min, 90 min de délai le jour même, horizon 60 jours
   ([lib/config.ts](lib/config.ts)) — calendrier calé sur l'heure de Paris.

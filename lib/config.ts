@@ -22,7 +22,7 @@ export const CONTACT = {
   region: "Hauts-de-France",
   scheduleLabel: "Lundi – Samedi · 10h00 – 17h00",
   instagramKandylove: "kandylovebeauty",
-  instagramNaftali: "naftali.lashes",
+  instagramNaftali: "naf.lashes",
   facebookKandylove: "Candynails",
 } as const;
 

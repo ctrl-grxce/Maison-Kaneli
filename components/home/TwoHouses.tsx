@@ -16,7 +16,7 @@ export function TwoHouses() {
               L&apos;excellence a <em className="text-bronze">deux signatures</em>
             </>
           }
-          intro="Une seule et même maison, deux pôles d'expertise : Kandylove Beauty pour les ongles et le maquillage, Naftali pour le regard. Chacune des fondatrices est CEO de son pôle — sous le même toit."
+          intro="Une seule et même maison, deux pôles d'expertise : Kandylove Beauty pour les ongles et le maquillage, Naftali pour le regard. Deux co-fondatrices, chacune à la tête de sa propre marque — sous le même toit."
         />
 
         <div className="mt-12 grid gap-6 md:mt-16 md:grid-cols-2">
@@ -61,14 +61,13 @@ export function TwoHouses() {
               href="/naftali"
               className="group block h-full border border-sand-deep bg-ivory p-8 transition-all duration-500 hover:-translate-y-1 hover:border-gold/50 hover:shadow-[0_24px_50px_-28px_rgba(194,160,95,0.5)] md:p-10"
             >
-              <div className="relative flex h-40 items-center justify-center overflow-hidden rounded-t-full border border-gold/25 bg-[#f7f0e2] md:h-48">
+              <div className="relative h-40 overflow-hidden rounded-t-full border border-gold/25 md:h-48">
                 <Image
-                  src="/images/naftali-logo-or.jpg"
-                  alt="Naftali — extensions de cils"
-                  width={280}
-                  height={280}
-                  sizes="18rem"
-                  className="w-56 object-contain mix-blend-multiply transition-transform duration-700 group-hover:scale-[1.05]"
+                  src="/images/cils-regard.jpg"
+                  alt="Extensions de cils — Naftali"
+                  fill
+                  sizes="(max-width: 768px) 90vw, 34rem"
+                  className="object-cover object-[50%_38%] transition-transform duration-700 group-hover:scale-[1.04]"
                 />
               </div>
               <p className="overline-label mt-8 text-gold">Le pôle regard · par Viminde Nafi</p>

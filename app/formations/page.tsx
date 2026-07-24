@@ -267,7 +267,7 @@ export default function FormationsPage() {
                 mains.&nbsp;»
               </p>
               <footer className="mt-4 text-[0.68rem] tracking-[0.2em] text-taupe uppercase">
-                Viminde Kandy · Fondatrice de Maison Kanali
+                Viminde Kandy · Co-fondatrice de Maison Kanali
               </footer>
             </blockquote>
           </Reveal>
