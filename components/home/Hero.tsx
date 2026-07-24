@@ -1,17 +1,63 @@
-import Image from "next/image";
 import Link from "next/link";
 import { CONTACT } from "@/lib/config";
-import { HeroShowcase } from "./HeroShowcase";
+import { HeroVideo } from "./HeroVideo";
 
 /**
- * Hero d'accueil — séquence de bienvenue animée :
- * titre dévoilé ligne à ligne, filet doré, carrousel des vraies réalisations.
+ * Hero d'accueil — un film de marque unique, fondu dans l'ivoire de la page :
+ *   · desktop : vidéo plein cadre, dégradé crème de gauche (texte) vers la vidéo ;
+ *   · mobile : vidéo en haut, le texte de bienvenue remonte sur son fondu bas.
  */
 export function Hero() {
   return (
-    <section className="halo-blush relative overflow-hidden">
-      <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 pt-14 pb-16 md:grid-cols-[1.05fr_0.95fr] md:gap-8 md:px-8 md:pt-20 md:pb-24">
-        <div className="order-2 md:order-1">
+    <section className="relative overflow-hidden bg-ivory">
+      {/* ── Le film : en flux sur mobile, plein cadre sur desktop ───────── */}
+      <div className="relative h-[56svh] min-h-[20rem] w-full md:absolute md:inset-0 md:h-full md:min-h-0">
+        <HeroVideo />
+
+        {/* Fondu haut — transition crème depuis le header */}
+        <div
+          aria-hidden
+          className="absolute inset-x-0 top-0 h-20"
+          style={{
+            background:
+              "linear-gradient(180deg, color-mix(in srgb, var(--color-ivory) 80%, transparent), transparent)",
+          }}
+        />
+
+        {/* Fondu bas (mobile) — la vidéo fond vers le texte de bienvenue */}
+        <div
+          aria-hidden
+          className="absolute inset-0 md:hidden"
+          style={{
+            background:
+              "linear-gradient(180deg, transparent 30%, color-mix(in srgb, var(--color-ivory) 55%, transparent) 62%, var(--color-ivory) 96%)",
+          }}
+        />
+
+        {/* Fondu gauche (desktop) — l'ivoire du texte fond vers la vidéo */}
+        <div
+          aria-hidden
+          className="absolute inset-0 hidden md:block"
+          style={{
+            background:
+              "linear-gradient(90deg, var(--color-ivory) 0%, var(--color-ivory) 34%, color-mix(in srgb, var(--color-ivory) 78%, transparent) 52%, color-mix(in srgb, var(--color-ivory) 28%, transparent) 66%, transparent 80%)",
+          }}
+        />
+
+        {/* Fondu bas (desktop) — transition douce vers la suite de la page */}
+        <div
+          aria-hidden
+          className="absolute inset-x-0 bottom-0 hidden h-28 md:block"
+          style={{
+            background:
+              "linear-gradient(180deg, transparent, var(--color-ivory))",
+          }}
+        />
+      </div>
+
+      {/* ── Le texte de bienvenue ───────────────────────────────────────── */}
+      <div className="relative z-10 mx-auto -mt-40 max-w-6xl px-4 pb-16 md:mt-0 md:flex md:min-h-[min(84svh,50rem)] md:items-center md:px-8 md:pb-0">
+        <div className="max-w-xl md:py-24">
           <p
             className="hero-fade overline-label"
             style={{ animationDelay: "120ms" }}
@@ -60,41 +106,6 @@ export function Hero() {
           >
             {CONTACT.scheduleLabel} · Sur rendez-vous
           </p>
-        </div>
-
-        <div className="order-1 md:order-2">
-          <div className="relative mx-auto w-full max-w-[21rem] md:max-w-[24rem]">
-            <div
-              aria-hidden
-              className="absolute -inset-4 rounded-t-full bg-blush-deep/40 blur-2xl"
-            />
-            <div className="relative">
-              <div className="hero-frame" style={{ animationDelay: "300ms" }}>
-                <HeroShowcase />
-              </div>
-              {/* Petite arche flottante — le regard Naftali */}
-              <div
-                className="hero-fade absolute -bottom-6 -left-5 w-24 md:-left-9 md:w-28"
-                style={{ animationDelay: "950ms" }}
-              >
-                <div className="hero-float arch relative aspect-[4/5] border-2 border-ivory shadow-[0_18px_36px_-18px_rgba(46,36,28,0.5)]">
-                  <Image
-                    src="/images/cils-regard.jpg"
-                    alt="Extensions de cils — Naftali"
-                    fill
-                    sizes="7rem"
-                    className="object-cover"
-                  />
-                </div>
-              </div>
-            </div>
-            <p
-              className="hero-fade mt-5 text-center text-[0.65rem] tracking-[0.28em] text-taupe uppercase"
-              style={{ animationDelay: "1150ms" }}
-            >
-              Kandylove Beauty · Naftali
-            </p>
-          </div>
         </div>
       </div>
     </section>

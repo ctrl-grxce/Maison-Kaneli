@@ -16,7 +16,7 @@ export function TwoHouses() {
               L&apos;excellence a <em className="text-bronze">deux signatures</em>
             </>
           }
-          intro="Sous un même toit, deux pôles d'expertise : Kandylove Beauty pour les ongles et le maquillage, Naftali pour le regard — chacun porté par sa professionnelle."
+          intro="Une seule et même maison, deux pôles d'expertise : Kandylove Beauty pour les ongles et le maquillage, Naftali pour le regard. Chacune des fondatrices est CEO de son pôle — sous le même toit."
         />
 
         <div className="mt-12 grid gap-6 md:mt-16 md:grid-cols-2">

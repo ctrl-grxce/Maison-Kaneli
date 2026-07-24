@@ -121,14 +121,14 @@ export default function AboutPage() {
                 Deux fondatrices, <em className="text-bronze">deux expertises</em>
               </>
             }
-            intro="Chacune dirige son pôle ; ensemble, elles ont imaginé un lieu où l'exigence rencontre la douceur."
+            intro="Une seule et même maison : Kandylove Beauty et Naftali n'en sont pas deux enseignes, mais les deux pôles. Chacune est CEO du sien ; ensemble, elles ont imaginé un lieu où l'exigence rencontre la douceur."
           />
           <div className="mx-auto mt-12 grid max-w-3xl gap-6 sm:grid-cols-2">
             <Reveal delay={100}>
               <div className="h-full border border-sand-deep bg-white p-8 text-center">
                 <p className="font-display text-2xl font-medium">Viminde Kandy</p>
                 <p className="overline-label mt-2 text-[0.62rem]">
-                  Fondatrice · CEO Kandylove Beauty
+                  Fondatrice · CEO du pôle beauté, Kandylove Beauty
                 </p>
                 <div className="hairline mx-auto my-5 w-10 bg-bronze/50" />
                 <p className="text-sm leading-relaxed text-taupe">
@@ -144,7 +144,7 @@ export default function AboutPage() {
               <div className="h-full border border-sand-deep bg-white p-8 text-center">
                 <p className="font-display text-2xl font-medium">Viminde Nafi</p>
                 <p className="overline-label mt-2 text-[0.62rem] text-gold">
-                  Co-fondatrice · CEO Naftali
+                  Co-fondatrice · CEO du pôle regard, Naftali
                 </p>
                 <div className="hairline mx-auto my-5 w-10 bg-gold/60" />
                 <p className="text-sm leading-relaxed text-taupe">

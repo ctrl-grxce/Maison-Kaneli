@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
 import { FORMATIONS } from "@/lib/services";
 import { cn } from "@/lib/utils";
 import { PageHero } from "@/components/ui/PageHero";
@@ -8,6 +7,7 @@ import { Reveal } from "@/components/ui/Reveal";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { MobileBookBar } from "@/components/layout/MobileBookBar";
 import { CheckIcon, DiplomaIcon } from "@/components/ui/icons";
+import { InscriptionForm } from "@/components/formations/InscriptionForm";
 
 export const metadata: Metadata = {
   title: "Formations professionnelles",
@@ -48,7 +48,9 @@ export default function FormationsPage() {
                           gold && "text-gold",
                         )}
                       >
-                        {gold ? "Naftali · by Maison Kanali" : "Kandylove Beauty"}
+                        {gold
+                          ? "Pôle regard · Naftali"
+                          : "Pôle beauté · Kandylove Beauty"}
                       </p>
                       <h2 className="font-display mt-3 text-[1.7rem] leading-tight font-medium md:text-3xl">
                         {formation.name}
@@ -147,12 +149,12 @@ export default function FormationsPage() {
                     <p className="text-[0.7rem] tracking-[0.16em] text-taupe uppercase">
                       Places limitées
                     </p>
-                    <Link
-                      href={`/rendez-vous?formation=${formation.id}`}
+                    <a
+                      href="#inscription"
                       className={cn("btn", gold ? "btn-dark" : "btn-primary")}
                     >
-                      Demander mon inscription
-                    </Link>
+                      S&apos;inscrire à cette formation
+                    </a>
                   </div>
                 </article>
               </Reveal>
@@ -167,6 +169,26 @@ export default function FormationsPage() {
             l&apos;inscription.
           </p>
         </Reveal>
+      </section>
+
+      {/* ── Inscription ──────────────────────────────────────────────────── */}
+      <section id="inscription" className="scroll-mt-24 border-t border-sand-deep/70">
+        <div className="mx-auto max-w-6xl px-4 py-14 md:px-8 md:py-20">
+          <SectionHeading
+            align="center"
+            overline="Inscription"
+            title={
+              <>
+                Votre <em className="text-bronze">inscription</em>, en trois
+                étapes
+              </>
+            }
+            intro="Choisissez votre formation, laissez vos coordonnées — Maison Kanali vous recontacte pour convenir des dates et des modalités."
+          />
+          <div className="mx-auto mt-12 max-w-3xl">
+            <InscriptionForm />
+          </div>
+        </div>
       </section>
 
       {/* ── La formation en images ───────────────────────────────────────── */}

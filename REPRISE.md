@@ -11,8 +11,9 @@ Kanali ») pour repartir exactement d'ici.*
 | Code source | ✅ https://github.com/ctrl-grxce/Maison-Kaneli (dossier local : `C:\Users\gradi\maison-kanali`) |
 | Base de données | ✅ Supabase `maison-kanali` (eu-west-3, gratuit) — tables `bookings` + `formation_requests`, anti-chevauchement testé |
 | Réservation en ligne | ✅ Testée de bout en bout — incohérences corrigées le 24/07 (bug créneau pris, fuseau Paris, validation téléphone…) |
-| Photos réelles | ✅ 11 photos intégrées le 24/07 (hero animé, galerie, Kandylove, Naftali, Formations, À propos) |
-| Hero d'accueil | ✅ « Bienvenue chez Maison Kanali » animé + carrousel des réalisations |
+| Photos réelles | ✅ 11 photos intégrées le 24/07 (galerie, Kandylove, Naftali, Formations, À propos) |
+| Hero d'accueil | ✅ Film de marque unique (vidéo IA générée depuis la photo des ongles bruns, Seedance 2.0) avec fondu crème desktop/mobile — `public/videos/hero.mp4` + poster |
+| Inscription formations | ✅ Formulaire d'inscription en 3 étapes directement sur /formations (POST /api/formations) |
 | Parcours de Kandy | ✅ Texte intégré sur la page À propos (5 diplômes, mentore Romina Chiriac) |
 | Sécurité | ✅ Renforcée le 24/07 : clés hors du code, en-têtes CSP/HSTS, rate limiting, anti-CSRF |
 | Emails automatiques | ⏳ Code prêt — **il manque la clé Resend + l'email de Kanali** |
