@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 import type { BookingMode } from "./StepService";
 
@@ -139,7 +140,14 @@ export function StepDetails({ mode, details, errors, onChange }: StepDetailsProp
 
       <p className="text-xs leading-relaxed text-taupe">
         * Champs requis. Vos coordonnées servent uniquement à la gestion de
-        votre rendez-vous par Maison Kanali.
+        votre rendez-vous par Maison Kanali — voir notre{" "}
+        <Link
+          href="/confidentialite"
+          className="underline underline-offset-2 transition-colors duration-300 hover:text-espresso"
+        >
+          politique de confidentialité
+        </Link>
+        .
       </p>
     </div>
   );

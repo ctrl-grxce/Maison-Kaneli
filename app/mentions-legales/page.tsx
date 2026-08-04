@@ -19,15 +19,14 @@ const SECTIONS = [
   {
     title: "Hébergement",
     body: [
-      "Ce site est hébergé par Vercel Inc., 440 N Barranca Ave #4133, Covina, CA 91723, États-Unis — vercel.com.",
+      "Ce site est hébergé par Vercel Inc., 440 N Barranca Ave #4133, Covina, CA 91723, États-Unis — vercel.com. Les fonctions serveur du site sont exécutées dans la région de Paris et les données de réservation sont stockées par Supabase à Paris (Union européenne).",
     ],
   },
   {
-    title: "Données personnelles",
+    title: "Données personnelles & cookies",
     body: [
-      "Les informations saisies lors d'une réservation (identité, coordonnées, prestation choisie) sont utilisées uniquement pour la gestion de vos rendez-vous par Maison Kanali. Elles ne sont ni cédées, ni vendues à des tiers.",
-      "Conformément au RGPD, vous pouvez demander l'accès, la rectification ou la suppression de vos données en contactant Maison Kanali (par exemple en réponse à l'email de confirmation de votre rendez-vous).",
-      "Ce site n'utilise aucun cookie de suivi publicitaire.",
+      "Les informations saisies lors d'une réservation (identité, coordonnées, prestation choisie) sont utilisées uniquement pour la gestion de vos rendez-vous par Maison Kanali. Elles ne sont ni cédées, ni vendues à des tiers. Ce site ne dépose aucun cookie.",
+      "Le détail complet — données collectées, durées de conservation, vos droits RGPD — figure dans notre politique de confidentialité, accessible depuis le pied de page.",
     ],
   },
   {
