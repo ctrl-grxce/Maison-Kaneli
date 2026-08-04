@@ -59,7 +59,7 @@ export default function KandylovePage() {
                   Des ongles <em className="text-bronze">d'exception</em>
                 </>
               }
-              intro="Pose en gel, remplissage, nail art : chaque geste est précis, chaque finition est pensée pour durer."
+              intro="Manucure, gainage, extensions capsules, pédicures : chaque geste est précis, chaque finition est pensée pour durer."
             />
             <Reveal delay={150}>
               <div className="arch relative mt-10 hidden aspect-[4/5] max-w-[19rem] border border-sand-deep/60 md:block">
@@ -159,8 +159,8 @@ export default function KandylovePage() {
             <Reveal delay={150}>
               <div className="arch relative mt-10 hidden aspect-[4/5] max-w-[19rem] border border-sand-deep/60 md:block">
                 <Image
-                  src="/images/carte-maquillage.jpg"
-                  alt="Maquillage professionnel — Kandylove Beauty"
+                  src="/images/maquillage-signature.jpg"
+                  alt="Mise en beauté aux tons nude — Kandylove Beauty"
                   fill
                   sizes="19rem"
                   className="object-cover"
@@ -188,6 +188,48 @@ export default function KandylovePage() {
                 « volume » +10 €. Déplacement possible le jour J, sur demande.
               </p>
             </Reveal>
+          </div>
+        </div>
+
+        {/* Réalisations maquillage — photos du showroom */}
+        <div className="mx-auto max-w-6xl px-4 pb-14 md:px-8 md:pb-20">
+          <Reveal>
+            <p className="overline-label mb-8 text-center">
+              Le maquillage Kandylove, en images
+            </p>
+          </Reveal>
+          <div className="mx-auto grid max-w-3xl gap-5 sm:grid-cols-2">
+            {(
+              [
+                {
+                  src: "/images/maquillage-glam-dore.jpg",
+                  alt: "Maquillage glam doré, regard pailleté — Kandylove Beauty",
+                  caption: "Glam doré, regard pailleté",
+                },
+                {
+                  src: "/images/maquillage-cuivre.jpg",
+                  alt: "Maquillage aux tons cuivrés, bouche glossy — Kandylove Beauty",
+                  caption: "Harmonie cuivrée, bouche glossy",
+                },
+              ] as const
+            ).map((photo, index) => (
+              <Reveal key={photo.src} delay={index * 130}>
+                <figure>
+                  <div className="relative aspect-[3/4] overflow-hidden rounded-[2px] border border-sand-deep/70">
+                    <Image
+                      src={photo.src}
+                      alt={photo.alt}
+                      fill
+                      sizes="(max-width: 640px) 90vw, 24rem"
+                      className="object-cover transition-transform duration-700 hover:scale-[1.05]"
+                    />
+                  </div>
+                  <figcaption className="mt-3 text-center text-[0.65rem] tracking-[0.2em] text-taupe uppercase">
+                    {photo.caption}
+                  </figcaption>
+                </figure>
+              </Reveal>
+            ))}
           </div>
         </div>
       </section>

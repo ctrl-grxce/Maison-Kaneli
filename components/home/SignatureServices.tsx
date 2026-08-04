@@ -6,18 +6,18 @@ import { ArrowRightIcon } from "@/components/ui/icons";
 
 const SIGNATURES = [
   {
-    serviceId: "pose-complete",
+    serviceId: "extensions-capsules",
     image: "/images/realisation-french.jpg",
-    alt: "Pose complète gel — french manucure",
+    alt: "Extensions capsules — french manucure",
     house: "Kandylove Beauty",
-    name: "Pose complète gel",
-    price: "À partir de 50 €",
+    name: "Extensions capsules",
+    price: "50 €",
     href: "/kandylove#onglerie",
   },
   {
     serviceId: "mariee-jour-j",
-    image: "/images/carte-maquillage.jpg",
-    alt: "Maquillage mariée",
+    image: "/images/maquillage-glam-dore.jpg",
+    alt: "Maquillage glam doré — Kandylove Beauty",
     house: "Kandylove Beauty",
     name: "Maquillage mariée",
     price: "80 €",
@@ -29,7 +29,7 @@ const SIGNATURES = [
     alt: "Extensions de cils volume russe",
     house: "Naftali",
     name: "Volume russe",
-    price: "Sur demande",
+    price: "40 € · Promo",
     href: "/naftali",
   },
 ] as const;

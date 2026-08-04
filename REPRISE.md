@@ -31,14 +31,16 @@ Kanali ») pour repartir exactement d'ici.*
 2. **Activer les emails** : compte gratuit sur resend.com → API Key, puis dans
    Vercel → Settings → Environment Variables : `RESEND_API_KEY` +
    `BOOKING_EMAIL_TO` (l'adresse qui reçoit les rendez-vous) → Redeploy.
-3. **Tarifs manquants** (fichier [lib/services.ts](lib/services.ts)) :
-   cils Naftali (cil à cil, mixte, volume russe, remplissage, dépose),
-   nail art, entretien & dépose — actuellement « Sur demande ».
+3. **Tarifs** (fichier [lib/services.ts](lib/services.ts)) : carte ongles à
+   jour (août 2026). Cils Naftali : promo « toutes les prestations à 40 € »
+   jusqu'à fin octobre 2026 — **penser à retirer le champ `promo` début
+   novembre** (les tarifs redeviennent « Sur demande » ou tarifs définitifs à
+   fournir). Dépose cils : toujours « Sur demande ».
 4. **Coordonnées réelles** ([lib/config.ts](lib/config.ts)) : adresse exacte du
    showroom, téléphone, vrai email de contact.
-5. **Photo maquillage** : la carte maquillage utilise encore un visuel IA
-   (`public/images/carte-maquillage.jpg`) — à remplacer quand Kandy enverra
-   une vraie photo. Idem `fondatrices.jpg` (portrait des deux fondatrices).
+5. **Photos** : les photos maquillage et cils sont désormais réelles
+   (`maquillage-*.jpg`, `cils-naftali-signature.jpg`, `cils-rituel.jpg`).
+   Reste un visuel IA : `fondatrices.jpg` (portrait des deux fondatrices).
 6. **Phase 2 — à discuter** : espace de gestion des rendez-vous pour la maison
    (confirmer/annuler, vue agenda) puis **système d'acompte** (paiement en
    ligne). La base est déjà structurée pour ça (statuts `pending/confirmed/

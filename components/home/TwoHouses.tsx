@@ -40,8 +40,8 @@ export function TwoHouses() {
                 Kandylove Beauty
               </h3>
               <p className="mt-3 text-sm leading-relaxed text-taupe">
-                Plus de huit années de prothésie ongulaire — pose gel,
-                remplissage, nail art — et un maquillage sur mesure, du teint
+                Plus de huit années de prothésie ongulaire — manucure, gainage,
+                extensions, pédicures — et un maquillage sur mesure, du teint
                 naturel au jour J.
               </p>
               <span className="link-line mt-7 text-bronze">

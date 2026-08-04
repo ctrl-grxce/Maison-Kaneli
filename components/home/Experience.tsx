@@ -32,6 +32,7 @@ export function Experience() {
               Un moment <em className="text-bronze">rien qu'à vous</em>
             </>
           }
+          intro="Prendre soin de soi n'est pas un luxe : c'est parfois ce qui aide à retrouver confiance. Ici, chaque personne est accueillie avec bienveillance, écoutée et sublimée — sans jugement."
         />
 
         <div className="mx-auto mt-12 grid max-w-4xl gap-10 sm:grid-cols-3 md:mt-16">

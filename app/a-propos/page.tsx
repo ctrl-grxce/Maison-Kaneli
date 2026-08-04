@@ -52,10 +52,10 @@ export default function AboutPage() {
         overline="Notre histoire"
         title={
           <>
-            Une maison née d&apos;un <em className="text-bronze">métier d&apos;art</em>
+            Une maison née d&apos;une <em className="text-bronze">conviction</em>
           </>
         }
-        intro="Maison Kanali est l'aboutissement de plus de huit années de passion : un showroom beauté intimiste, à Saint-Quentin, où chaque visite se vit sur rendez-vous."
+        intro="Maison Kanali est bien plus qu'un institut : un showroom beauté intimiste, à Saint-Quentin, où chaque visite se vit sur rendez-vous — et où chacune repart plus confiante qu'à son arrivée."
       />
 
       {/* ── Histoire ─────────────────────────────────────────────────────── */}
@@ -78,34 +78,56 @@ export default function AboutPage() {
         </Reveal>
         <div>
           <Reveal>
-            <p className="overline-label">De Kandylove Beauty à Maison Kanali</p>
+            <p className="overline-label">Notre histoire</p>
           </Reveal>
           <Reveal delay={90}>
             <h2 className="font-display mt-4 text-3xl leading-[1.12] font-medium md:text-[2.4rem]">
-              Huit ans de métier,{" "}
-              <em className="text-bronze">un écrin pour les réunir</em>
+              Née bien avant l&apos;ouverture{" "}
+              <em className="text-bronze">de ses portes</em>
             </h2>
           </Reveal>
           <Reveal delay={180}>
             <div className="mt-6 space-y-4 text-[0.9375rem] leading-relaxed text-taupe">
               <p>
-                Tout commence avec Kandylove Beauty : plus de huit années de
-                prothésie ongulaire, une clientèle fidèle et un réseau
-                d&apos;élèves formées au fil des ans.
+                Maison Kanali est née bien avant l&apos;ouverture de ses
+                portes. Elle est née dans une saison de vie où, chacune à
+                notre manière, nous traversions des épreuves qui nous ont
+                profondément transformées.
               </p>
               <p>
-                Maison Kanali est la suite naturelle de cette aventure : un
-                showroom pensé comme un écrin, où le pôle beauté historique —
-                ongles et maquillage — rencontre Naftali, le pôle dédié au
-                regard, et où les formations professionnelles trouvent leur
-                salle de classe.
+                Au cœur de ces moments, une conviction est restée intacte :
+                même lorsque la vie nous met à l&apos;épreuve, nous avons
+                toujours besoin de nous sentir belles, dignes et valorisées.
+                Prendre soin de soi n&apos;est pas un luxe — c&apos;est
+                parfois ce qui nous aide à retrouver confiance, à relever la
+                tête et à continuer d&apos;avancer.
               </p>
               <p>
-                Le tout, sur rendez-vous uniquement — pour un accueil
-                personnalisé, un environnement calme et une qualité de service
-                sans compromis.
+                De cette conviction est née notre vision : créer un lieu où
+                chaque personne est accueillie avec bienveillance, écoutée et
+                sublimée, sans jugement. Un lieu où la beauté ne se résume pas
+                à l&apos;apparence, mais devient un moyen de révéler la force,
+                la féminité et la valeur qui existent déjà en chacune.
+              </p>
+              <p>
+                Maison Kanali est bien plus qu&apos;un institut : une maison
+                où l&apos;excellence rencontre l&apos;humanité, où chaque
+                prestation est réalisée avec soin — et où chaque cliente
+                repart plus belle, plus confiante et plus forte qu&apos;à son
+                arrivée.
               </p>
             </div>
+          </Reveal>
+          <Reveal delay={270}>
+            <blockquote className="mt-8 border-l-2 border-bronze/40 pl-5">
+              <p className="font-display text-xl leading-snug font-medium italic md:text-2xl">
+                «&nbsp;Quelles que soient les saisons que nous traversons,
+                chacun mérite de se sentir précieux.&nbsp;»
+              </p>
+              <footer className="mt-3 text-[0.68rem] tracking-[0.2em] text-taupe uppercase">
+                Kandy &amp; Nafi · Co-fondatrices de Maison Kanali
+              </footer>
+            </blockquote>
           </Reveal>
         </div>
       </section>

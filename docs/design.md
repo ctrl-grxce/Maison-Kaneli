@@ -116,12 +116,14 @@ emails sont simplement désactivés — clé à ajouter dans Vercel).
 ## 5. Contenus clés
 
 - Tarifs maquillage : flyer TARIF (mariée 80 €, naturel 50–60 €, full face 65–70 €).
-- Onglerie : pose complète, remplissage, nail art, entretien — « à partir de 50 € »
-  (business plan). Tarifs précis à confirmer par Maison Kanali dans
-  `lib/services.ts`.
-- Cils Naftali : menu classique/mixte/volume — tarifs « communiqués à la
-  réservation » tant que non fournis.
-- Formation onglerie : 2 jours, 350 € sans kit / 420 € avec kit + inclus (flyer).
+- Onglerie (carte août 2026) : manucure + semi 35 €, gainage + semi 45 €,
+  extensions capsules 50 €, pédicure Spa 60 €, pédicure basic 30 €,
+  remplissage 40 € — dans `lib/services.ts`.
+- Cils Naftali : promo « toutes les prestations à 40 € » jusqu'à fin
+  octobre 2026 (champ `promo` dans `lib/services.ts`) ; hors promo, tarifs
+  « Sur demande ».
+- Formation onglerie : 2 jours, 650 € sans kit / 720 € avec kit
+  (kit professionnel d'une valeur de 220 €) + inclus (flyer août 2026).
 - Horaires : lundi–samedi, 10 h – 17 h. Instagram : @kandylovebeauty,
   @naftali.lashes. Coordonnées précises = placeholders à remplacer.
 - À propos : histoire (8 ans d'expérience → showroom), Viminde Kandy (fondatrice &

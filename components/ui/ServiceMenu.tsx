@@ -46,14 +46,37 @@ export function ServiceMenu({
             </div>
 
             <div className="flex shrink-0 flex-col items-end gap-3 text-right">
-              <p
-                className={cn(
-                  "font-display text-xl leading-none whitespace-nowrap md:text-2xl",
-                  gold ? "text-gold" : "text-bronze",
-                )}
-              >
-                {service.price}
-              </p>
+              {service.promo ? (
+                <div className="flex flex-col items-end gap-2">
+                  <span
+                    className={cn(
+                      "inline-flex items-center rounded-full border px-3 py-1 text-[0.56rem] tracking-[0.16em] whitespace-nowrap uppercase",
+                      gold
+                        ? "border-gold/50 bg-gold/10 text-gold"
+                        : "border-bronze/50 bg-bronze/10 text-bronze",
+                    )}
+                  >
+                    Promo · {service.promo.until}
+                  </span>
+                  <p
+                    className={cn(
+                      "font-display text-xl leading-none whitespace-nowrap md:text-2xl",
+                      gold ? "text-gold" : "text-bronze",
+                    )}
+                  >
+                    {service.promo.price}
+                  </p>
+                </div>
+              ) : (
+                <p
+                  className={cn(
+                    "font-display text-xl leading-none whitespace-nowrap md:text-2xl",
+                    gold ? "text-gold" : "text-bronze",
+                  )}
+                >
+                  {service.price}
+                </p>
+              )}
               <Link
                 href={`/rendez-vous?service=${service.id}`}
                 aria-label={`Réserver : ${service.name}`}

@@ -2,8 +2,9 @@
  * Catalogue des prestations et formations de Maison Kanali.
  *
  * ✏️  C'est LE fichier à modifier pour ajuster tarifs, durées ou descriptions.
- * Sources : business plan (onglerie « à partir de 50 € »), flyer TARIF
- * (maquillage) et flyer FORMATION Kandylove Beauty.
+ * Sources : carte ongles Kandylove (août 2026), flyer TARIF (maquillage),
+ * flyer FORMATION Kandylove Beauty (650 € / 720 €, août 2026) et promo cils
+ * Naftali — toutes les prestations à 40 € jusqu'à fin octobre 2026.
  */
 
 export type Brand = "kandylove" | "naftali";
@@ -18,6 +19,8 @@ export interface Service {
   durationMin: number;
   /** Tarif affiché tel quel (ex. « 80 € », « À partir de 50 € », « Sur demande »). */
   price: string;
+  /** Promotion en cours : remplace `price` à l'affichage, avec sa mention. */
+  promo?: { price: string; until: string };
 }
 
 export interface CategoryInfo {
@@ -49,7 +52,8 @@ export const CATEGORIES: CategoryInfo[] = [
     brand: "kandylove",
     label: "Prothésie ongulaire",
     brandLabel: "Kandylove Beauty",
-    tagline: "Pose gel, remplissage, nail art — des mains impeccables.",
+    tagline:
+      "Manucure, gainage, extensions, pédicures — des mains et des pieds impeccables.",
   },
   {
     id: "maquillage",
@@ -68,16 +72,55 @@ export const CATEGORIES: CategoryInfo[] = [
 ];
 
 export const SERVICES: Service[] = [
-  /* ── Onglerie — Kandylove Beauty ─────────────────────────────────────── */
+  /* ── Onglerie — Kandylove Beauty (carte août 2026) ───────────────────── */
   {
-    id: "pose-complete",
+    id: "manucure-semi",
     brand: "kandylove",
     category: "ongles",
-    name: "Pose complète gel",
+    name: "Manucure & semi-permanent",
     description:
-      "Construction complète en gel — forme, longueur et finition sur mesure.",
+      "Manucure soignée et pose de vernis semi-permanent — brillance longue durée.",
+    durationMin: 60,
+    price: "35 €",
+  },
+  {
+    id: "gainage-semi",
+    brand: "kandylove",
+    category: "ongles",
+    name: "Gainage & semi-permanent",
+    description:
+      "Le gainage renforce l'ongle naturel, sublimé d'un semi-permanent.",
+    durationMin: 75,
+    price: "45 €",
+  },
+  {
+    id: "extensions-capsules",
+    brand: "kandylove",
+    category: "ongles",
+    name: "Extensions capsules",
+    description:
+      "Longueur et forme sur mesure — la pose signature, finitions impeccables.",
     durationMin: 120,
-    price: "À partir de 50 €",
+    price: "50 €",
+  },
+  {
+    id: "pedicure-spa",
+    brand: "kandylove",
+    category: "ongles",
+    name: "Pédicure Spa",
+    description:
+      "Le rituel complet des pieds : semi-permanent et soins profonds.",
+    durationMin: 90,
+    price: "60 €",
+  },
+  {
+    id: "pedicure-basic",
+    brand: "kandylove",
+    category: "ongles",
+    name: "Pédicure basic",
+    description: "L'essentiel du soin des pieds, propre et net.",
+    durationMin: 45,
+    price: "30 €",
   },
   {
     id: "remplissage",
@@ -86,26 +129,7 @@ export const SERVICES: Service[] = [
     name: "Remplissage",
     description: "L'entretien idéal de votre pose, toutes les 3 à 5 semaines.",
     durationMin: 90,
-    price: "À partir de 50 €",
-  },
-  {
-    id: "nail-art",
-    brand: "kandylove",
-    category: "ongles",
-    name: "Nail art",
-    description:
-      "French, babyboomer, strass ou dessins fins — en complément de votre pose.",
-    durationMin: 30,
-    price: "Sur demande",
-  },
-  {
-    id: "entretien-depose",
-    brand: "kandylove",
-    category: "ongles",
-    name: "Entretien & dépose",
-    description: "Dépose soignée et soin des ongles naturels.",
-    durationMin: 45,
-    price: "Sur demande",
+    price: "40 €",
   },
 
   /* ── Maquillage — Kandylove Beauty (flyer TARIF) ─────────────────────── */
@@ -185,6 +209,7 @@ export const SERVICES: Service[] = [
   },
 
   /* ── Extensions de cils — Naftali ────────────────────────────────────── */
+  /*    Promo en cours : toutes les prestations à 40 € jusqu'à fin octobre.  */
   {
     id: "cil-a-cil",
     brand: "naftali",
@@ -194,6 +219,7 @@ export const SERVICES: Service[] = [
       "Une extension par cil naturel — l'effet mascara, en plus raffiné.",
     durationMin: 120,
     price: "Sur demande",
+    promo: { price: "40 €", until: "jusqu'à fin octobre" },
   },
   {
     id: "pose-mixte",
@@ -203,6 +229,7 @@ export const SERVICES: Service[] = [
     description: "Entre cil à cil et volume — densité maîtrisée, regard velours.",
     durationMin: 135,
     price: "Sur demande",
+    promo: { price: "40 €", until: "jusqu'à fin octobre" },
   },
   {
     id: "volume-russe",
@@ -212,6 +239,7 @@ export const SERVICES: Service[] = [
     description: "Bouquets faits main pour un regard intense et aérien.",
     durationMin: 150,
     price: "Sur demande",
+    promo: { price: "40 €", until: "jusqu'à fin octobre" },
   },
   {
     id: "remplissage-cils",
@@ -221,6 +249,7 @@ export const SERVICES: Service[] = [
     description: "L'entretien de votre pose, idéalement toutes les 3 semaines.",
     durationMin: 90,
     price: "Sur demande",
+    promo: { price: "40 €", until: "jusqu'à fin octobre" },
   },
   {
     id: "depose-cils",
@@ -243,10 +272,14 @@ export const FORMATIONS: Formation[] = [
     tagline:
       "En deux jours, repartez avec les bases solides pour gagner vos premières clientes.",
     durationLabel: "2 jours · en privé",
-    priceLabel: "350 € – 420 €",
+    priceLabel: "650 € – 720 €",
     kitOptions: [
-      { id: "avec-kit", label: "Avec kit professionnel", price: "420 €" },
-      { id: "sans-kit", label: "Sans kit", price: "350 €" },
+      { id: "sans-kit", label: "Sans kit", price: "650 €" },
+      {
+        id: "avec-kit",
+        label: "Avec kit professionnel (valeur 220 €)",
+        price: "720 €",
+      },
     ],
     program: [
       "Pose de gel — construction & remplissage",
@@ -258,8 +291,10 @@ export const FORMATIONS: Formation[] = [
       "Certificat de formation",
       "Support PDF + fiches techniques",
       "Pratique sur modèle",
-      "Suivi après formation",
-      "Conseils pour lancer votre activité",
+      "Photos des résultats obtenus",
+      "Avis d'anciennes élèves",
+      "Suivi après la formation",
+      "Aide à la création de contenu & réseaux sociaux",
     ],
   },
   {
