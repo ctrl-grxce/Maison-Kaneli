@@ -10,6 +10,9 @@ import { MobileBookBar } from "@/components/layout/MobileBookBar";
 import { CtaBand } from "@/components/home/CtaBand";
 import { ArrowRightIcon, EyeIcon, PetalIcon, SparkleIcon } from "@/components/ui/icons";
 
+/* Regénéré chaque jour : la promo cils expire ainsi toute seule fin octobre. */
+export const revalidate = 86400;
+
 export const metadata: Metadata = {
   title: "Naftali — Extensions de cils",
   description:
@@ -176,14 +179,15 @@ export default function NaftaliPage() {
       <section className="border-y border-sand-deep/70 bg-[#f7f0e2]">
         <div className="mx-auto max-w-6xl px-4 py-14 md:px-8 md:py-20">
           <Reveal className="mx-auto max-w-md">
-            <Image
-              src="/images/naftali-logo-or.jpg"
-              alt="Naftali"
-              width={420}
-              height={420}
-              sizes="(max-width: 768px) 60vw, 24rem"
-              className="mx-auto w-52 object-contain mix-blend-multiply md:w-64"
-            />
+            <div className="relative mx-auto aspect-[3/4] w-56 overflow-hidden rounded-t-full border border-gold/30 md:w-72">
+              <Image
+                src="/images/naftali-regard-rituel.jpg"
+                alt="Regard sublimé aux extensions de cils — le rituel Naftali"
+                fill
+                sizes="(max-width: 768px) 14rem, 18rem"
+                className="object-cover"
+              />
+            </div>
           </Reveal>
           <div className="mx-auto mt-10 grid max-w-4xl gap-10 sm:grid-cols-3">
             {RITUAL.map((step, index) => (

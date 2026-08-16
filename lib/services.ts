@@ -19,8 +19,10 @@ export interface Service {
   durationMin: number;
   /** Tarif affiché tel quel (ex. « 80 € », « À partir de 50 € », « Sur demande »). */
   price: string;
-  /** Promotion en cours : remplace `price` à l'affichage, avec sa mention. */
-  promo?: { price: string; until: string };
+  /** Promotion en cours : remplace `price` à l'affichage, avec sa mention.
+   *  `endsOn` (AAAA-MM-JJ, heure de Paris) : dernier jour de validité — passé
+   *  cette date, la promo disparaît toute seule de l'affichage. */
+  promo?: { price: string; until: string; endsOn: string };
 }
 
 export interface CategoryInfo {
@@ -66,7 +68,7 @@ export const CATEGORIES: CategoryInfo[] = [
     id: "cils",
     brand: "naftali",
     label: "Extensions de cils",
-    brandLabel: "Naftali · by Maison Kanali",
+    brandLabel: "Naftali",
     tagline: "Un regard signé, du cil à cil au volume russe.",
   },
 ];
@@ -219,7 +221,7 @@ export const SERVICES: Service[] = [
       "Une extension par cil naturel — l'effet mascara, en plus raffiné.",
     durationMin: 120,
     price: "Sur demande",
-    promo: { price: "40 €", until: "jusqu'à fin octobre" },
+    promo: { price: "40 €", until: "jusqu'à fin octobre", endsOn: "2026-10-31" },
   },
   {
     id: "pose-mixte",
@@ -229,7 +231,7 @@ export const SERVICES: Service[] = [
     description: "Entre cil à cil et volume — densité maîtrisée, regard velours.",
     durationMin: 135,
     price: "Sur demande",
-    promo: { price: "40 €", until: "jusqu'à fin octobre" },
+    promo: { price: "40 €", until: "jusqu'à fin octobre", endsOn: "2026-10-31" },
   },
   {
     id: "volume-russe",
@@ -239,7 +241,7 @@ export const SERVICES: Service[] = [
     description: "Bouquets faits main pour un regard intense et aérien.",
     durationMin: 150,
     price: "Sur demande",
-    promo: { price: "40 €", until: "jusqu'à fin octobre" },
+    promo: { price: "40 €", until: "jusqu'à fin octobre", endsOn: "2026-10-31" },
   },
   {
     id: "remplissage-cils",
@@ -249,7 +251,7 @@ export const SERVICES: Service[] = [
     description: "L'entretien de votre pose, idéalement toutes les 3 semaines.",
     durationMin: 90,
     price: "Sur demande",
-    promo: { price: "40 €", until: "jusqu'à fin octobre" },
+    promo: { price: "40 €", until: "jusqu'à fin octobre", endsOn: "2026-10-31" },
   },
   {
     id: "depose-cils",
@@ -259,6 +261,7 @@ export const SERVICES: Service[] = [
     description: "Retrait tout en douceur, dans le respect du cil naturel.",
     durationMin: 30,
     price: "Sur demande",
+    promo: { price: "40 €", until: "jusqu'à fin octobre", endsOn: "2026-10-31" },
   },
 ];
 
@@ -336,5 +339,40 @@ export function servicesByCategory(category: Category): Service[] {
 
 export const BRAND_LABELS: Record<Brand, string> = {
   kandylove: "Kandylove Beauty",
-  naftali: "Naftali · by Maison Kanali",
+  naftali: "Naftali",
 };
+
+/* ── Promotions ──────────────────────────────────────────────────────────── */
+
+/** Date du jour (AAAA-MM-JJ) en heure de Paris — côté serveur comme client. */
+function parisToday(): string {
+  return new Intl.DateTimeFormat("fr-CA", {
+    timeZone: "Europe/Paris",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date());
+}
+
+/** Promo encore valable aujourd'hui, sinon null (expiration automatique). */
+export function activePromo(
+  service: Service,
+): NonNullable<Service["promo"]> | null {
+  if (!service.promo) return null;
+  return parisToday() <= service.promo.endsOn ? service.promo : null;
+}
+
+/** Tarif effectif à afficher / enregistrer : promo en cours ou tarif normal. */
+export function effectivePrice(service: Service): {
+  label: string;
+  promo: NonNullable<Service["promo"]> | null;
+} {
+  const promo = activePromo(service);
+  return { label: promo ? promo.price : service.price, promo };
+}
+
+/** Libellé complet pour la base et les emails (ex. « 40 € · offre jusqu'à fin octobre »). */
+export function bookingPriceLabel(service: Service): string {
+  const promo = activePromo(service);
+  return promo ? `${promo.price} · offre ${promo.until}` : service.price;
+}

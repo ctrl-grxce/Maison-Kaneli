@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { effectivePrice, getService } from "@/lib/services";
 import { Reveal } from "@/components/ui/Reveal";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { ArrowRightIcon } from "@/components/ui/icons";
@@ -11,7 +12,6 @@ const SIGNATURES = [
     alt: "Extensions capsules — french manucure",
     house: "Kandylove Beauty",
     name: "Extensions capsules",
-    price: "50 €",
     href: "/kandylove#onglerie",
   },
   {
@@ -20,19 +20,25 @@ const SIGNATURES = [
     alt: "Maquillage glam doré — Kandylove Beauty",
     house: "Kandylove Beauty",
     name: "Maquillage mariée",
-    price: "80 €",
     href: "/kandylove#maquillage",
   },
   {
     serviceId: "volume-russe",
-    image: "/images/cils-regard.jpg",
-    alt: "Extensions de cils volume russe",
+    image: "/images/cils-volume-russe.jpg",
+    alt: "Extensions de cils volume russe — Naftali",
     house: "Naftali",
     name: "Volume russe",
-    price: "40 € · Promo",
     href: "/naftali",
   },
 ] as const;
+
+/** Tarif tiré du catalogue — suit les promos et leur expiration tout seul. */
+function priceLabel(serviceId: string): string {
+  const service = getService(serviceId);
+  if (!service) return "";
+  const { label, promo } = effectivePrice(service);
+  return promo ? `${label} · Promo` : label;
+}
 
 export function SignatureServices() {
   return (
@@ -71,7 +77,7 @@ export function SignatureServices() {
                     <Link href={item.href}>{item.name}</Link>
                   </h3>
                   <p className="font-display text-lg whitespace-nowrap text-bronze">
-                    {item.price}
+                    {priceLabel(item.serviceId)}
                   </p>
                 </div>
                 <div className="hairline my-5" />

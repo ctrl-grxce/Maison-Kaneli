@@ -1,3 +1,6 @@
+/* Regénérée chaque jour : le tarif promo des cartes signature expire seul. */
+export const revalidate = 86400;
+
 import { Hero } from "@/components/home/Hero";
 import { TwoHouses } from "@/components/home/TwoHouses";
 import { SignatureServices } from "@/components/home/SignatureServices";

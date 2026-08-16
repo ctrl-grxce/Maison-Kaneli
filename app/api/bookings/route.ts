@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { OPENING } from "@/lib/config";
-import { getService, BRAND_LABELS } from "@/lib/services";
+import { getService, bookingPriceLabel, BRAND_LABELS } from "@/lib/services";
 import { getSupabase } from "@/lib/supabase-server";
 import { bookingSchema } from "@/lib/validation";
 import { sendBookingEmails } from "@/lib/email";
@@ -122,11 +122,13 @@ export async function POST(request: Request) {
     );
   }
 
+  const priceLabel = bookingPriceLabel(service);
+
   const { data: bookingId, error } = await supabase.rpc("create_booking", {
     p_service_id: service.id,
     p_service_name: service.name,
     p_brand: service.brand,
-    p_price_label: service.price,
+    p_price_label: priceLabel,
     p_duration_min: service.durationMin,
     p_date: input.date,
     p_start_time: input.time,
@@ -163,10 +165,11 @@ export async function POST(request: Request) {
       reference,
       serviceName: service.name,
       brandLabel: BRAND_LABELS[service.brand],
-      price: service.price,
+      price: priceLabel,
       durationMin: service.durationMin,
       date: input.date,
       time: input.time,
+      endTime: minutesToTime(endMin),
       firstName: input.firstName,
       lastName: input.lastName,
       email: input.email,

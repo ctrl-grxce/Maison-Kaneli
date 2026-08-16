@@ -5,6 +5,7 @@ import {
   CATEGORIES,
   FORMATIONS,
   SERVICES,
+  activePromo,
   type Category,
   type Formation,
   type Service,
@@ -129,6 +130,7 @@ export function StepService({
                 {SERVICES.filter((item) => item.category === category).map(
                   (item) => {
                     const active = service?.id === item.id;
+                    const promo = activePromo(item);
                     return (
                       <li key={item.id}>
                         <button
@@ -159,9 +161,20 @@ export function StepService({
                               {formatDuration(item.durationMin)}
                             </span>
                           </span>
-                          <span className="font-display text-lg whitespace-nowrap text-bronze">
-                            {item.price}
-                          </span>
+                          {promo ? (
+                            <span className="flex flex-col items-end gap-1">
+                              <span className="font-display text-lg leading-none whitespace-nowrap text-gold">
+                                {promo.price}
+                              </span>
+                              <span className="text-[0.55rem] tracking-[0.14em] whitespace-nowrap text-gold uppercase">
+                                Promo · {promo.until}
+                              </span>
+                            </span>
+                          ) : (
+                            <span className="font-display text-lg whitespace-nowrap text-bronze">
+                              {item.price}
+                            </span>
+                          )}
                         </button>
                       </li>
                     );

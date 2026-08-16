@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { Service } from "@/lib/services";
+import { activePromo, type Service } from "@/lib/services";
 import { formatDuration, cn } from "@/lib/utils";
 import { Reveal } from "./Reveal";
 import { ClockIcon } from "./icons";
@@ -29,7 +29,9 @@ export function ServiceMenu({
         className,
       )}
     >
-      {services.map((service, index) => (
+      {services.map((service, index) => {
+        const promo = activePromo(service);
+        return (
         <Reveal key={service.id} delay={Math.min(index, 4) * 70}>
           <li className="flex items-start justify-between gap-5 py-6 sm:gap-8">
             <div className="min-w-0">
@@ -46,7 +48,7 @@ export function ServiceMenu({
             </div>
 
             <div className="flex shrink-0 flex-col items-end gap-3 text-right">
-              {service.promo ? (
+              {promo ? (
                 <div className="flex flex-col items-end gap-2">
                   <span
                     className={cn(
@@ -56,7 +58,7 @@ export function ServiceMenu({
                         : "border-bronze/50 bg-bronze/10 text-bronze",
                     )}
                   >
-                    Promo · {service.promo.until}
+                    Promo · {promo.until}
                   </span>
                   <p
                     className={cn(
@@ -64,7 +66,7 @@ export function ServiceMenu({
                       gold ? "text-gold" : "text-bronze",
                     )}
                   >
-                    {service.promo.price}
+                    {promo.price}
                   </p>
                 </div>
               ) : (
@@ -92,7 +94,8 @@ export function ServiceMenu({
             </div>
           </li>
         </Reveal>
-      ))}
+        );
+      })}
     </ul>
   );
 }

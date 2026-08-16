@@ -1,10 +1,20 @@
+import nodemailer from "nodemailer";
 import { Resend } from "resend";
+import { buildBookingIcs } from "./ics";
+import { buildTicketPdf } from "./ticket-pdf";
 import { formatDateFr, formatTimeFr, formatDuration } from "./utils";
 
 /**
- * Emails transactionnels de Maison Kanali (via Resend).
- * Sans RESEND_API_KEY, les fonctions se désactivent proprement :
- * la réservation reste enregistrée, seul l'envoi d'email est ignoré.
+ * Emails transactionnels de Maison Kanali.
+ *
+ * Deux transports possibles, choisis automatiquement :
+ *   1. Gmail (GMAIL_USER + GMAIL_APP_PASSWORD) — recommandé : envoie depuis
+ *      la vraie adresse maisonkanali@gmail.com, vers n'importe quelle cliente,
+ *      sans domaine à acheter.
+ *   2. Resend (RESEND_API_KEY) — utile plus tard avec un domaine vérifié.
+ *
+ * Sans configuration, les fonctions se désactivent proprement : la
+ * réservation reste enregistrée, seul l'envoi d'email est ignoré.
  */
 
 interface BookingEmailData {
@@ -15,6 +25,7 @@ interface BookingEmailData {
   durationMin: number;
   date: string;
   time: string;
+  endTime: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -39,12 +50,91 @@ const TAUPE = "#80705f";
 const IVORY = "#fdfbf7";
 const SAND = "#e7dccc";
 
-function getResend(): Resend | null {
-  const key = process.env.RESEND_API_KEY;
-  return key ? new Resend(key) : null;
+/* ── Transport ───────────────────────────────────────────────────────────── */
+
+interface EmailAttachment {
+  filename: string;
+  content: string | Buffer;
+  contentType: string;
 }
 
-function shell(title: string, intro: string, rows: string, footer: string): string {
+interface EmailMessage {
+  to: string;
+  subject: string;
+  html: string;
+  replyTo?: string;
+  attachments?: EmailAttachment[];
+}
+
+function emailConfigured(): boolean {
+  return Boolean(
+    (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) ||
+      process.env.RESEND_API_KEY,
+  );
+}
+
+async function sendEmail(message: EmailMessage): Promise<void> {
+  const gmailUser = process.env.GMAIL_USER;
+  const gmailPassword = process.env.GMAIL_APP_PASSWORD;
+
+  if (gmailUser && gmailPassword) {
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: { user: gmailUser, pass: gmailPassword },
+    });
+    await transporter.sendMail({
+      from: `"Maison Kanali" <${gmailUser}>`,
+      to: message.to,
+      replyTo: message.replyTo,
+      subject: message.subject,
+      html: message.html,
+      attachments: message.attachments?.map((item) => ({
+        filename: item.filename,
+        content: item.content,
+        contentType: item.contentType,
+      })),
+    });
+    return;
+  }
+
+  const resendKey = process.env.RESEND_API_KEY;
+  if (resendKey) {
+    const resend = new Resend(resendKey);
+    const from =
+      process.env.BOOKING_EMAIL_FROM ?? "Maison Kanali <onboarding@resend.dev>";
+    const { error } = await resend.emails.send({
+      from,
+      to: message.to,
+      replyTo: message.replyTo,
+      subject: message.subject,
+      html: message.html,
+      attachments: message.attachments?.map((item) => ({
+        filename: item.filename,
+        content:
+          typeof item.content === "string"
+            ? Buffer.from(item.content).toString("base64")
+            : item.content.toString("base64"),
+        contentType: item.contentType,
+      })),
+    });
+    if (error) throw new Error(`Resend: ${error.message}`);
+    return;
+  }
+
+  console.warn(
+    "[email] Aucun transport configuré (GMAIL_USER/GMAIL_APP_PASSWORD ou RESEND_API_KEY) — email non envoyé :",
+    message.subject,
+  );
+}
+
+/* ── Gabarit ─────────────────────────────────────────────────────────────── */
+
+function shell(
+  title: string,
+  intro: string,
+  body: string,
+  footer: string,
+): string {
   return `<!doctype html>
 <html lang="fr">
   <body style="margin:0;padding:0;background-color:${IVORY};font-family:Georgia,'Times New Roman',serif;">
@@ -68,11 +158,7 @@ function shell(title: string, intro: string, rows: string, footer: string): stri
             </td>
           </tr>
           <tr>
-            <td style="padding:20px 40px 8px;">
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid ${SAND};background-color:${IVORY};">
-                ${rows}
-              </table>
-            </td>
+            <td style="padding:20px 40px 8px;">${body}</td>
           </tr>
           <tr>
             <td style="padding:20px 40px 36px;">
@@ -93,10 +179,21 @@ function shell(title: string, intro: string, rows: string, footer: string): stri
 </html>`;
 }
 
+function detailTable(rows: string): string {
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid ${SAND};background-color:${IVORY};">${rows}</table>`;
+}
+
 function row(label: string, value: string, strong = false): string {
   return `<tr>
-    <td style="padding:11px 18px;border-bottom:1px solid ${SAND};font-size:11px;letter-spacing:2px;text-transform:uppercase;color:${TAUPE};font-family:Arial,sans-serif;white-space:nowrap;">${label}</td>
+    <td style="padding:11px 18px;border-bottom:1px solid ${SAND};font-size:11px;letter-spacing:2px;text-transform:uppercase;color:${TAUPE};font-family:Arial,sans-serif;white-space:nowrap;vertical-align:top;">${label}</td>
     <td style="padding:11px 18px;border-bottom:1px solid ${SAND};font-size:14px;color:${ESPRESSO};text-align:right;${strong ? "font-weight:bold;" : ""}font-family:Georgia,serif;">${value}</td>
+  </tr>`;
+}
+
+/** Ligne d'en-tête de section, sur toute la largeur du tableau. */
+function sectionRow(label: string): string {
+  return `<tr>
+    <td colspan="2" style="padding:13px 18px 9px;border-bottom:1px solid ${SAND};background-color:#ffffff;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:${BRONZE};font-family:Arial,sans-serif;">${label}</td>
   </tr>`;
 }
 
@@ -108,60 +205,164 @@ function escapeHtml(value: string): string {
     .replace(/"/g, "&quot;");
 }
 
-/** Notification interne + accusé de réception client pour un rendez-vous. */
-export async function sendBookingEmails(data: BookingEmailData): Promise<void> {
-  const resend = getResend();
-  const to = process.env.BOOKING_EMAIL_TO;
-  const from =
-    process.env.BOOKING_EMAIL_FROM ?? "Maison Kanali <onboarding@resend.dev>";
+function telHref(phone: string): string {
+  return `tel:${phone.replace(/[^+\d]/g, "")}`;
+}
 
-  if (!resend || !to) {
+/** Ticket de rendez-vous — le bloc central de l'email de confirmation. */
+function ticket(data: BookingEmailData): string {
+  const rows =
+    row("Prestation", escapeHtml(data.serviceName), true) +
+    row("Pôle", escapeHtml(data.brandLabel)) +
+    row("Date", escapeHtml(formatDateFr(data.date)), true) +
+    row(
+      "Heure",
+      `${escapeHtml(formatTimeFr(data.time))} – ${escapeHtml(formatTimeFr(data.endTime))}`,
+      true,
+    ) +
+    row("Durée", formatDuration(data.durationMin)) +
+    row("Tarif", escapeHtml(data.price));
+
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid ${BRONZE};background-color:#ffffff;">
+    <tr>
+      <td style="padding:18px 18px 16px;background-color:${BRONZE};text-align:center;">
+        <div style="font-size:11px;letter-spacing:4px;text-transform:uppercase;color:${IVORY};font-family:Arial,sans-serif;">Ticket de rendez-vous</div>
+        <div style="font-size:24px;letter-spacing:3px;color:#ffffff;padding-top:8px;font-family:Georgia,serif;">${escapeHtml(data.reference)}</div>
+      </td>
+    </tr>
+    <tr><td>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0">${rows}</table>
+    </td></tr>
+    <tr>
+      <td style="padding:14px 18px;border-top:1px dashed ${BRONZE};text-align:center;">
+        <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:${TAUPE};font-family:Arial,sans-serif;line-height:1.8;">
+          Lundi – Samedi · 10h00 – 17h00<br />Saint-Quentin · Sur rendez-vous
+        </div>
+      </td>
+    </tr>
+  </table>`;
+}
+
+/* ── Rendez-vous ─────────────────────────────────────────────────────────── */
+
+/** Contenus des deux emails de réservation (purs — testables sans envoi). */
+export function buildBookingEmails(data: BookingEmailData): {
+  manager: { subject: string; html: string };
+  client: { subject: string; html: string; ics: string };
+} {
+  const clientName = `${escapeHtml(data.firstName)} ${escapeHtml(data.lastName)}`;
+  const dateLabel = formatDateFr(data.date);
+  const timeRange = `${formatTimeFr(data.time)} – ${formatTimeFr(data.endTime)}`;
+
+  /* — Notification pour la maison : tout le détail, en deux sections — */
+  const managerRows =
+    sectionRow("Le rendez-vous") +
+    row("Référence", escapeHtml(data.reference), true) +
+    row("Prestation", escapeHtml(data.serviceName), true) +
+    row("Pôle", escapeHtml(data.brandLabel)) +
+    row("Date", escapeHtml(dateLabel), true) +
+    row("Heure", escapeHtml(timeRange), true) +
+    row("Durée", formatDuration(data.durationMin)) +
+    row("Tarif", escapeHtml(data.price)) +
+    sectionRow("La cliente") +
+    row("Nom", clientName, true) +
+    row(
+      "Téléphone",
+      `<a href="${telHref(data.phone)}" style="color:${ESPRESSO};">${escapeHtml(data.phone)}</a>`,
+    ) +
+    row(
+      "Email",
+      `<a href="mailto:${escapeHtml(data.email)}" style="color:${ESPRESSO};">${escapeHtml(data.email)}</a>`,
+    ) +
+    (data.notes ? row("Précisions", escapeHtml(data.notes)) : "");
+
+  /* — Invitation calendrier jointe à la confirmation cliente — */
+  const ics = buildBookingIcs({
+    reference: data.reference,
+    serviceName: data.serviceName,
+    date: data.date,
+    startTime: data.time,
+    endTime: data.endTime,
+  });
+
+  return {
+    manager: {
+      subject: `Nouveau rendez-vous — ${dateLabel} à ${formatTimeFr(data.time)} · ${data.serviceName}`,
+      html: shell(
+        "Nouvelle demande de rendez-vous",
+        `${clientName} vient de réserver en ligne. Ce créneau n'est plus proposé sur le site : aucune autre cliente ne peut le réserver. Il vous reste à confirmer le rendez-vous auprès de la cliente.`,
+        detailTable(managerRows),
+        `L'invitation jointe ajoute ce rendez-vous à votre agenda (Google, Apple ou Outlook) en un clic, avec un rappel la veille.<br /><br />Répondre à cet email écrira directement à ${escapeHtml(data.email)}.`,
+      ),
+    },
+    client: {
+      subject: `Votre rendez-vous du ${dateLabel} — Maison Kanali (${data.reference})`,
+      html: shell(
+        `Merci, ${escapeHtml(data.firstName)}.`,
+        `Votre demande de rendez-vous est bien enregistrée et votre créneau est réservé. Maison Kanali vous en confirmera la tenue très prochainement — voici votre ticket, à présenter à votre arrivée.`,
+        ticket(data),
+        `Deux pièces sont jointes à cet email : votre <strong>ticket de réservation</strong> (PDF, à présenter à votre arrivée) et une <strong>invitation calendrier</strong> pour ajouter le rendez-vous à votre agenda (Google, Apple ou Outlook), avec un rappel automatique la veille.<br /><br />Un empêchement ? Répondez simplement à cet email pour modifier ou annuler votre rendez-vous.`,
+      ),
+      ics,
+    },
+  };
+}
+
+/** Notification interne détaillée + confirmation cliente avec ticket. */
+export async function sendBookingEmails(data: BookingEmailData): Promise<void> {
+  const to = process.env.BOOKING_EMAIL_TO;
+
+  if (!emailConfigured() || !to) {
     console.warn(
-      "[email] RESEND_API_KEY ou BOOKING_EMAIL_TO manquant — emails de réservation non envoyés.",
+      "[email] Transport ou BOOKING_EMAIL_TO manquant — emails de réservation non envoyés.",
     );
     return;
   }
 
-  const dateLabel = `${formatDateFr(data.date)} · ${formatTimeFr(data.time)}`;
-  const clientName = `${escapeHtml(data.firstName)} ${escapeHtml(data.lastName)}`;
+  const emails = buildBookingEmails(data);
 
-  const detailRows =
-    row("Référence", data.reference, true) +
-    row("Prestation", escapeHtml(data.serviceName), true) +
-    row("Pôle", escapeHtml(data.brandLabel)) +
-    row("Date", escapeHtml(dateLabel), true) +
-    row("Durée", formatDuration(data.durationMin)) +
-    row("Tarif", escapeHtml(data.price));
+  /* Ticket PDF joint à la confirmation cliente (reçu en attendant le
+     paiement en ligne). S'il échoue, l'email part quand même sans lui. */
+  let ticketPdf: Buffer | null = null;
+  try {
+    ticketPdf = Buffer.from(await buildTicketPdf(data));
+  } catch (pdfError) {
+    console.error("[email] Génération du ticket PDF échouée:", pdfError);
+  }
 
-  const clientRows =
-    row("Cliente", clientName, true) +
-    row("Email", escapeHtml(data.email)) +
-    row("Téléphone", escapeHtml(data.phone)) +
-    (data.notes ? row("Précisions", escapeHtml(data.notes)) : "");
+  const icsAttachment = {
+    filename: `rendez-vous-${data.reference}.ics`,
+    content: emails.client.ics,
+    contentType: "text/calendar; charset=utf-8; method=PUBLISH",
+  };
 
   const results = await Promise.allSettled([
-    resend.emails.send({
-      from,
+    sendEmail({
       to,
       replyTo: data.email,
-      subject: `Nouveau rendez-vous — ${data.serviceName} · ${formatDateFr(data.date)} ${formatTimeFr(data.time)}`,
-      html: shell(
-        "Nouvelle demande de rendez-vous",
-        `${clientName} vient de réserver en ligne. Pensez à confirmer ce rendez-vous auprès de la cliente.`,
-        detailRows + clientRows,
-        `Répondre à cet email écrira directement à ${escapeHtml(data.email)}.`,
-      ),
+      subject: emails.manager.subject,
+      html: emails.manager.html,
+      /* La maison aussi ajoute le rendez-vous à son agenda en un clic. */
+      attachments: [icsAttachment],
     }),
-    resend.emails.send({
-      from,
+    sendEmail({
       to: data.email,
-      subject: `Votre demande de rendez-vous — Maison Kanali (${data.reference})`,
-      html: shell(
-        `Merci, ${escapeHtml(data.firstName)}.`,
-        "Votre demande de rendez-vous a bien été reçue. Maison Kanali vous la confirmera très prochainement.",
-        detailRows,
-        "Un empêchement ? Répondez simplement à cet email pour modifier ou annuler votre rendez-vous.",
-      ),
+      /* Les réponses de la cliente arrivent dans la boîte de la maison. */
+      replyTo: to,
+      subject: emails.client.subject,
+      html: emails.client.html,
+      attachments: [
+        ...(ticketPdf
+          ? [
+              {
+                filename: `ticket-${data.reference}.pdf`,
+                content: ticketPdf,
+                contentType: "application/pdf",
+              },
+            ]
+          : []),
+        icsAttachment,
+      ],
     }),
   ]);
 
@@ -172,54 +373,63 @@ export async function sendBookingEmails(data: BookingEmailData): Promise<void> {
   }
 }
 
+/* ── Formations ──────────────────────────────────────────────────────────── */
+
 /** Notification interne + accusé client pour une demande de formation. */
 export async function sendFormationEmails(data: FormationEmailData): Promise<void> {
-  const resend = getResend();
   const to = process.env.BOOKING_EMAIL_TO;
-  const from =
-    process.env.BOOKING_EMAIL_FROM ?? "Maison Kanali <onboarding@resend.dev>";
 
-  if (!resend || !to) {
+  if (!emailConfigured() || !to) {
     console.warn(
-      "[email] RESEND_API_KEY ou BOOKING_EMAIL_TO manquant — emails de formation non envoyés.",
+      "[email] Transport ou BOOKING_EMAIL_TO manquant — emails de formation non envoyés.",
     );
     return;
   }
 
   const clientName = `${escapeHtml(data.firstName)} ${escapeHtml(data.lastName)}`;
 
-  const rows =
-    row("Référence", data.reference, true) +
+  const managerRows =
+    sectionRow("La demande") +
+    row("Référence", escapeHtml(data.reference), true) +
     row("Formation", escapeHtml(data.formationName), true) +
     (data.kitOption ? row("Option", escapeHtml(data.kitOption)) : "") +
-    row("Élève", clientName, true) +
-    row("Email", escapeHtml(data.email)) +
-    row("Téléphone", escapeHtml(data.phone)) +
+    sectionRow("L'élève") +
+    row("Nom", clientName, true) +
+    row(
+      "Téléphone",
+      `<a href="${telHref(data.phone)}" style="color:${ESPRESSO};">${escapeHtml(data.phone)}</a>`,
+    ) +
+    row(
+      "Email",
+      `<a href="mailto:${escapeHtml(data.email)}" style="color:${ESPRESSO};">${escapeHtml(data.email)}</a>`,
+    ) +
     (data.message ? row("Message", escapeHtml(data.message)) : "");
 
+  const clientRows =
+    row("Référence", escapeHtml(data.reference), true) +
+    row("Formation", escapeHtml(data.formationName), true) +
+    (data.kitOption ? row("Option", escapeHtml(data.kitOption)) : "");
+
   const results = await Promise.allSettled([
-    resend.emails.send({
-      from,
+    sendEmail({
       to,
       replyTo: data.email,
       subject: `Nouvelle demande de formation — ${data.formationName}`,
       html: shell(
         "Nouvelle demande d'inscription",
         `${clientName} souhaite s'inscrire à une formation. Contactez-la pour convenir des dates.`,
-        rows,
+        detailTable(managerRows),
         `Répondre à cet email écrira directement à ${escapeHtml(data.email)}.`,
       ),
     }),
-    resend.emails.send({
-      from,
+    sendEmail({
       to: data.email,
+      replyTo: to,
       subject: `Votre demande de formation — Maison Kanali (${data.reference})`,
       html: shell(
         `Merci, ${escapeHtml(data.firstName)}.`,
         "Votre demande d'inscription a bien été reçue. Maison Kanali vous recontactera très vite pour convenir des dates et des modalités.",
-        row("Référence", data.reference, true) +
-          row("Formation", escapeHtml(data.formationName), true) +
-          (data.kitOption ? row("Option", escapeHtml(data.kitOption)) : ""),
+        detailTable(clientRows),
         "Une question ? Répondez simplement à cet email.",
       ),
     }),

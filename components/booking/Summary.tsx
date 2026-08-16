@@ -1,7 +1,12 @@
 "use client";
 
 import { formatDateFr, formatDuration, formatTimeFr } from "@/lib/utils";
-import { BRAND_LABELS, type Formation, type Service } from "@/lib/services";
+import {
+  BRAND_LABELS,
+  effectivePrice,
+  type Formation,
+  type Service,
+} from "@/lib/services";
 import type { BookingMode } from "./StepService";
 import { CalendarIcon, ClockIcon, SparkleIcon } from "@/components/ui/icons";
 
@@ -40,8 +45,13 @@ export function Summary({
               <ClockIcon width={15} height={15} />
               {formatDuration(service.durationMin)}
               <span aria-hidden>·</span>
-              <span className="text-bronze">{service.price}</span>
+              <span className="text-bronze">{effectivePrice(service).label}</span>
             </p>
+            {effectivePrice(service).promo && (
+              <p className="mt-2 inline-flex rounded-full border border-gold/50 bg-gold/10 px-2.5 py-0.5 text-[0.56rem] tracking-[0.14em] text-gold uppercase">
+                Promo · {effectivePrice(service).promo?.until}
+              </p>
+            )}
           </div>
         ) : (
           <p className="mt-4 text-sm leading-relaxed text-taupe">

@@ -1,7 +1,12 @@
 "use client";
 
 import { formatDateFr, formatDuration, formatTimeFr } from "@/lib/utils";
-import { BRAND_LABELS, type Formation, type Service } from "@/lib/services";
+import {
+  BRAND_LABELS,
+  bookingPriceLabel,
+  type Formation,
+  type Service,
+} from "@/lib/services";
 import type { BookingMode } from "./StepService";
 import type { ContactDetails } from "./StepDetails";
 
@@ -48,7 +53,7 @@ export function StepConfirm({
               <Row label="Pôle" value={BRAND_LABELS[service.brand]} />
               <Row label="Prestation" value={service.name} />
               <Row label="Durée" value={formatDuration(service.durationMin)} />
-              <Row label="Tarif" value={service.price} />
+              <Row label="Tarif" value={bookingPriceLabel(service)} />
               {date && <Row label="Date" value={formatDateFr(date)} />}
               {time && <Row label="Heure" value={formatTimeFr(time)} />}
             </>
