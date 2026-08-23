@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Jost } from "next/font/google";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { CONTACT, SITE } from "@/lib/config";
+import { CONTACT, OPENING_HOURS_ISO, SITE } from "@/lib/config";
 import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
@@ -72,8 +72,8 @@ const JSON_LD = {
         "Friday",
         "Saturday",
       ],
-      opens: "10:00",
-      closes: "17:00",
+      opens: OPENING_HOURS_ISO.opens,
+      closes: OPENING_HOURS_ISO.closes,
     },
   ],
   priceRange: "€€",

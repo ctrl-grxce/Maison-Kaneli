@@ -19,7 +19,7 @@ Kanali ») pour repartir exactement d'ici.*
 | Emails automatiques | ✅ **Fonctionnels depuis le 16/08 au soir** (testés en prod) : notification détaillée → maisonkanali@gmail.com + ticket cliente avec invitation .ics. Envoi via Gmail `gradipalaba28@gmail.com` (mot de passe d'application) ; les réponses des clientes arrivent chez maisonkanali (reply-to). Pour passer l'expéditeur sur maisonkanali@gmail.com plus tard : créer un mot de passe d'application SUR CE compte, remplacer `GMAIL_APP_PASSWORD` et `GMAIL_USER` sur Vercel, redéployer |
 | Promo cils 40 € | ✅ Partout (dépose comprise), expiration automatique le 31/10 — la bannière `/naftali` reste à retirer à la main début novembre |
 | Anti-pause Supabase | ✅ Cron Vercel quotidien 6h UTC → `/api/health` (le projet gratuit ne se suspend plus ; il s'était mis en pause le 16/08, restauré) |
-| Décision créneaux en attente | ❓ Kandy & Nafi doivent trancher : dernière cliente *sort* à 17h (règle actuelle) ou *arrive* jusqu'à 17h — réglage `lib/config.ts`/`lib/availability.ts` |
+| Horaires | ✅ Tranché le 23/08/2026 : ouverture **10h–18h** (lun–sam), une prestation doit *finir* à 18h — réglage `OPENING` dans `lib/config.ts`, tous les libellés en dérivent |
 | Vercel | Compte gradipalaba28 · projet `maison-kanali` — variables `SUPABASE_URL`/`SUPABASE_KEY` (Sensitive) ajoutées le 24/07 |
 
 ## ✋ À faire à la reprise (dans l'ordre)
@@ -83,7 +83,7 @@ npx vercel deploy --prod --yes   # déployer en production
   Naftali (pôle regard : cils). Ce ne sont PAS deux entreprises différentes.
   Ne pas dire « associée stratégique » ni présenter Kandy comme LA seule
   fondatrice. Instagram : @kandylovebeauty et **@naf.lashes**.
-- Horaires : lundi–samedi, 10h–17h — sur rendez-vous uniquement.
+- Horaires : lundi–samedi, 10h–18h — sur rendez-vous uniquement.
 - Réservations : pas de 30 min, 90 min de délai le jour même, horizon 60 jours
   ([lib/config.ts](lib/config.ts)) — calendrier calé sur l'heure de Paris.
 - Photos : les réalisations sont dans `public/images/realisation-*.jpg`,

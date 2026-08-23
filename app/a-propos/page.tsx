@@ -295,9 +295,9 @@ export default function AboutPage() {
                 <ClockIcon width={22} height={22} className="mx-auto text-bronze" />
                 <p className="overline-label mt-3 text-[0.62rem]">Horaires</p>
                 <p className="mt-2 text-sm text-espresso/85">
-                  Lundi – Samedi
+                  {CONTACT.scheduleDays}
                   <br />
-                  10h00 – 17h00
+                  {CONTACT.scheduleHours}
                 </p>
               </div>
             </Reveal>

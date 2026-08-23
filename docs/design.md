@@ -77,7 +77,7 @@ Wizard une-étape-à-l'écran (jamais de page interminable), barre de progressio
 1. **Prestation** — univers (Kandylove ongles / Kandylove maquillage / Naftali cils)
    puis prestation précise (durée + tarif affichés).
 2. **Date & créneau** — calendrier custom (dimanche fermé, passé désactivé) ;
-   créneaux de 30 min entre **10 h et 17 h (lun–sam)** filtrés par la durée de la
+   créneaux de 30 min entre **10 h et 18 h (lun–sam)** filtrés par la durée de la
    prestation ; les créneaux pris sont grisés « Indisponible » en temps réel.
 3. **Coordonnées** — prénom, nom, email, téléphone, précisions (optionnel).
 4. **Confirmation** — récapitulatif complet avant envoi.
@@ -124,7 +124,7 @@ emails sont simplement désactivés — clé à ajouter dans Vercel).
   « Sur demande ».
 - Formation onglerie : 2 jours, 650 € sans kit / 720 € avec kit
   (kit professionnel d'une valeur de 220 €) + inclus (flyer août 2026).
-- Horaires : lundi–samedi, 10 h – 17 h. Instagram : @kandylovebeauty,
+- Horaires : lundi–samedi, 10 h – 18 h. Instagram : @kandylovebeauty,
   @naftali.lashes. Coordonnées précises = placeholders à remplacer.
 - À propos : histoire (8 ans d'expérience → showroom), Viminde Kandy (fondatrice &
   gérante, pôle beauté), Viminde Nafi (co-fondatrice, associée stratégique),

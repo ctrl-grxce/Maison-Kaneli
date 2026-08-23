@@ -4,7 +4,8 @@
  * ✏️  C'est LE fichier à modifier pour ajuster tarifs, durées ou descriptions.
  * Sources : carte ongles Kandylove (août 2026), flyer TARIF (maquillage),
  * flyer FORMATION Kandylove Beauty (650 € / 720 €, août 2026) et promo cils
- * Naftali — toutes les prestations à 40 € jusqu'à fin octobre 2026.
+ * Naftali — toutes les poses à 40 € et la dépose à 20 € jusqu'à fin
+ * octobre 2026 (dépose 20 € confirmée par Gradi le 23/08/2026).
  */
 
 export type Brand = "kandylove" | "naftali";
@@ -211,7 +212,7 @@ export const SERVICES: Service[] = [
   },
 
   /* ── Extensions de cils — Naftali ────────────────────────────────────── */
-  /*    Promo en cours : toutes les prestations à 40 € jusqu'à fin octobre.  */
+  /*    Promo en cours : poses à 40 €, dépose à 20 € — jusqu'à fin octobre. */
   {
     id: "cil-a-cil",
     brand: "naftali",
@@ -261,7 +262,7 @@ export const SERVICES: Service[] = [
     description: "Retrait tout en douceur, dans le respect du cil naturel.",
     durationMin: 30,
     price: "Sur demande",
-    promo: { price: "40 €", until: "jusqu'à fin octobre", endsOn: "2026-10-31" },
+    promo: { price: "20 €", until: "jusqu'à fin octobre", endsOn: "2026-10-31" },
   },
 ];
 

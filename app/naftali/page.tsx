@@ -52,7 +52,7 @@ export default function NaftaliPage() {
         intro="Le pôle regard de Maison Kanali, dirigé par sa fondatrice Viminde Nafi : du cil à cil le plus naturel au volume russe le plus couture."
       />
 
-      {/* ── Offre spéciale — toutes les prestations à 40 € ───────────────── */}
+      {/* ── Offre spéciale — poses à 40 €, dépose à 20 € ─────────────────── */}
       <section className="border-b border-gold/25 bg-[#f7f0e2]">
         <div className="mx-auto grid max-w-6xl items-center gap-8 px-4 py-12 md:grid-cols-[0.9fr_1.1fr] md:gap-14 md:px-8 md:py-16">
           <Reveal>
@@ -80,9 +80,9 @@ export default function NaftaliPage() {
             <Reveal delay={180}>
               <p className="mx-auto mt-5 max-w-lg text-[0.9375rem] leading-relaxed text-taupe md:mx-0">
                 Du cil à cil le plus naturel au volume russe le plus couture,
-                remplissage compris : jusqu&apos;à fin octobre, chaque
-                prestation cils est à 40 €. L&apos;occasion idéale de confier
-                votre regard à Naftali.
+                remplissage compris : jusqu&apos;à fin octobre, chaque pose
+                est à 40 € — et la dépose à 20 €. L&apos;occasion idéale de
+                confier votre regard à Naftali.
               </p>
             </Reveal>
             <Reveal delay={260}>
@@ -106,7 +106,7 @@ export default function NaftaliPage() {
                 La carte <em className="text-gold">des poses</em>
               </>
             }
-            intro="Jusqu'à fin octobre, toutes les prestations sont à 40 € — l'effet, lui, se dessine avec vous à la réservation."
+            intro="Jusqu'à fin octobre, toutes les poses sont à 40 € et la dépose à 20 € — l'effet, lui, se dessine avec vous à la réservation."
           />
           <Reveal delay={150}>
             <div className="relative mt-10 hidden aspect-[4/5] max-w-[19rem] overflow-hidden rounded-t-full border border-gold/30 md:block">

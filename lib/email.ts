@@ -3,6 +3,7 @@ import { Resend } from "resend";
 import { buildBookingIcs } from "./ics";
 import { buildTicketPdf } from "./ticket-pdf";
 import { formatDateFr, formatTimeFr, formatDuration } from "./utils";
+import { CONTACT } from "./config";
 
 /**
  * Emails transactionnels de Maison Kanali.
@@ -168,7 +169,7 @@ function shell(
           <tr>
             <td style="padding:18px 40px;border-top:1px solid ${SAND};text-align:center;">
               <div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:${TAUPE};font-family:Arial,sans-serif;">
-                Maison Kanali · Lundi – Samedi · 10h00 – 17h00
+                Maison Kanali · ${CONTACT.scheduleLabel}
               </div>
             </td>
           </tr>
@@ -236,7 +237,7 @@ function ticket(data: BookingEmailData): string {
     <tr>
       <td style="padding:14px 18px;border-top:1px dashed ${BRONZE};text-align:center;">
         <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:${TAUPE};font-family:Arial,sans-serif;line-height:1.8;">
-          Lundi – Samedi · 10h00 – 17h00<br />Saint-Quentin · Sur rendez-vous
+          ${CONTACT.scheduleLabel}<br />Saint-Quentin · Sur rendez-vous
         </div>
       </td>
     </tr>

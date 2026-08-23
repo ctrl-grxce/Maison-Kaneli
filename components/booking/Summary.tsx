@@ -1,6 +1,7 @@
 "use client";
 
 import { formatDateFr, formatDuration, formatTimeFr } from "@/lib/utils";
+import { CONTACT } from "@/lib/config";
 import {
   BRAND_LABELS,
   effectivePrice,
@@ -98,7 +99,7 @@ export function Summary({
 
       <div className="mt-6 border-t border-sand-deep pt-4">
         <p className="text-[0.65rem] leading-relaxed tracking-[0.14em] text-taupe uppercase">
-          Lundi – Samedi · 10h – 17h
+          {CONTACT.scheduleLabel}
           <br />
           Saint-Quentin · Sur rendez-vous
         </p>
