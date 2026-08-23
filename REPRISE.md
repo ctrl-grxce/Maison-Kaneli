@@ -17,10 +17,11 @@ Kanali ») pour repartir exactement d'ici.*
 | Parcours de Kandy | ✅ Texte intégré sur la page À propos (5 diplômes, mentore Romina Chiriac) |
 | Sécurité | ✅ Renforcée le 24/07 : clés hors du code, en-têtes CSP/HSTS, rate limiting, anti-CSRF |
 | Emails automatiques | ✅ **Fonctionnels depuis le 16/08 au soir** (testés en prod) : notification détaillée → maisonkanali@gmail.com + ticket cliente avec invitation .ics. Envoi via Gmail `gradipalaba28@gmail.com` (mot de passe d'application) ; les réponses des clientes arrivent chez maisonkanali (reply-to). Pour passer l'expéditeur sur maisonkanali@gmail.com plus tard : créer un mot de passe d'application SUR CE compte, remplacer `GMAIL_APP_PASSWORD` et `GMAIL_USER` sur Vercel, redéployer |
-| Promo cils 40 € | ✅ Partout (dépose comprise), expiration automatique le 31/10 — la bannière `/naftali` reste à retirer à la main début novembre |
+| Promo cils | ✅ Poses à 40 € et **dépose à 20 €** (depuis le 23/08), expiration automatique le 31/10 — la bannière `/naftali` reste à retirer à la main début novembre |
 | Anti-pause Supabase | ✅ Cron Vercel quotidien 6h UTC → `/api/health` (le projet gratuit ne se suspend plus ; il s'était mis en pause le 16/08, restauré) |
 | Horaires | ✅ Tranché le 23/08/2026 : ouverture **10h–18h** (lun–sam), une prestation doit *finir* à 18h — réglage `OPENING` dans `lib/config.ts`, tous les libellés en dérivent |
 | Vercel | Compte gradipalaba28 · projet `maison-kanali` — variables `SUPABASE_URL`/`SUPABASE_KEY` (Sensitive) ajoutées le 24/07 |
+| Nom de domaine | ⏳ Pas encore acheté — tout est libre au 23/08 (maisonkanali.fr / .com…). Procédure complète dans `docs/DOMAINE.md` (achat, DNS, `NEXT_PUBLIC_SITE_URL`, Search Console) |
 
 ## ✋ À faire à la reprise (dans l'ordre)
 
@@ -33,8 +34,8 @@ Kanali ») pour repartir exactement d'ici.*
    ⚠️ Jamais de pipe PowerShell vers `vercel env add` (BOM) — dashboard ou
    `printf` Git Bash.
 3. **Tarifs** ([lib/services.ts](lib/services.ts)) : carte ongles à jour
-   (août 2026). Cils : promo 40 € sur les 5 prestations (dépose comprise,
-   décision du 16/08), **expiration automatique le 31/10** (`endsOn`) — début
+   (août 2026). Cils : promo 40 € sur les 4 poses + **dépose à 20 €** (décision
+   du 23/08), **expiration automatique le 31/10** (`endsOn`) — début
    novembre il restera à (a) retirer la bannière promo codée en dur sur
    [app/naftali/page.tsx](app/naftali/page.tsx) (section « Offre spéciale »
    + textes), (b) mettre les vrais tarifs cils ou laisser « Sur demande »,
