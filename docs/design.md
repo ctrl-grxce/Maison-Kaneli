@@ -119,9 +119,10 @@ emails sont simplement désactivés — clé à ajouter dans Vercel).
 - Onglerie (carte août 2026) : manucure + semi 35 €, gainage + semi 45 €,
   extensions capsules 50 €, pédicure Spa 60 €, pédicure basic 30 €,
   remplissage 40 € — dans `lib/services.ts`.
-- Cils Naftali : promo « toutes les prestations à 40 € » jusqu'à fin
-  octobre 2026 (champ `promo` dans `lib/services.ts`) ; hors promo, tarifs
-  « Sur demande ».
+- Cils Naftali : promo « toutes les poses à 40 € » jusqu'à fin
+  octobre 2026 (champ `promo` dans `lib/services.ts`) ; hors promo, poses
+  « Sur demande ». La dépose est à 20 € en prix normal (définitif, pas une
+  promo — décision Gradi du 29/08/2026).
 - Formation onglerie : 2 jours, 650 € sans kit / 720 € avec kit
   (kit professionnel d'une valeur de 220 €) + inclus (flyer août 2026).
 - Horaires : lundi–samedi, 10 h – 18 h. Instagram : @kandylovebeauty,
