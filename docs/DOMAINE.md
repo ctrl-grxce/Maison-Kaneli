@@ -1,9 +1,19 @@
 # Nom de domaine — marche à suivre
 
-> État au 23/08/2026 : le site tourne sur `https://maison-kanali.vercel.app`
-> (projet Vercel `maison-kanali`, compte gradipalaba28). Aucun domaine acheté.
-> Disponibilité vérifiée le 23/08/2026 : **maisonkanali.fr, maisonkanali.com,
-> maison-kanali.fr, maison-kanali.com et maisonkanali.beauty sont tous libres.**
+> ✅ **FAIT le 24-25/08/2026 : le site est en ligne sur
+> `https://maisonkanali.fr`.** Domaine acheté chez LWS le 23/08/2026
+> (compte LWS-822560, expire le 21-08-2027, renouvellement auto).
+> Zone DNS gérée au panel.lws.fr : `A @ → 216.198.79.1` + `A @ → 64.29.17.1`
+> (valeurs exigées par `vercel domains verify`, PAS le 76.76.21.21 du §3),
+> AAAA supprimé, enregistrements mail (MX/SPF/DKIM) conservés.
+> `NEXT_PUBLIC_SITE_URL=https://maisonkanali.fr` posée en prod + redéploiement.
+> Redirections 308 : `www.maisonkanali.fr` et `maison-kanali.vercel.app` →
+> `maisonkanali.fr` (dashboard Vercel → Settings → Domains).
+> **Reste à faire (§5)** : Search Console, bios Instagram/Facebook,
+> domaine dans les mentions légales.
+>
+> — Ancien état au 23/08/2026 : site sur `maison-kanali.vercel.app`, aucun
+> domaine acheté ; tout ce qui suit était la marche à suivre prévue.
 
 ## 1. Choisir le domaine
 
