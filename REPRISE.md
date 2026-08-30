@@ -38,11 +38,12 @@ Ensuite, dans l'ordre voulu : **retouches design** (Gradi précisera), puis
 - [ ] Gestion des rendez-vous pour Kandy & Nafi (voir/annuler/déplacer — à cadrer ensemble après le paiement ; la base est prête : statuts `pending/confirmed/cancelled`)
 - [ ] Compresser `public/videos/hero.mp4` 11 MB → ~3 MB (ffmpeg-static dans le scratchpad, comme le 04/08)
 
-### 💳 Chantier paiement (état au 30/08)
+### 💳 Chantier paiement (état au 30/08) — spec complète : `docs/PAIEMENT.md`
 
 1. [x] **Cadrage** (29/08) : 3 architectures expliquées. Reco = **option A : Checkout Stripe hébergé + webhook** — résa `awaiting_payment` qui bloque le créneau 30 min → page de paiement chez Stripe → webhook signé → résa confirmée + emails ; pas payé en 30 min → créneau libéré. (Option B Payment Links : rejetée pour les résas, utile plus tard pour les formations. Option C formulaire intégré : trop de code pour rien.)
-2. [ ] **Valider l'architecture** (décision Gradi)
-3. [ ] **Décider le montant de l'acompte** + **les prestations concernées** (la dépose 20 € resterait sans acompte → circuit actuel inchangé)
+2. [x] **Architecture VALIDÉE par Gradi (30/08)** : option A — Checkout Stripe hébergé + webhook
+3. [x] **Montants décidés par Gradi (30/08)** : acompte **20 € ongles** · **30 € maquillage** (hors prestations mariées → sur devis, Gradi reviendra plus tard là-dessus) · **20 € poses de cils** · **dépose = SANS acompte** (20 € payés sur place, circuit actuel inchangé)
+3b. [x] **Règles fixées par Gradi (30/08)** : ① AUCUN email (ni à la maison ni à la cliente) tant que l'acompte n'est pas payé — les emails partent uniquement quand le paiement est confirmé ; ② joindre en plus une **facture d'acompte PDF** au ticket et au fichier agenda ; ③ toujours écrire « réservation », jamais « résa » ; ④ remis à plus tard : retards & remboursements, prestations mariées (sur devis).
 4. [ ] **Compte Stripe en mode test** — Gradi le crée (gratuit, pas besoin de SIRET/IBAN en test) et colle les clés dans Vercel lui-même (Claude ne manipule jamais les secrets)
 5. [ ] **Implémentation** derrière l'interrupteur `PAYMENTS_ENABLED` (éteint = site actuel intact) : statut + expiration en base, route création de session Checkout, route `/api/stripe/webhook`, aiguillage emails (« acompte réglé X € · reste Y € sur place »)
 6. [ ] **Tests en mode test** (carte `4242 4242 4242 4242`) sur un déploiement de préview Vercel — jamais directement en prod
