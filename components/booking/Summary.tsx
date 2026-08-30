@@ -5,6 +5,8 @@ import { CONTACT } from "@/lib/config";
 import {
   BRAND_LABELS,
   effectivePrice,
+  formatEuros,
+  remainderLabelFor,
   type Formation,
   type Service,
 } from "@/lib/services";
@@ -18,6 +20,8 @@ interface SummaryProps {
   kitLabel: string | null;
   date: string | null;
   time: string | null;
+  /** Acompte à régler en ligne, en centimes (0 = pas de paiement en ligne). */
+  depositCents?: number;
 }
 
 /** Récapitulatif latéral (desktop) — se remplit au fil du parcours. */
@@ -28,6 +32,7 @@ export function Summary({
   kitLabel,
   date,
   time,
+  depositCents = 0,
 }: SummaryProps) {
   return (
     <aside className="sticky top-24 hidden h-fit border border-sand-deep bg-sand p-6 lg:block">
@@ -51,6 +56,19 @@ export function Summary({
             {effectivePrice(service).promo && (
               <p className="mt-2 inline-flex rounded-full border border-gold/50 bg-gold/10 px-2.5 py-0.5 text-[0.56rem] tracking-[0.14em] text-gold uppercase">
                 Promo · {effectivePrice(service).promo?.until}
+              </p>
+            )}
+            {depositCents > 0 && (
+              <p className="mt-2 text-[0.8rem] leading-relaxed text-taupe">
+                Acompte en ligne :{" "}
+                <span className="text-bronze">{formatEuros(depositCents)}</span>
+                {remainderLabelFor(effectivePrice(service).label, depositCents) && (
+                  <>
+                    {" "}
+                    · Reste sur place :{" "}
+                    {remainderLabelFor(effectivePrice(service).label, depositCents)}
+                  </>
+                )}
               </p>
             )}
           </div>

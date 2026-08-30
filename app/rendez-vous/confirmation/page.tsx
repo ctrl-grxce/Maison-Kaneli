@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { formatDateFr, formatTimeFr } from "@/lib/utils";
 import { CheckIcon } from "@/components/ui/icons";
+import { PaymentStatus } from "@/components/booking/PaymentStatus";
 
 export const metadata: Metadata = {
   title: "Demande envoyée",
@@ -16,6 +17,8 @@ interface PageProps {
     d?: string;
     t?: string;
     k?: string;
+    paid?: string;
+    bid?: string;
   }>;
 }
 
@@ -23,6 +26,8 @@ export default async function ConfirmationPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const isFormation = params.type === "f";
   const hasBooking = Boolean(params.ref && params.s);
+  /* Retour de la page de paiement Stripe (docs/PAIEMENT.md). */
+  const isPaid = params.paid === "1" && Boolean(params.bid);
 
   if (!hasBooking) {
     return (
@@ -108,11 +113,15 @@ export default async function ConfirmationPage({ searchParams }: PageProps) {
           </dl>
         </div>
 
-        <p className="mt-7 max-w-md text-sm leading-relaxed text-taupe">
-          {isFormation
-            ? "Votre demande est bien enregistrée : Maison Kanali vous recontacte très vite, par email ou par téléphone, pour convenir des dates et des modalités."
-            : "Votre créneau est bien enregistré : Maison Kanali vous confirmera ce rendez-vous très prochainement, par email ou par téléphone."}
-        </p>
+        {isPaid && params.bid ? (
+          <PaymentStatus bookingId={params.bid} />
+        ) : (
+          <p className="mt-7 max-w-md text-sm leading-relaxed text-taupe">
+            {isFormation
+              ? "Votre demande est bien enregistrée : Maison Kanali vous recontacte très vite, par email ou par téléphone, pour convenir des dates et des modalités."
+              : "Votre créneau est bien enregistré : Maison Kanali vous confirmera ce rendez-vous très prochainement, par email ou par téléphone."}
+          </p>
+        )}
 
         <div className="mt-9 flex flex-col gap-3 sm:flex-row">
           <Link href="/" className="btn btn-primary">

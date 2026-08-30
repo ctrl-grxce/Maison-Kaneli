@@ -4,6 +4,8 @@ import { useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
+  depositCentsFor,
+  formatEuros,
   getFormation,
   getService,
   type Category,
@@ -44,12 +46,16 @@ const EMPTY_DETAILS: ContactDetails = {
 interface BookingWizardProps {
   initialServiceId?: string;
   initialFormationId?: string;
+  /** Interrupteur serveur PAYMENTS_ENABLED (docs/PAIEMENT.md) : quand il est
+   *  éteint, le tunnel se comporte exactement comme avant. */
+  paymentsEnabled?: boolean;
 }
 
 /** Parcours de réservation — une étape à l'écran, jamais de scroll infini. */
 export function BookingWizard({
   initialServiceId,
   initialFormationId,
+  paymentsEnabled = false,
 }: BookingWizardProps) {
   const router = useRouter();
   const topRef = useRef<HTMLDivElement>(null);
@@ -89,6 +95,12 @@ export function BookingWizard({
     const option = formation.kitOptions.find((item) => item.id === kitOptionId);
     return option ? `${option.label} — ${option.price}` : null;
   }, [formation, kitOptionId]);
+
+  /** Acompte à régler en ligne (0 = circuit sans paiement, comme avant). */
+  const depositCents =
+    paymentsEnabled && mode === "prestation" && service
+      ? depositCentsFor(service)
+      : 0;
 
   const goTo = (next: number) => {
     setStep(next);
@@ -183,6 +195,13 @@ export function BookingWizard({
         setSubmitError(
           payload?.error ?? "Une erreur est survenue. Merci de réessayer.",
         );
+        return;
+      }
+
+      /* Parcours avec acompte : direction la page de paiement sécurisée
+         Stripe — la confirmation (et les emails) suivront le paiement. */
+      if (payload?.checkoutUrl) {
+        window.location.assign(payload.checkoutUrl);
         return;
       }
 
@@ -282,6 +301,7 @@ export function BookingWizard({
               date={date}
               time={time}
               details={details}
+              depositCents={depositCents}
             />
           )}
 
@@ -323,9 +343,13 @@ export function BookingWizard({
                 )}
               >
                 {submitting
-                  ? "Envoi en cours…"
+                  ? depositCents > 0
+                    ? "Direction le paiement…"
+                    : "Envoi en cours…"
                   : mode === "prestation"
-                    ? "Confirmer le rendez-vous"
+                    ? depositCents > 0
+                      ? `Payer l'acompte (${formatEuros(depositCents)}) et réserver`
+                      : "Confirmer le rendez-vous"
                     : "Envoyer ma demande"}
               </button>
             )}
@@ -339,6 +363,7 @@ export function BookingWizard({
           kitLabel={kitLabel}
           date={date}
           time={time}
+          depositCents={depositCents}
         />
       </div>
     </div>

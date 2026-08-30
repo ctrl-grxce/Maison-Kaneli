@@ -46,6 +46,20 @@ export const CONTACT = {
   facebookKandylove: "Candynails",
 } as const;
 
+/**
+ * Coordonnées légales de la maison — utilisées sur la facture d'acompte
+ * (docs/PAIEMENT.md). ⚠️ À compléter en phase conformité (adresse exacte,
+ * SIRET, mention TVA selon le statut) : le paiement réel ne s'allumera pas
+ * tant que ces champs sont vides.
+ */
+export const LEGAL = {
+  businessName: "Maison Kanali",
+  address: null as string | null,
+  siret: null as string | null,
+  /** Ex. « TVA non applicable, art. 293 B du CGI » — à trancher selon le statut. */
+  vatNote: null as string | null,
+} as const;
+
 export const SITE = {
   name: "Maison Kanali",
   tagline: "Showroom beauté & centre de formation",

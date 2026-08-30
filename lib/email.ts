@@ -2,6 +2,7 @@ import nodemailer from "nodemailer";
 import { Resend } from "resend";
 import { buildBookingIcs } from "./ics";
 import { buildTicketPdf } from "./ticket-pdf";
+import { buildFacturePdf } from "./facture-pdf";
 import { formatDateFr, formatTimeFr, formatDuration } from "./utils";
 import { CONTACT } from "./config";
 
@@ -32,6 +33,15 @@ interface BookingEmailData {
   email: string;
   phone: string;
   notes?: string;
+  /** Présent quand l'acompte a été réglé en ligne (docs/PAIEMENT.md) :
+   *  les emails ne partent alors qu'à la confirmation du paiement. */
+  deposit?: {
+    paidLabel: string;
+    remainderLabel: string | null;
+    invoiceNumber: string;
+    /** Date du paiement (AAAA-MM-JJ) — date d'émission de la facture. */
+    issuedOn: string;
+  };
 }
 
 interface FormationEmailData {
@@ -222,7 +232,13 @@ function ticket(data: BookingEmailData): string {
       true,
     ) +
     row("Durée", formatDuration(data.durationMin)) +
-    row("Tarif", escapeHtml(data.price));
+    row("Tarif", escapeHtml(data.price)) +
+    (data.deposit
+      ? row("Acompte réglé en ligne", escapeHtml(data.deposit.paidLabel), true) +
+        (data.deposit.remainderLabel
+          ? row("Reste sur place", escapeHtml(data.deposit.remainderLabel))
+          : "")
+      : "");
 
   return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid ${BRONZE};background-color:#ffffff;">
     <tr>
@@ -265,6 +281,13 @@ export function buildBookingEmails(data: BookingEmailData): {
     row("Heure", escapeHtml(timeRange), true) +
     row("Durée", formatDuration(data.durationMin)) +
     row("Tarif", escapeHtml(data.price)) +
+    (data.deposit
+      ? row("Acompte réglé en ligne", escapeHtml(data.deposit.paidLabel), true) +
+        (data.deposit.remainderLabel
+          ? row("Reste sur place", escapeHtml(data.deposit.remainderLabel))
+          : "") +
+        row("Facture d'acompte", escapeHtml(data.deposit.invoiceNumber))
+      : "") +
     sectionRow("La cliente") +
     row("Nom", clientName, true) +
     row(
@@ -288,21 +311,33 @@ export function buildBookingEmails(data: BookingEmailData): {
 
   return {
     manager: {
-      subject: `Nouveau rendez-vous — ${dateLabel} à ${formatTimeFr(data.time)} · ${data.serviceName}`,
+      subject: data.deposit
+        ? `Rendez-vous confirmé (acompte réglé) — ${dateLabel} à ${formatTimeFr(data.time)} · ${data.serviceName}`
+        : `Nouveau rendez-vous — ${dateLabel} à ${formatTimeFr(data.time)} · ${data.serviceName}`,
       html: shell(
-        "Nouvelle demande de rendez-vous",
-        `${clientName} vient de réserver en ligne. Ce créneau n'est plus proposé sur le site : aucune autre cliente ne peut le réserver. Il vous reste à confirmer le rendez-vous auprès de la cliente.`,
+        data.deposit
+          ? "Rendez-vous confirmé — acompte réglé"
+          : "Nouvelle demande de rendez-vous",
+        data.deposit
+          ? `${clientName} vient de réserver en ligne et a réglé l'acompte de ${escapeHtml(data.deposit.paidLabel)} par carte. Le rendez-vous est confirmé et le créneau n'est plus proposé sur le site. La facture d'acompte ${escapeHtml(data.deposit.invoiceNumber)} est jointe.`
+          : `${clientName} vient de réserver en ligne. Ce créneau n'est plus proposé sur le site : aucune autre cliente ne peut le réserver. Il vous reste à confirmer le rendez-vous auprès de la cliente.`,
         detailTable(managerRows),
         `L'invitation jointe ajoute ce rendez-vous à votre agenda (Google, Apple ou Outlook) en un clic, avec un rappel la veille.<br /><br />Répondre à cet email écrira directement à ${escapeHtml(data.email)}.`,
       ),
     },
     client: {
-      subject: `Votre rendez-vous du ${dateLabel} — Maison Kanali (${data.reference})`,
+      subject: data.deposit
+        ? `Votre rendez-vous du ${dateLabel} est confirmé — Maison Kanali (${data.reference})`
+        : `Votre rendez-vous du ${dateLabel} — Maison Kanali (${data.reference})`,
       html: shell(
         `Merci, ${escapeHtml(data.firstName)}.`,
-        `Votre demande de rendez-vous est bien enregistrée et votre créneau est réservé. Maison Kanali vous en confirmera la tenue très prochainement — voici votre ticket, à présenter à votre arrivée.`,
+        data.deposit
+          ? `Votre acompte de ${escapeHtml(data.deposit.paidLabel)} est bien réglé : votre rendez-vous est confirmé et votre créneau est réservé. Voici votre ticket, à présenter à votre arrivée.`
+          : `Votre demande de rendez-vous est bien enregistrée et votre créneau est réservé. Maison Kanali vous en confirmera la tenue très prochainement — voici votre ticket, à présenter à votre arrivée.`,
         ticket(data),
-        `Deux pièces sont jointes à cet email : votre <strong>ticket de réservation</strong> (PDF, à présenter à votre arrivée) et une <strong>invitation calendrier</strong> pour ajouter le rendez-vous à votre agenda (Google, Apple ou Outlook), avec un rappel automatique la veille.<br /><br />Un empêchement ? Répondez simplement à cet email pour modifier ou annuler votre rendez-vous.`,
+        data.deposit
+          ? `Trois pièces sont jointes à cet email : votre <strong>ticket de réservation</strong> (PDF, à présenter à votre arrivée), votre <strong>facture d'acompte</strong> (${escapeHtml(data.deposit.invoiceNumber)}) et une <strong>invitation calendrier</strong> pour ajouter le rendez-vous à votre agenda (Google, Apple ou Outlook), avec un rappel automatique la veille.${data.deposit.remainderLabel ? ` Le reste (${escapeHtml(data.deposit.remainderLabel)}) se règle sur place le jour du rendez-vous.` : ""}<br /><br />Un empêchement ? Répondez simplement à cet email pour modifier ou annuler votre rendez-vous.`
+          : `Deux pièces sont jointes à cet email : votre <strong>ticket de réservation</strong> (PDF, à présenter à votre arrivée) et une <strong>invitation calendrier</strong> pour ajouter le rendez-vous à votre agenda (Google, Apple ou Outlook), avec un rappel automatique la veille.<br /><br />Un empêchement ? Répondez simplement à cet email pour modifier ou annuler votre rendez-vous.`,
       ),
       ics,
     },
@@ -331,11 +366,48 @@ export async function sendBookingEmails(data: BookingEmailData): Promise<void> {
     console.error("[email] Génération du ticket PDF échouée:", pdfError);
   }
 
+  /* Facture d'acompte — jointe des deux côtés dès que l'acompte est payé
+     (la maison la garde pour sa comptabilité). Si sa génération échoue,
+     les emails partent quand même sans elle. */
+  let facturePdf: Buffer | null = null;
+  if (data.deposit) {
+    try {
+      facturePdf = Buffer.from(
+        await buildFacturePdf({
+          invoiceNumber: data.deposit.invoiceNumber,
+          reference: data.reference,
+          serviceName: data.serviceName,
+          brandLabel: data.brandLabel,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          date: data.date,
+          time: data.time,
+          issuedOn: data.deposit.issuedOn,
+          priceLabel: data.price,
+          depositLabel: data.deposit.paidLabel,
+          remainderLabel: data.deposit.remainderLabel,
+        }),
+      );
+    } catch (factureError) {
+      console.error("[email] Génération de la facture d'acompte échouée:", factureError);
+    }
+  }
+
   const icsAttachment = {
     filename: `rendez-vous-${data.reference}.ics`,
     content: emails.client.ics,
     contentType: "text/calendar; charset=utf-8; method=PUBLISH",
   };
+  const factureAttachments =
+    facturePdf && data.deposit
+      ? [
+          {
+            filename: `facture-acompte-${data.deposit.invoiceNumber}.pdf`,
+            content: facturePdf,
+            contentType: "application/pdf",
+          },
+        ]
+      : [];
 
   const results = await Promise.allSettled([
     sendEmail({
@@ -344,7 +416,7 @@ export async function sendBookingEmails(data: BookingEmailData): Promise<void> {
       subject: emails.manager.subject,
       html: emails.manager.html,
       /* La maison aussi ajoute le rendez-vous à son agenda en un clic. */
-      attachments: [icsAttachment],
+      attachments: [icsAttachment, ...factureAttachments],
     }),
     sendEmail({
       to: data.email,
@@ -362,6 +434,7 @@ export async function sendBookingEmails(data: BookingEmailData): Promise<void> {
               },
             ]
           : []),
+        ...factureAttachments,
         icsAttachment,
       ],
     }),

@@ -45,9 +45,14 @@ Ensuite, dans l'ordre voulu : **retouches design** (Gradi précisera), puis
 3. [x] **Montants décidés par Gradi (30/08)** : acompte **20 € ongles** · **30 € maquillage** (hors prestations mariées → sur devis, Gradi reviendra plus tard là-dessus) · **20 € poses de cils** · **dépose = SANS acompte** (20 € payés sur place, circuit actuel inchangé)
 3b. [x] **Règles fixées par Gradi (30/08)** : ① AUCUN email (ni à la maison ni à la cliente) tant que l'acompte n'est pas payé — les emails partent uniquement quand le paiement est confirmé ; ② joindre en plus une **facture d'acompte PDF** au ticket et au fichier agenda ; ③ toujours écrire « réservation », jamais « résa » ; ④ remis à plus tard : retards & remboursements, prestations mariées (sur devis).
 4. [ ] **Compte Stripe en mode test** — Gradi le crée (gratuit, pas besoin de SIRET/IBAN en test) et colle les clés dans Vercel lui-même (Claude ne manipule jamais les secrets)
-5. [ ] **Implémentation** derrière l'interrupteur `PAYMENTS_ENABLED` (éteint = site actuel intact) : statut + expiration en base, route création de session Checkout, route `/api/stripe/webhook`, aiguillage emails (« acompte réglé X € · reste Y € sur place »)
-6. [ ] **Tests en mode test** (carte `4242 4242 4242 4242`) sur un déploiement de préview Vercel — jamais directement en prod
-7. [ ] **Plus tard, pour allumer en vrai** (décision Gradi) : compte Stripe officiel de la maison (SIRET/IBAN de Kandy & Nafi), clés réelles, CGV (→ conformité), et sans doute Vercel Pro 20 $/m + Supabase Pro 25 $/m
+5. [x] **Implémentation CODÉE le 30/08** ✅ (tests 24/24, typecheck et build OK ; tout derrière `PAYMENTS_ENABLED`, éteint par défaut = site public inchangé) :
+   - Base : migration `supabase/migrations/2026-08-30_paiement_acomptes.sql` (statut `awaiting_payment`, expiration 35 min, purge auto, RPC idempotentes, séquence facture) — **PAS ENCORE APPLIQUÉE à Supabase** (attend l'OK de Gradi)
+   - `lib/services.ts` : acomptes 20/30/20 € (dépose ET mariées exclues — mariées en circuit historique en attendant le « sur devis »)
+   - `lib/stripe.ts` (session Checkout 31 min, interrupteur), `lib/facture-pdf.ts` (facture A5 charte), ticket PDF avec bloc acompte (+ bug horaires 17h corrigé), emails « confirmé + 3 pièces jointes »
+   - Routes : aiguillage `/api/bookings`, webhook signé `/api/stripe/webhook`, `/api/bookings/status`, `/api/bookings/cancel-hold`
+   - Tunnel : récapitulatif acompte/reste, bouton « Payer l'acompte (X €) et réserver », redirection Stripe ; pages retour `/rendez-vous/confirmation` (vérification live) et `/rendez-vous/annule`
+6. [ ] **Prochaine séance** : Gradi crée le compte Stripe test + colle `STRIPE_SECRET_KEY` (test) dans `.env.local` → appliquer la migration Supabase (OK Gradi) → test local complet carte `4242…` → configurer le webhook → préview Vercel — jamais directement en prod
+7. [ ] **Plus tard, pour allumer en vrai** (décision Gradi) : compte Stripe officiel de la maison (SIRET/IBAN de Kandy & Nafi), clés réelles, coordonnées légales dans `LEGAL` (lib/config.ts) + CGV (→ conformité), et sans doute Vercel Pro 20 $/m + Supabase Pro 25 $/m
 
 ### ② Conformité (après ①)
 
@@ -76,6 +81,11 @@ Ensuite, dans l'ordre voulu : **retouches design** (Gradi précisera), puis
 
 ## 📖 Journal de progression
 
+- **30/08 (suite)** : chantier paiement CODÉ de bout en bout (base, Stripe,
+  facture d'acompte PDF, emails, tunnel, pages de retour) — 24 tests verts,
+  build OK, tout éteint par défaut. Migration Supabase préparée, pas encore
+  appliquée. Bug corrigé au passage : horaires en dur « 10h-17h » sur le
+  ticket PDF (désormais dérivés de `lib/config.ts`).
 - **30/08** : ce fichier devient LE fichier de suivi (l'ancien « point de reprise » est remplacé).
 - **29/08** : dépose cils → **20 € prix normal, hors promo** (commit `40f7f1f`, déployé + vérifié). Cadrage complet du paiement (3 options, reco option A). `docs/DOMAINE.md` mis à jour et commité.
 - **24-25/08** : **maisonkanali.fr acheté** (LWS) et 100 % configuré — DNS (A 216.198.79.1 + 64.29.17.1), HTTPS, redirections 308, `NEXT_PUBLIC_SITE_URL`, sitemap/robots sur le .fr.

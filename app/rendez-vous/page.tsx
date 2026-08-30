@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { BookingWizard } from "@/components/booking/BookingWizard";
 import { Reveal } from "@/components/ui/Reveal";
+import { paymentsEnabled } from "@/lib/stripe";
 
 export const metadata: Metadata = {
   title: "Prendre rendez-vous",
@@ -33,6 +34,7 @@ export default async function BookingPage({ searchParams }: PageProps) {
           <BookingWizard
             initialServiceId={params.service}
             initialFormationId={params.formation}
+            paymentsEnabled={paymentsEnabled()}
           />
         </Reveal>
       </div>

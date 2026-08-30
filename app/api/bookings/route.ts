@@ -1,9 +1,20 @@
 import { NextResponse } from "next/server";
 import { OPENING } from "@/lib/config";
-import { getService, bookingPriceLabel, BRAND_LABELS } from "@/lib/services";
+import {
+  getService,
+  bookingPriceLabel,
+  depositCentsFor,
+  BRAND_LABELS,
+} from "@/lib/services";
 import { getSupabase } from "@/lib/supabase-server";
 import { bookingSchema } from "@/lib/validation";
 import { sendBookingEmails } from "@/lib/email";
+import {
+  paymentsEnabled,
+  createDepositCheckoutSession,
+  requestOrigin,
+  HOLD_EXPIRES_MINUTES,
+} from "@/lib/stripe";
 import {
   clientIp,
   isSameOrigin,
@@ -124,6 +135,14 @@ export async function POST(request: Request) {
 
   const priceLabel = bookingPriceLabel(service);
 
+  /* ── Aiguillage acompte (docs/PAIEMENT.md) ───────────────────────────────
+     Acompte > 0 et paiements allumés → la réservation est créée en
+     « awaiting_payment » (elle bloque le créneau, expire toute seule) et la
+     cliente part payer chez Stripe. AUCUN email ne part à ce stade.
+     Sinon → circuit historique, strictement identique à avant. */
+  const depositCents = depositCentsFor(service);
+  const withPayment = depositCents > 0 && paymentsEnabled();
+
   const { data: bookingId, error } = await supabase.rpc("create_booking", {
     p_service_id: service.id,
     p_service_name: service.name,
@@ -138,6 +157,15 @@ export async function POST(request: Request) {
     p_email: input.email,
     p_phone: input.phone,
     p_notes: input.notes ?? "",
+    ...(withPayment
+      ? {
+          p_status: "awaiting_payment",
+          p_deposit_cents: depositCents,
+          p_expires_at: new Date(
+            Date.now() + HOLD_EXPIRES_MINUTES * 60_000,
+          ).toISOString(),
+        }
+      : {}),
   });
 
   if (error) {
@@ -159,6 +187,42 @@ export async function POST(request: Request) {
   }
 
   const reference = `MK-${String(bookingId).slice(0, 6).toUpperCase()}`;
+
+  /* ── Parcours avec acompte : direction la page de paiement Stripe ──────── */
+  if (withPayment) {
+    try {
+      const session = await createDepositCheckoutSession({
+        bookingId: String(bookingId),
+        reference,
+        serviceName: service.name,
+        brandLabel: BRAND_LABELS[service.brand],
+        depositCents,
+        customerEmail: input.email,
+        origin: requestOrigin(request),
+        date: input.date,
+        time: input.time,
+      });
+      await supabase.rpc("attach_stripe_session", {
+        p_id: bookingId,
+        p_session_id: session.id,
+      });
+      return NextResponse.json(
+        { reference, checkoutUrl: session.url },
+        { status: 201 },
+      );
+    } catch (stripeError) {
+      /* Stripe injoignable : on libère le créneau et on explique. */
+      console.error("[bookings] Création de session Stripe échouée:", stripeError);
+      await supabase.rpc("cancel_payment_hold", { p_id: bookingId });
+      return NextResponse.json(
+        {
+          error:
+            "Le paiement en ligne est momentanément indisponible. Merci de réessayer dans quelques minutes.",
+        },
+        { status: 503 },
+      );
+    }
+  }
 
   try {
     await sendBookingEmails({

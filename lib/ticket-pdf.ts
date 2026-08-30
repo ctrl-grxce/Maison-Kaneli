@@ -7,13 +7,14 @@ import {
   type RGB,
 } from "pdf-lib";
 import { formatDateFr, formatTimeFr, formatDuration } from "./utils";
+import { CONTACT } from "./config";
 
 /**
  * Ticket de réservation PDF, joint à l'email de confirmation de la cliente.
  *
- * En attendant le paiement en ligne, il tient lieu de reçu de réservation —
- * ce n'est PAS une facture (une vraie facture exigera SIRET, numérotation…
- * elle viendra avec le module de paiement, phase 2).
+ * Sans paiement en ligne, il tient lieu de reçu de réservation (ce n'est pas
+ * une facture). Quand l'acompte est payé en ligne, il l'affiche — et la
+ * facture d'acompte officielle (lib/facture-pdf.ts) est jointe à côté.
  */
 
 interface TicketData {
@@ -27,6 +28,8 @@ interface TicketData {
   endTime: string;
   firstName: string;
   lastName: string;
+  /** Présent quand l'acompte a été réglé en ligne (docs/PAIEMENT.md). */
+  deposit?: { paidLabel: string; remainderLabel: string | null };
 }
 
 /* Charte Maison Kanali, convertie depuis les hex du site. */
@@ -132,18 +135,21 @@ export async function buildTicketPdf(data: TicketData): Promise<Uint8Array> {
 
   const left = INSET + 22;
   const right = WIDTH - INSET - 22;
-  y = bandTop - bandHeight - 40;
+  /* Avec le bloc acompte, on resserre un peu pour rester dans la page A5. */
+  const rowText = data.deposit ? 13 : 14;
+  const rowGap = data.deposit ? 17 : 22;
+  y = bandTop - bandHeight - (data.deposit ? 32 : 40);
   for (const [label, value] of rows) {
     page.drawText(spaced(label), { x: left, y, size: 7, font: helvetica, color: TAUPE });
     drawRight(page, value, right, y - 1, times, 12.5, ESPRESSO);
-    y -= 14;
+    y -= rowText;
     page.drawLine({
       start: { x: left, y },
       end: { x: right, y },
       thickness: 0.6,
       color: SAND,
     });
-    y -= 22;
+    y -= rowGap;
   }
 
   /* — Total — */
@@ -151,13 +157,31 @@ export async function buildTicketPdf(data: TicketData): Promise<Uint8Array> {
   page.drawText(spaced("TARIF"), { x: left, y, size: 7, font: helvetica, color: TAUPE });
   drawRight(page, data.price, right, y - 4, timesBold, 16, BRONZE);
   y -= 20;
-  page.drawText("À régler sur place — ce ticket ne vaut pas facture.", {
-    x: left,
-    y,
-    size: 7.5,
-    font: helvetica,
-    color: TAUPE,
-  });
+  if (data.deposit) {
+    page.drawText(spaced("ACOMPTE RÉGLÉ EN LIGNE"), { x: left, y, size: 7, font: helvetica, color: TAUPE });
+    drawRight(page, data.deposit.paidLabel, right, y - 2, timesBold, 12.5, BRONZE);
+    y -= 18;
+    if (data.deposit.remainderLabel) {
+      page.drawText(spaced("RESTE À RÉGLER SUR PLACE"), { x: left, y, size: 7, font: helvetica, color: TAUPE });
+      drawRight(page, data.deposit.remainderLabel, right, y - 2, times, 12.5, ESPRESSO);
+      y -= 18;
+    }
+    page.drawText("Acompte bien reçu — voir la facture d'acompte jointe à l'email.", {
+      x: left,
+      y,
+      size: 7.5,
+      font: helvetica,
+      color: TAUPE,
+    });
+  } else {
+    page.drawText("À régler sur place — ce ticket ne vaut pas facture.", {
+      x: left,
+      y,
+      size: 7.5,
+      font: helvetica,
+      color: TAUPE,
+    });
+  }
 
   /* — Séparation pointillée façon billet — */
   y -= 26;
@@ -173,7 +197,7 @@ export async function buildTicketPdf(data: TicketData): Promise<Uint8Array> {
   y -= 26;
   drawCentered(page, "Présentez ce ticket (ou votre référence) à votre arrivée.", y, times, 10.5, ESPRESSO);
   y -= 18;
-  drawCentered(page, spaced("LUNDI – SAMEDI · 10H00 – 17H00"), y, helvetica, 6.5, TAUPE);
+  drawCentered(page, spaced(CONTACT.scheduleLabel.toUpperCase()), y, helvetica, 6.5, TAUPE);
   y -= 12;
   drawCentered(page, spaced("SAINT-QUENTIN · SUR RENDEZ-VOUS"), y, helvetica, 6.5, TAUPE);
   y -= 20;

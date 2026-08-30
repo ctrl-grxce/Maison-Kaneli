@@ -29,7 +29,13 @@ create table if not exists public.bookings (
   phone         text not null,
   notes         text,
   status        text not null default 'pending'
-                check (status in ('pending', 'confirmed', 'cancelled')),
+                check (status in ('pending', 'awaiting_payment', 'confirmed', 'cancelled')),
+  -- Paiement de l'acompte en ligne (docs/PAIEMENT.md) :
+  deposit_cents     int not null default 0 check (deposit_cents >= 0),
+  stripe_session_id text,
+  expires_at        timestamptz,
+  paid_at           timestamptz,
+  invoice_number    text,
   constraint bookings_time_valid check (end_time > start_time),
   -- Deux rendez-vous actifs ne peuvent jamais se chevaucher.
   constraint bookings_no_overlap exclude using gist (
@@ -38,6 +44,9 @@ create table if not exists public.bookings (
 );
 
 alter table public.bookings enable row level security;
+
+-- Numérotation continue des factures d'acompte (obligation légale).
+create sequence if not exists public.facture_acompte_seq;
 
 -- ── Demandes de formation ──────────────────────────────────────────────────
 create table if not exists public.formation_requests (
@@ -67,7 +76,13 @@ as $$
   select b.start_time, b.end_time
   from public.bookings b
   where b.booking_date = p_date
-    and b.status <> 'cancelled';
+    and b.status <> 'cancelled'
+    -- Un blocage de paiement expiré ne bloque plus le créneau :
+    and not (
+      b.status = 'awaiting_payment'
+      and b.expires_at is not null
+      and b.expires_at < now()
+    );
 $$;
 
 -- ── RPC : création atomique d'un rendez-vous ───────────────────────────────
@@ -84,7 +99,11 @@ create or replace function public.create_booking(
   p_last_name    text,
   p_email        text,
   p_phone        text,
-  p_notes        text
+  p_notes        text,
+  -- Paiement de l'acompte (optionnels — les appels historiques restent valides) :
+  p_status        text default 'pending',
+  p_deposit_cents int default 0,
+  p_expires_at    timestamptz default null
 )
 returns uuid
 language plpgsql
@@ -94,15 +113,32 @@ as $$
 declare
   v_id uuid;
 begin
+  if p_status not in ('pending', 'awaiting_payment') then
+    raise exception 'BAD_STATUS';
+  end if;
+
+  -- Libère les blocages de paiement expirés qui chevauchent ce créneau —
+  -- sinon la contrainte d'exclusion refuserait un créneau pourtant libre.
+  update public.bookings
+     set status = 'cancelled'
+   where status = 'awaiting_payment'
+     and expires_at is not null
+     and expires_at < now()
+     and booking_date = p_date
+     and tsrange(booking_date + start_time, booking_date + end_time)
+         && tsrange(p_date + p_start_time, p_date + p_end_time);
+
   insert into public.bookings (
     service_id, service_name, brand, price_label, duration_min,
     booking_date, start_time, end_time,
-    first_name, last_name, email, phone, notes
+    first_name, last_name, email, phone, notes,
+    status, deposit_cents, expires_at
   )
   values (
     p_service_id, p_service_name, p_brand, p_price_label, p_duration_min,
     p_date, p_start_time, p_end_time,
-    p_first_name, p_last_name, p_email, p_phone, nullif(p_notes, '')
+    p_first_name, p_last_name, p_email, p_phone, nullif(p_notes, ''),
+    p_status, p_deposit_cents, p_expires_at
   )
   returning id into v_id;
 
@@ -111,6 +147,80 @@ exception
   when exclusion_violation then
     raise exception 'SLOT_TAKEN';
 end;
+$$;
+
+-- ── RPC : relier une réservation à sa session de paiement Stripe ───────────
+create or replace function public.attach_stripe_session(
+  p_id         uuid,
+  p_session_id text
+)
+returns void
+language sql
+security definer
+set search_path = public
+as $$
+  update public.bookings
+     set stripe_session_id = p_session_id
+   where id = p_id
+     and status = 'awaiting_payment';
+$$;
+
+-- ── RPC : confirmation après paiement — IDEMPOTENTE ────────────────────────
+-- Ne confirme qu'une seule fois (si Stripe notifie deux fois, le second appel
+-- ne renvoie aucune ligne → aucun email en double). Attribue le numéro de
+-- facture d'acompte (séquence continue) à ce moment-là.
+create or replace function public.confirm_paid_booking(
+  p_id         uuid,
+  p_session_id text
+)
+returns setof public.bookings
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  return query
+  update public.bookings
+     set status  = 'confirmed',
+         paid_at = now(),
+         invoice_number = coalesce(
+           invoice_number,
+           'FA-' || to_char(now() at time zone 'Europe/Paris', 'YYYY') || '-'
+                 || lpad(nextval('public.facture_acompte_seq')::text, 4, '0')
+         )
+   where id = p_id
+     and status = 'awaiting_payment'
+     and (stripe_session_id is null or stripe_session_id = p_session_id)
+  returning *;
+end;
+$$;
+
+-- ── RPC : libérer un blocage de paiement (abandon ou expiration) ───────────
+-- N'agit QUE sur « awaiting_payment » : une réservation confirmée ou payée
+-- ne peut jamais être annulée par ce chemin.
+create or replace function public.cancel_payment_hold(p_id uuid)
+returns boolean
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  update public.bookings
+     set status = 'cancelled'
+   where id = p_id
+     and status = 'awaiting_payment';
+  return found;
+end;
+$$;
+
+-- ── RPC : statut d'une réservation (page de merci — aucune donnée perso) ───
+create or replace function public.get_booking_status(p_id uuid)
+returns text
+language sql
+security definer
+set search_path = public
+as $$
+  select b.status from public.bookings b where b.id = p_id;
 $$;
 
 -- ── RPC : demande d'inscription à une formation ────────────────────────────

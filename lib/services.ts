@@ -377,3 +377,62 @@ export function bookingPriceLabel(service: Service): string {
   const promo = activePromo(service);
   return promo ? `${promo.price} · offre ${promo.until}` : service.price;
 }
+
+/* ── Acomptes (paiement en ligne — docs/PAIEMENT.md) ─────────────────────── */
+
+/** Montants d'acompte par catégorie, en CENTIMES (jamais de virgule
+ *  flottante pour de l'argent). Décision Gradi du 30/08/2026 :
+ *  ongles 20 € · maquillage 30 € · cils 20 €. */
+export const DEPOSIT_CENTS: Record<Category, number> = {
+  ongles: 2000,
+  maquillage: 3000,
+  cils: 2000,
+};
+
+/** Prestations SANS acompte en ligne :
+ *  · la dépose — tout se règle sur place (décision Gradi du 30/08/2026) ;
+ *  · les prestations mariées — passeront « sur devis », en attente des
+ *    précisions de Gradi (30/08/2026) : circuit historique en attendant. */
+const NO_DEPOSIT_SERVICE_IDS = new Set([
+  "depose-cils",
+  "mariee-essai",
+  "mariee-jour-j",
+]);
+
+/** Acompte à régler en ligne pour une prestation, en centimes. */
+export function depositCentsFor(service: Service): number {
+  if (NO_DEPOSIT_SERVICE_IDS.has(service.id)) return 0;
+  return DEPOSIT_CENTS[service.category] ?? 0;
+}
+
+/** 2000 → « 20 € » · 2050 → « 20,50 € ». */
+export function formatEuros(cents: number): string {
+  const euros = Math.floor(cents / 100);
+  const rest = cents % 100;
+  return rest === 0
+    ? `${euros} €`
+    : `${euros},${String(rest).padStart(2, "0")} €`;
+}
+
+/** Montant en centimes lu dans un libellé de tarif (« 40 € », « 40 € · offre
+ *  jusqu'à fin octobre »…). `null` si le tarif n'est pas un montant fixe
+ *  (« Sur demande », « À partir de 50 € »). */
+export function parsePriceCents(label: string): number | null {
+  const match = label.trim().match(/^(\d+)(?:[.,](\d{1,2}))?\s*€/);
+  if (!match) return null;
+  const euros = Number(match[1]);
+  const cents = match[2] ? Number(match[2].padEnd(2, "0")) : 0;
+  return euros * 100 + cents;
+}
+
+/** Reste à régler sur place (« 20 € ») une fois l'acompte déduit — `null`
+ *  quand le tarif n'est pas un montant fixe : on n'affiche alors que
+ *  l'acompte. */
+export function remainderLabelFor(
+  priceLabel: string,
+  depositCents: number,
+): string | null {
+  const priceCents = parsePriceCents(priceLabel);
+  if (priceCents === null || priceCents < depositCents) return null;
+  return formatEuros(priceCents - depositCents);
+}
