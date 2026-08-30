@@ -144,7 +144,8 @@ export const SERVICES: Service[] = [
     description:
       "Répétition complète de votre mise en beauté, en amont du grand jour.",
     durationMin: 90,
-    price: "80 €",
+    /* Sur devis — décision des fondatrices du 30/08/2026 (avant : 80 €). */
+    price: "Sur devis",
   },
   {
     id: "mariee-jour-j",
@@ -154,7 +155,8 @@ export const SERVICES: Service[] = [
     description:
       "Mise en beauté du jour J. Faux cils naturel +5 €, volume +10 €.",
     durationMin: 90,
-    price: "80 €",
+    /* Sur devis — décision des fondatrices du 30/08/2026 (avant : 80 €). */
+    price: "Sur devis",
   },
   {
     id: "naturel-basic",

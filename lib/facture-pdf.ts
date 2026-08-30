@@ -225,7 +225,16 @@ export async function buildFacturePdf(data: FactureData): Promise<Uint8Array> {
     y -= 12;
     drawCentered(page, LEGAL.vatNote, y, helvetica, 7.5, TAUPE);
   }
-  y -= 16;
+  y -= 14;
+  drawCentered(
+    page,
+    `Question ou demande de remboursement : ${CONTACT.emailPublic}`,
+    y,
+    times,
+    9,
+    ESPRESSO,
+  );
+  y -= 14;
   drawCentered(
     page,
     "Facture générée automatiquement à la confirmation du paiement.",

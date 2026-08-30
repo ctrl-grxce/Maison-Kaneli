@@ -51,7 +51,21 @@ Ensuite, dans l'ordre voulu : **retouches design** (Gradi précisera), puis
    - `lib/stripe.ts` (session Checkout 31 min, interrupteur), `lib/facture-pdf.ts` (facture A5 charte), ticket PDF avec bloc acompte (+ bug horaires 17h corrigé), emails « confirmé + 3 pièces jointes »
    - Routes : aiguillage `/api/bookings`, webhook signé `/api/stripe/webhook`, `/api/bookings/status`, `/api/bookings/cancel-hold`
    - Tunnel : récapitulatif acompte/reste, bouton « Payer l'acompte (X €) et réserver », redirection Stripe ; pages retour `/rendez-vous/confirmation` (vérification live) et `/rendez-vous/annule`
-6. [ ] **Prochaine séance** : Gradi crée le compte Stripe test + colle `STRIPE_SECRET_KEY` (test) dans `.env.local` → appliquer la migration Supabase (OK Gradi) → test local complet carte `4242…` → configurer le webhook → préview Vercel — jamais directement en prod
+6. [x] **Compte Stripe test créé par Gradi le 30/08** (« Maison K test ») + clé `sk_test_` collée dans `.env.local` par Gradi, validée (200 OK) ; `PAYMENTS_ENABLED=1` en local uniquement
+6b. **ORDRE CONVENU le 30/08 (avant l'appel avec les fondatrices)** :
+   ① appel : valider les PRIX des acomptes (20/30/20, dépose 0) + mariée « sur devis » →
+   ② appel : politique de remboursement/annulation (+ SIRET/adresse si possible) →
+   ③ ✅ **Réponses rapportées par Gradi (30/08, appel fondatrices)** :
+      · maquillage mariée → **SUR DEVIS** (retirer les 80 € du catalogue) ;
+      · annulation possible **jusqu'à 48h avant** le rendez-vous — en dessous,
+        l'acompte est perdu (mécanique de remboursement à détailler plus tard) ;
+      · afficher « En cas de question ou de demande de remboursement,
+        contactez maisonkanali@gmail.com » sur la page de confirmation de
+        paiement ET sur la facture d'acompte.
+      → à IMPLÉMENTER au début de l'étape ④, avant le test →
+   ④ test complet en mode test (migration Supabase avec OK Gradi + carte 4242, puis webhook, puis préview Vercel — jamais directement en prod) →
+   ⑤ création du Stripe OFFICIEL des fondatrices (guidée ; pièce d'identité + SIRET + IBAN) →
+   ⑥ espace rendez-vous : à voir après, si validé
 7. [ ] **Plus tard, pour allumer en vrai** (décision Gradi) : compte Stripe officiel de la maison (SIRET/IBAN de Kandy & Nafi), clés réelles, coordonnées légales dans `LEGAL` (lib/config.ts) + CGV (→ conformité), et sans doute Vercel Pro 20 $/m + Supabase Pro 25 $/m
 
 ### ② Conformité (après ①)

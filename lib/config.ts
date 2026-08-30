@@ -36,6 +36,9 @@ export const OPENING_HOURS_ISO = {
 export const CONTACT = {
   city: "Saint-Quentin",
   region: "Hauts-de-France",
+  /** Email public de la maison — affiché pour les questions et demandes de
+   *  remboursement (page de confirmation de paiement, facture d'acompte). */
+  emailPublic: "maisonkanali@gmail.com",
   /** « Lundi – Samedi · 10h00 – 18h00 » — dérivé de OPENING. */
   scheduleLabel: `Lundi – Samedi · ${toFr(OPENING.openMinutes)} – ${toFr(OPENING.closeMinutes)}`,
   /** Ligne « jours » et ligne « heures » séparées (page À propos). */

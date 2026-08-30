@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { formatDateFr, formatTimeFr } from "@/lib/utils";
+import { CONTACT } from "@/lib/config";
 import { CheckIcon } from "@/components/ui/icons";
 import { PaymentStatus } from "@/components/booking/PaymentStatus";
 
@@ -114,7 +115,19 @@ export default async function ConfirmationPage({ searchParams }: PageProps) {
         </div>
 
         {isPaid && params.bid ? (
-          <PaymentStatus bookingId={params.bid} />
+          <>
+            <PaymentStatus bookingId={params.bid} />
+            <p className="mt-5 max-w-md text-[0.8rem] leading-relaxed text-taupe">
+              Une question ou une demande de remboursement ? Écrivez à{" "}
+              <a
+                href={`mailto:${CONTACT.emailPublic}`}
+                className="text-bronze underline decoration-bronze/40 underline-offset-2"
+              >
+                {CONTACT.emailPublic}
+              </a>
+              .
+            </p>
+          </>
         ) : (
           <p className="mt-7 max-w-md text-sm leading-relaxed text-taupe">
             {isFormation
