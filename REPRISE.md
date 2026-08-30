@@ -74,14 +74,18 @@ Ensuite, dans l'ordre voulu : **retouches design** (Gradi précisera), puis
      Gradi 30 €, FA-0002 et FA-0003 par Claude 20 € — parcours, blocage créneau,
      webhook 200, factures, page de confirmation + message remboursement : tout ✅ ;
      réservations-tests annulées ensuite, base propre).
-   · 🚨 **BUG CRITIQUE DÉCOUVERT grâce aux tests : GMAIL_APP_PASSWORD est
-     INVALIDE (11 caractères au lieu de 16) — en local ET sur Vercel
-     production → les emails du VRAI site sont en panne.** Aucune vraie
-     cliente touchée (0 réservation réelle depuis le 17/08). FIX en attente :
-     Gradi crée un NOUVEAU mot de passe d'application sur gradipalaba28@gmail.com
-     (myaccount.google.com/apppasswords) et le colle : ① .env.local ligne
-     GMAIL_APP_PASSWORD= ② Vercel (Production + Preview) → puis redeploy prod
-     (avec son GO) + un dernier test d'emails.
+   · 📧 **EMAILS DE PRODUCTION VÉRIFIÉS FONCTIONNELS le 31/08 ~1h** :
+     réservation-test Dépose MK-17F7E3 faite par Claude sur maisonkanali.fr →
+     email de confirmation REÇU (vérifié via le connecteur Gmail), puis
+     réservation annulée. Épisode résolu : la panne locale venait du fait que
+     GMAIL_APP_PASSWORD est une variable Vercel « sensible » (illisible en
+     pull — le pull renvoie un marqueur de 11 caractères, PAS la vraie
+     valeur) → ne JAMAIS diagnostiquer une variable sensible via env pull.
+     Gradi a recréé un mot de passe d'application le 31/08 et l'a collé sur
+     Vercel (Prod + Preview) + redéployé la prod lui-même. ⚠️ `.env.local`
+     contient toujours le marqueur invalide : pour de futurs tests d'emails
+     EN LOCAL, Gradi devra y coller le vrai mot de passe (ligne
+     GMAIL_APP_PASSWORD=) — pas bloquant.
    · Démo préview pour les sœurs : déployée (maison-kanali-95i6xrlja-…vercel.app,
      variables preview posées) mais **bloquée par la protection Vercel** —
      Gradi doit désactiver « Vercel Authentication » dans Settings →
