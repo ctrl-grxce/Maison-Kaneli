@@ -64,8 +64,33 @@ Ensuite, dans l'ordre voulu : **retouches design** (Gradi précisera), puis
         paiement ET sur la facture d'acompte.
       → à IMPLÉMENTER au début de l'étape ④, avant le test →
    ④ test complet en mode test (migration Supabase avec OK Gradi + carte 4242, puis webhook, puis préview Vercel — jamais directement en prod) →
-   ⑤ création du Stripe OFFICIEL des fondatrices (guidée ; pièce d'identité + SIRET + IBAN) →
+   ⑤ ✅ **Stripe OFFICIEL « Maison Kanali » créé ET configuré par les fondatrices
+      le 30/08** (SIRET/IBAN saisis par elles ; vérification Stripe possible sous
+      quelques jours — surveiller leurs emails). Consigne donnée : ne rien faire
+      dans leur dashboard (jamais « débiter un client manuellement ») ; les clés
+      réelles ne seront branchées qu'au lancement officiel →
    ⑥ espace rendez-vous : à voir après, si validé
+   · **④ TESTS LOCAUX COMPLETS RÉUSSIS le 30/08** (3 paiements 4242 : FA-2026-0001
+     Gradi 30 €, FA-0002 et FA-0003 par Claude 20 € — parcours, blocage créneau,
+     webhook 200, factures, page de confirmation + message remboursement : tout ✅ ;
+     réservations-tests annulées ensuite, base propre).
+   · 🚨 **BUG CRITIQUE DÉCOUVERT grâce aux tests : GMAIL_APP_PASSWORD est
+     INVALIDE (11 caractères au lieu de 16) — en local ET sur Vercel
+     production → les emails du VRAI site sont en panne.** Aucune vraie
+     cliente touchée (0 réservation réelle depuis le 17/08). FIX en attente :
+     Gradi crée un NOUVEAU mot de passe d'application sur gradipalaba28@gmail.com
+     (myaccount.google.com/apppasswords) et le colle : ① .env.local ligne
+     GMAIL_APP_PASSWORD= ② Vercel (Production + Preview) → puis redeploy prod
+     (avec son GO) + un dernier test d'emails.
+   · Démo préview pour les sœurs : déployée (maison-kanali-95i6xrlja-…vercel.app,
+     variables preview posées) mais **bloquée par la protection Vercel** —
+     Gradi doit désactiver « Vercel Authentication » dans Settings →
+     Deployment Protection (lien direct donné le 30/08).
+   · Infos légales (30/08, presque complètes) : statut **entrepreneur** ·
+     **SIREN 982944332** (⚠️ 9 chiffres — demander le SIRET complet 14 chiffres
+     + au nom de qui) · adresse : **19 chemin d'Harly, 02100 Saint-Quentin**
+     (Gradi a écrit « 0200 », corrigé en 02100 — à confirmer) · email officiel :
+     **maisonkanali@gmail.com**.
 7. [ ] **Plus tard, pour allumer en vrai** (décision Gradi) : compte Stripe officiel de la maison (SIRET/IBAN de Kandy & Nafi), clés réelles, coordonnées légales dans `LEGAL` (lib/config.ts) + CGV (→ conformité), et sans doute Vercel Pro 20 $/m + Supabase Pro 25 $/m
 
 ### ② Conformité (après ①)
