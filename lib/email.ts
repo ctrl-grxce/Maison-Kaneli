@@ -447,6 +447,147 @@ export async function sendBookingEmails(data: BookingEmailData): Promise<void> {
   }
 }
 
+/* ── Espace de gestion : annulation et déplacement ───────────────────────── */
+
+interface CancellationEmailData {
+  reference: string;
+  serviceName: string;
+  date: string;
+  time: string;
+  firstName: string;
+  email: string;
+  /** true si un acompte avait été réglé en ligne. */
+  depositPaid: boolean;
+}
+
+/** Contenu de l'email d'annulation envoyé à la cliente (pur — testable). */
+export function buildCancellationEmail(data: CancellationEmailData): {
+  subject: string;
+  html: string;
+} {
+  const dateLabel = formatDateFr(data.date);
+  return {
+    subject: `Votre rendez-vous du ${dateLabel} est annulé — Maison Kanali (${data.reference})`,
+    html: shell(
+      `Bonjour ${escapeHtml(data.firstName)},`,
+      `Maison Kanali doit malheureusement annuler votre réservation ` +
+        `<strong>${escapeHtml(data.serviceName)}</strong> prévue le ` +
+        `<strong>${escapeHtml(dateLabel)} à ${escapeHtml(formatTimeFr(data.time))}</strong> ` +
+        `(référence ${escapeHtml(data.reference)}). Nous sommes sincèrement désolées de ce contretemps.`,
+      `<div style="border:1px solid ${SAND};background-color:${IVORY};padding:20px 24px;font-size:14px;line-height:1.8;color:${ESPRESSO};font-family:Arial,sans-serif;">
+        Le créneau a été libéré. Vous pouvez choisir un nouveau moment qui vous convient en quelques clics sur
+        <a href="https://maisonkanali.fr/rendez-vous" style="color:${BRONZE};">maisonkanali.fr/rendez-vous</a> —
+        nous serons ravies de vous accueillir.
+      </div>`,
+      (data.depositPaid
+        ? `Un acompte avait été réglé en ligne pour cette réservation. En cas de question ou de demande de remboursement, écrivez à <a href="mailto:${CONTACT.emailPublic}" style="color:${BRONZE};">${CONTACT.emailPublic}</a>.<br /><br />`
+        : "") +
+        `Répondre à cet email écrit directement à Maison Kanali.`,
+    ),
+  };
+}
+
+/** Envoie l'email d'annulation à la cliente (décision de la maison). */
+export async function sendCancellationEmail(
+  data: CancellationEmailData,
+): Promise<void> {
+  const to = process.env.BOOKING_EMAIL_TO;
+  if (!emailConfigured() || !to) {
+    console.warn(
+      "[email] Transport ou BOOKING_EMAIL_TO manquant — email d'annulation non envoyé.",
+    );
+    return;
+  }
+  const email = buildCancellationEmail(data);
+  await sendEmail({
+    to: data.email,
+    replyTo: to,
+    subject: email.subject,
+    html: email.html,
+  });
+}
+
+interface RescheduleEmailData extends BookingEmailData {
+  /** Ancienne date et heure, pour rappel dans le message. */
+  previousDate: string;
+  previousTime: string;
+}
+
+/** Contenu de l'email de déplacement envoyé à la cliente (pur — testable). */
+export function buildRescheduleEmail(data: RescheduleEmailData): {
+  subject: string;
+  html: string;
+  ics: string;
+} {
+  const dateLabel = formatDateFr(data.date);
+  const previousLabel = `${formatDateFr(data.previousDate)} à ${formatTimeFr(data.previousTime)}`;
+
+  const ics = buildBookingIcs({
+    reference: data.reference,
+    serviceName: data.serviceName,
+    date: data.date,
+    startTime: data.time,
+    endTime: data.endTime,
+  });
+
+  return {
+    subject: `Votre rendez-vous est déplacé au ${dateLabel} — Maison Kanali (${data.reference})`,
+    html: shell(
+      `Bonjour ${escapeHtml(data.firstName)},`,
+      `Maison Kanali a déplacé votre réservation <strong>${escapeHtml(data.serviceName)}</strong>, ` +
+        `initialement prévue le ${escapeHtml(previousLabel)}. ` +
+        `Voici votre nouveau ticket — il remplace le précédent.`,
+      ticket(data),
+      `Votre nouveau <strong>ticket de réservation</strong> (PDF) et une <strong>invitation calendrier</strong> à jour sont joints à cet email. Pensez à supprimer l'ancien rendez-vous de votre agenda si vous l'y aviez ajouté.<br /><br />Ce nouvel horaire ne vous convient pas ? Répondez simplement à cet email.`,
+    ),
+    ics,
+  };
+}
+
+/** Envoie le nouveau ticket à la cliente après un déplacement. */
+export async function sendRescheduleEmail(
+  data: RescheduleEmailData,
+): Promise<void> {
+  const to = process.env.BOOKING_EMAIL_TO;
+  if (!emailConfigured() || !to) {
+    console.warn(
+      "[email] Transport ou BOOKING_EMAIL_TO manquant — email de déplacement non envoyé.",
+    );
+    return;
+  }
+  const email = buildRescheduleEmail(data);
+
+  let ticketPdf: Buffer | null = null;
+  try {
+    ticketPdf = Buffer.from(await buildTicketPdf(data));
+  } catch (pdfError) {
+    console.error("[email] Génération du ticket PDF échouée:", pdfError);
+  }
+
+  await sendEmail({
+    to: data.email,
+    replyTo: to,
+    subject: email.subject,
+    html: email.html,
+    attachments: [
+      ...(ticketPdf
+        ? [
+            {
+              filename: `ticket-${data.reference}.pdf`,
+              content: ticketPdf,
+              contentType: "application/pdf",
+            },
+          ]
+        : []),
+      {
+        filename: `rendez-vous-${data.reference}.ics`,
+        content: email.ics,
+        contentType: "text/calendar; charset=utf-8; method=PUBLISH",
+      },
+    ],
+  });
+}
+
 /* ── Formations ──────────────────────────────────────────────────────────── */
 
 /** Notification interne + accusé client pour une demande de formation. */

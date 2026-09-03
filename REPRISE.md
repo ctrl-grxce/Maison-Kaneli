@@ -6,14 +6,17 @@ jour à chaque avancée. Dernière mise à jour : **30/08/2026**.*
 
 ## 🚦 En ce moment
 
-**Phase en cours : ① Finalisation du site** (plan fixé par Gradi le 29/08 :
-finir la finition ce week-end, puis ② conformité, puis ③ référencement).
-
-**Chantier actif : paiement / acomptes.** Cadrage fait le 29/08 (3 options
-expliquées en profondeur, reco = Checkout Stripe hébergé + webhook), en attente
-des décisions de Gradi — voir « Chantier paiement » ci-dessous.
-Ensuite, dans l'ordre voulu : **retouches design** (Gradi précisera), puis
-**gestion des rendez-vous** (à cadrer et faire).
+**SPRINT DE LANCEMENT (plan fixé par Gradi le 03/09)** :
+- **03/09 avant 17h** : espace de gestion des rendez-vous (✅ CODÉ, voir
+  chantier ci-dessous) + retouches design (⏳ liste attendue de Gradi).
+- **03/09 à 17h30, appel fondatrices** : SIRET complet 14 chiffres + au nom
+  de qui + confirmer l'adresse « 19 chemin d'Harly, 02100 Saint-Quentin ».
+- **03/09 soir / 04/09** : cookies + mentions légales/CGV (conformité), puis
+  référencement. Objectif : le 04/09 il ne reste QUE juridique + référencement.
+- **Ensuite : LANCEMENT** (déploiement final sur accord de Gradi).
+- La démo préview pour les sœurs est ABANDONNÉE (décision Gradi 03/09 —
+  inutile de toucher à Vercel Authentication). Compression vidéo hero :
+  reportée (« on ne touche pas à la vidéo »).
 
 ## ✅ État du site — tout est en prod et fonctionne
 
@@ -35,8 +38,39 @@ Ensuite, dans l'ordre voulu : **retouches design** (Gradi précisera), puis
 
 - [ ] **Paiement / acomptes** → voir chantier détaillé ci-dessous
 - [ ] Retouches design (liste à préciser par Gradi)
-- [ ] Gestion des rendez-vous pour Kandy & Nafi (voir/annuler/déplacer — à cadrer ensemble après le paiement ; la base est prête : statuts `pending/confirmed/cancelled`)
-- [ ] Compresser `public/videos/hero.mp4` 11 MB → ~3 MB (ffmpeg-static dans le scratchpad, comme le 04/08)
+- [x] **Gestion des rendez-vous pour Kandy & Nafi — CODÉE le 03/09** → voir chantier ci-dessous
+- [ ] (reporté par Gradi) Compresser `public/videos/hero.mp4` 11 MB → ~3 MB (ffmpeg-static dans le scratchpad, comme le 04/08)
+
+### 📅 Chantier gestion des rendez-vous (état au 03/09)
+
+Cadrage validé par Gradi le 03/09 : page **/gestion** sur le site (rien à
+installer), accès par **code secret partagé** (`ADMIN_CODE`), périmètre
+complet **voir + annuler + déplacer + bloquer des indisponibilités**, emails
+automatiques à la cliente quand la maison annule ou déplace.
+
+1. [x] **Implémentation complète le 03/09** (43 tests verts, typecheck + build OK) :
+   - Migration `supabase/migrations/2026-09-03_gestion_rdv.sql` : table
+     `blocked_slots` (RLS sans policy), `get_taken_slots` inclut les plages
+     bloquées, `create_booking` les refuse (SLOT_TAKEN) — **PAS ENCORE
+     APPLIQUÉE** (avec l'OK de Gradi, en même temps que celle du paiement)
+   - `lib/gestion-auth.ts` : code secret + cookie signé HMAC 7 jours (5
+     essais/15 min par IP ; changer ADMIN_CODE déconnecte tout le monde)
+   - Routes `/api/gestion/*` (login, bookings, cancel, reschedule, blocked) —
+     clé **service_role** côté serveur uniquement (`getSupabaseAdmin`), rien
+     d'exposé à la clé anonyme
+   - Emails : annulation (sobre + lien re-réserver + contact remboursement si
+     acompte payé) et déplacement (nouveau ticket PDF + .ics)
+   - Écran `/gestion` mobile-first dans la charte : onglets Rendez-vous
+     (à venir/passés, annuler avec confirmation, déplacer via calendrier +
+     créneaux libres) et Indisponibilités (jour entier ou plage, note, retrait)
+   - `robots.txt` : /gestion interdit d'indexation (+ noindex sur la page)
+2. [ ] **Actions Gradi pour activer** :
+   ① coller la clé `service_role` dans `.env.local` (ligne préparée) — puis
+   Claude teste tout en local ; ② appliquer les 2 migrations Supabase (OK à
+   donner) ; ③ poser sur Vercel : `ADMIN_CODE` (le vrai code des filles) +
+   `SUPABASE_SERVICE_ROLE_KEY` (Production) — au moment du lancement
+3. [ ] Test complet en local (liste, annulation + email, déplacement + email,
+   blocage → créneaux retirés du site public)
 
 ### 💳 Chantier paiement (état au 30/08) — spec complète : `docs/PAIEMENT.md`
 
