@@ -9,8 +9,12 @@ jour à chaque avancée. Dernière mise à jour : **30/08/2026**.*
 **SPRINT DE LANCEMENT (plan fixé par Gradi le 03/09)** :
 - **03/09 avant 17h** : espace de gestion des rendez-vous (✅ CODÉ, voir
   chantier ci-dessous) + retouches design (⏳ liste attendue de Gradi).
-- **03/09 à 17h30, appel fondatrices** : SIRET complet 14 chiffres + au nom
-  de qui + confirmer l'adresse « 19 chemin d'Harly, 02100 Saint-Quentin ».
+- **03/09, appel fondatrices FAIT** : adresse confirmée (02100) ; SIRET 14
+  chiffres à venir (Gradi le donnera) ; **⚠️ elles passent en ASSOCIATION
+  loi 1901 — en cours de validation** (Gradi transmettra nom/RNA/adresse).
+  Conséquence actée : lancement possible sous le statut actuel (compte Stripe
+  vérifié), bascule des mentions légales + factures vers l'association quand
+  elle existera. Email de vérification Stripe non reçu mais compte annoncé bon.
 - **03/09 soir / 04/09** : cookies + mentions légales/CGV (conformité), puis
   référencement. Objectif : le 04/09 il ne reste QUE juridique + référencement.
 - **Ensuite : LANCEMENT** (déploiement final sur accord de Gradi).
@@ -64,13 +68,24 @@ automatiques à la cliente quand la maison annule ou déplace.
      (à venir/passés, annuler avec confirmation, déplacer via calendrier +
      créneaux libres) et Indisponibilités (jour entier ou plage, note, retrait)
    - `robots.txt` : /gestion interdit d'indexation (+ noindex sur la page)
-2. [ ] **Actions Gradi pour activer** :
-   ① coller la clé `service_role` dans `.env.local` (ligne préparée) — puis
-   Claude teste tout en local ; ② appliquer les 2 migrations Supabase (OK à
-   donner) ; ③ poser sur Vercel : `ADMIN_CODE` (le vrai code des filles) +
-   `SUPABASE_SERVICE_ROLE_KEY` (Production) — au moment du lancement
-3. [ ] Test complet en local (liste, annulation + email, déplacement + email,
-   blocage → créneaux retirés du site public)
+2. [x] **Migrations appliquées le 03/09** (via MCP Supabase, OK Gradi) — et
+   vérification faite : la migration PAIEMENT du 30/08 était déjà en place
+   (la note « pas encore appliquée » était périmée).
+3. [x] **Clé secrète Supabase collée par Gradi le 03/09** dans `.env.local`
+   (nouvelle « Secret key » `sb_secret_…`, équivalent service_role).
+4. [x] **TEST COMPLET LOCAL RÉUSSI le 03/09 ~18h** : connexion (mauvais code
+   refusé), liste réelle, déplacement 06/10→17/09 ✅, blocage jour entier →
+   0 créneau public + POST direct refusé 409 ✅, retrait → 16 créneaux de
+   retour ✅, annulation ✅ (réservation-test MK-DF4571 créée puis annulée par
+   Claude ; base propre). Les emails locaux ne partent pas (GMAIL_APP_PASSWORD
+   local = marqueur invalide, connu) : l'écran l'affiche honnêtement ; contenus
+   couverts par les tests, envoi réel déjà validé en prod le 31/08.
+   Amélioration au passage : « À venir » masque annulées/paiements non aboutis,
+   onglet « Passés & annulés » les regroupe (même futures).
+5. [ ] **Au lancement (Gradi, dashboard Vercel, env Production)** :
+   `SUPABASE_SERVICE_ROLE_KEY` (la même clé secrète) + `ADMIN_CODE` (le vrai
+   code des filles) — puis déployer, et donner l'adresse /gestion + le code à
+   Kandy & Nafi.
 
 ### 💳 Chantier paiement (état au 30/08) — spec complète : `docs/PAIEMENT.md`
 

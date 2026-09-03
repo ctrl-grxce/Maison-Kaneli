@@ -811,7 +811,7 @@ export function GestionApp() {
             {(
               [
                 ["upcoming", "À venir"],
-                ["past", "Passés"],
+                ["past", "Passés & annulés"],
               ] as const
             ).map(([key, label]) => (
               <button
@@ -844,7 +844,7 @@ export function GestionApp() {
             <p className="mt-8 text-center text-sm text-taupe">
               {scope === "upcoming"
                 ? "Aucune réservation à venir pour le moment."
-                : "Aucune réservation passée sur les 4 derniers mois."}
+                : "Aucune réservation passée ou annulée sur les 4 derniers mois."}
             </p>
           )}
 

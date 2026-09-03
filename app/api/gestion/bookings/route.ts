@@ -30,8 +30,10 @@ export async function GET(request: Request) {
       .order("booking_date", { ascending: true })
       .order("start_time", { ascending: true });
   } else {
+    /* « Passés & annulés » : l'historique récent + toute annulation, même
+       future (pour vérifier qu'une annulation a bien été prise en compte). */
     query = query
-      .lt("booking_date", today)
+      .or(`booking_date.lt.${today},status.eq.cancelled`)
       .gte("booking_date", addDays(today, -120))
       .order("booking_date", { ascending: false })
       .order("start_time", { ascending: false })
@@ -47,16 +49,23 @@ export async function GET(request: Request) {
     );
   }
 
-  const bookings = (data ?? []).map((row) => ({
-    ...row,
-    reference: bookingReference(String(row.id)),
-    /* Un blocage de paiement expiré n'est plus une réservation : affiché
-       « expirée » côté écran, aucune action possible. */
-    expired:
-      row.status === "awaiting_payment" &&
-      Boolean(row.expires_at) &&
-      new Date(String(row.expires_at)).getTime() < Date.now(),
-  }));
+  const bookings = (data ?? [])
+    .map((row) => ({
+      ...row,
+      reference: bookingReference(String(row.id)),
+      /* Un blocage de paiement expiré n'est plus une réservation : affiché
+         « paiement non abouti », aucune action possible. */
+      expired:
+        row.status === "awaiting_payment" &&
+        Boolean(row.expires_at) &&
+        new Date(String(row.expires_at)).getTime() < Date.now(),
+    }))
+    /* « À venir » ne montre que l'agenda réel : les annulées et les
+       paiements non aboutis restent consultables dans « Passés ». */
+    .filter(
+      (row) =>
+        scope === "past" || (row.status !== "cancelled" && !row.expired),
+    );
 
   return NextResponse.json({ today, scope, bookings });
 }
