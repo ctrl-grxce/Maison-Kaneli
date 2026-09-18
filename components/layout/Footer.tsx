@@ -19,6 +19,7 @@ const COLUMNS = [
       { href: "/formations", label: "Formations professionnelles" },
       { href: "/a-propos", label: "À propos" },
       { href: "/mentions-legales", label: "Mentions légales" },
+      { href: "/cgv", label: "Conditions générales de vente" },
       { href: "/confidentialite", label: "Confidentialité & cookies" },
     ],
   },

@@ -50,17 +50,31 @@ export const CONTACT = {
 } as const;
 
 /**
- * Coordonnées légales de la maison — utilisées sur la facture d'acompte
- * (docs/PAIEMENT.md). ⚠️ À compléter en phase conformité (adresse exacte,
- * SIRET, mention TVA selon le statut) : le paiement réel ne s'allumera pas
- * tant que ces champs sont vides.
+ * Identité légale de la maison — source unique pour les mentions légales,
+ * les CGV et la facture d'acompte PDF (docs/PAIEMENT.md).
+ *
+ * Renseignée le 18/09/2026 par Gradi : la structure est une **association
+ * loi 1901 à but non lucratif**, déclarée en préfecture de l'Aisne.
+ * Modifier ces valeurs ici suffit : les trois pages et le PDF suivent.
  */
 export const LEGAL = {
+  /** Nom exact déclaré en préfecture (récépissé W023006110). */
   businessName: "Maison Kanali",
-  address: null as string | null,
-  siret: null as string | null,
-  /** Ex. « TVA non applicable, art. 293 B du CGI » — à trancher selon le statut. */
-  vatNote: null as string | null,
+  /** Forme juridique, affichée telle quelle. */
+  legalForm: "Association loi 1901 à but non lucratif",
+  /** Numéro RNA (Répertoire National des Associations). */
+  rna: "W023006110",
+  /** SIRET (14 chiffres) — identifie l'établissement auprès de l'INSEE. */
+  siret: "98294433200013" as string | null,
+  /** Siège social — obligatoire sur une facture et en mentions légales. */
+  address: "19 chemin d'Harly, 02100 Saint-Quentin" as string | null,
+  /** Pays du siège : détermine le droit applicable (cf. CGV). */
+  country: "France",
+  /** Franchise en base : l'association ne facture pas de TVA. La mention est
+   *  légalement obligatoire sur chaque facture émise. */
+  vatNote: "TVA non applicable — article 293 B du CGI" as string | null,
+  /** Représentante légale & directrice de la publication. */
+  representative: "Viminde Kandy",
 } as const;
 
 export const SITE = {

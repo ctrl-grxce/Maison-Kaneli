@@ -127,6 +127,17 @@ export default async function ConfirmationPage({ searchParams }: PageProps) {
               </a>
               .
             </p>
+            <p className="mt-2 max-w-md text-[0.8rem] leading-relaxed text-taupe">
+              Annulation ou report sans frais jusqu’à 48 h avant le rendez-vous —
+              au-delà, l’acompte reste acquis. Détail dans nos{" "}
+              <Link
+                href="/cgv"
+                className="text-bronze underline decoration-bronze/40 underline-offset-2"
+              >
+                conditions générales de vente
+              </Link>
+              .
+            </p>
           </>
         ) : (
           <p className="mt-7 max-w-md text-sm leading-relaxed text-taupe">

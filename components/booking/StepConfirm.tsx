@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { formatDateFr, formatDuration, formatTimeFr } from "@/lib/utils";
 import {
   BRAND_LABELS,
@@ -103,6 +104,21 @@ export function StepConfirm({
             : "En confirmant, votre créneau est réservé et Maison Kanali reçoit immédiatement votre demande. Vous recevrez la confirmation définitive par email ou téléphone."
           : "En envoyant votre demande, Maison Kanali est immédiatement notifiée et vous recontacte pour convenir des dates et modalités de votre formation."}
       </p>
+
+      {mode === "prestation" && depositCents > 0 && (
+        <p className="mt-3 text-xs leading-relaxed text-taupe">
+          Annulation ou report possible sans frais jusqu’à 48 h avant le
+          rendez-vous — au-delà, l’acompte reste acquis. En confirmant, vous
+          acceptez nos{" "}
+          <Link
+            href="/cgv"
+            className="underline underline-offset-2 transition-colors duration-300 hover:text-espresso"
+          >
+            conditions générales de vente
+          </Link>
+          .
+        </p>
+      )}
     </div>
   );
 }

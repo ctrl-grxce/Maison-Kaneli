@@ -158,7 +158,7 @@ export async function buildFacturePdf(data: FactureData): Promise<Uint8Array> {
       thickness: 0.6,
       color: SAND,
     });
-    y -= 19;
+    y -= 15;
   }
 
   /* — Montants — */
@@ -168,7 +168,7 @@ export async function buildFacturePdf(data: FactureData): Promise<Uint8Array> {
   y -= 24;
   page.drawText(spaced("ACOMPTE RÉGLÉ EN LIGNE"), { x: left, y, size: 7, font: helvetica, color: TAUPE });
   drawRight(page, data.depositLabel, right, y - 4, timesBold, 16, BRONZE);
-  y -= 24;
+  y -= 22;
   if (data.remainderLabel) {
     page.drawText(spaced("RESTE À RÉGLER SUR PLACE"), { x: left, y, size: 7, font: helvetica, color: TAUPE });
     drawRight(page, data.remainderLabel, right, y - 2, times, 12, ESPRESSO);
@@ -191,7 +191,7 @@ export async function buildFacturePdf(data: FactureData): Promise<Uint8Array> {
   });
 
   /* — Séparation pointillée — */
-  y -= 22;
+  y -= 18;
   page.drawLine({
     start: { x: INSET + 10, y },
     end: { x: WIDTH - INSET - 10, y },
@@ -201,9 +201,11 @@ export async function buildFacturePdf(data: FactureData): Promise<Uint8Array> {
   });
 
   /* — Pied : coordonnées légales — */
-  y -= 24;
+  y -= 18;
   drawCentered(page, LEGAL.businessName, y, timesBold, 10.5, ESPRESSO);
-  y -= 14;
+  y -= 12;
+  drawCentered(page, LEGAL.legalForm, y, times, 8, TAUPE);
+  y -= 12;
   drawCentered(
     page,
     LEGAL.address ?? `${CONTACT.city} (${CONTACT.region})`,
@@ -212,20 +214,25 @@ export async function buildFacturePdf(data: FactureData): Promise<Uint8Array> {
     9,
     TAUPE,
   );
-  y -= 13;
+  y -= 12;
   drawCentered(
     page,
-    LEGAL.siret ? `SIRET : ${LEGAL.siret}` : "SIRET : à compléter",
+    [
+      LEGAL.siret ? `SIRET : ${LEGAL.siret}` : null,
+      `RNA : ${LEGAL.rna}`,
+    ]
+      .filter(Boolean)
+      .join("  ·  "),
     y,
     helvetica,
     7.5,
     TAUPE,
   );
   if (LEGAL.vatNote) {
-    y -= 12;
+    y -= 11;
     drawCentered(page, LEGAL.vatNote, y, helvetica, 7.5, TAUPE);
   }
-  y -= 14;
+  y -= 13;
   drawCentered(
     page,
     `Question ou demande de remboursement : ${CONTACT.emailPublic}`,
@@ -234,7 +241,7 @@ export async function buildFacturePdf(data: FactureData): Promise<Uint8Array> {
     9,
     ESPRESSO,
   );
-  y -= 14;
+  y -= 13;
   drawCentered(
     page,
     "Facture générée automatiquement à la confirmation du paiement.",
