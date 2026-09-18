@@ -25,7 +25,8 @@ export interface Service {
    *  cette date, la promo disparaît toute seule de l'affichage. */
   promo?: { price: string; until: string; endsOn: string };
   /** Acompte imposé pour cette prestation, en centimes — prime sur le montant
-   *  de la catégorie. Sert à la prestation de test à 1 €. */
+   *  de la catégorie. A servi à la prestation de test à 1 € du 18/09/2026
+   *  (retirée après validation du paiement réel) ; gardé pour un futur test. */
   depositCentsOverride?: number;
   /** Prestation de test interne : réservable dans le tunnel, mais JAMAIS
    *  affichée sur les pages vitrines (cf. `servicesByCategory`). */
@@ -82,23 +83,6 @@ export const CATEGORIES: CategoryInfo[] = [
 
 export const SERVICES: Service[] = [
   /* ── Onglerie — Kandylove Beauty (carte août 2026) ───────────────────── */
-  /* Prestation de TEST — demandée par Gradi le 18/09/2026 pour vérifier le
-   *  paiement réel de bout en bout sans dépenser 20 € à chaque essai.
-   *  `isTest` la garde hors des pages vitrines : elle n'apparaît que dans le
-   *  tunnel de réservation.
-   *  ⚠️ À SUPPRIMER une fois les tests terminés — effacer ce bloc suffit. */
-  {
-    id: "test-paiement-1-euro",
-    brand: "kandylove",
-    category: "ongles",
-    name: "Test technique (équipe Maison Kanali)",
-    description:
-      "Créneau de test réservé à l'équipe pour vérifier le paiement en ligne. Merci de ne pas le réserver.",
-    durationMin: 30,
-    price: "1 €",
-    depositCentsOverride: 100,
-    isTest: true,
-  },
   {
     id: "manucure-semi",
     brand: "kandylove",

@@ -24,17 +24,17 @@ describe("depositCentsFor", () => {
     }
   });
 
-  it("respecte l'acompte imposé de la prestation de test (1 €)", () => {
-    const test = SERVICES.find((s) => s.id === "test-paiement-1-euro");
-    expect(test).toBeDefined();
-    expect(depositCentsFor(test!)).toBe(100);
+  it("respecte un acompte imposé (depositCentsOverride)", () => {
+    const fictive = { ...SERVICES[0], id: "fictive", price: "1 €", depositCentsOverride: 100 };
+    expect(depositCentsFor(fictive)).toBe(100);
     /* Acompte = tarif : aucun reste à régler sur place. */
-    expect(remainderLabelFor(test!.price, 100)).toBeNull();
+    expect(remainderLabelFor(fictive.price, 100)).toBeNull();
   });
 
-  it("garde la prestation de test hors des pages vitrines", () => {
+  it("n'affiche jamais une prestation de test sur les vitrines", () => {
     expect(servicesByCategory("ongles").some((s) => s.isTest)).toBe(false);
-    expect(SERVICES.some((s) => s.isTest)).toBe(true);
+    /* La prestation à 1 € du 18/09 a bien été retirée du catalogue. */
+    expect(SERVICES.some((s) => s.isTest)).toBe(false);
   });
 
   it("demande 30 € d'acompte pour le maquillage (hors mariée)", () => {

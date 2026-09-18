@@ -1,3 +1,4 @@
+import { createHash, timingSafeEqual } from "crypto";
 import { NextResponse } from "next/server";
 import { recordThreat, lockLevel } from "@/lib/lockdown";
 import { sendSecurityAlert, type ThreatEvent } from "@/lib/security-alert";
@@ -13,9 +14,21 @@ export const dynamic = "force-dynamic";
  * Route protégée par un secret partagé : sans le bon en-tête `x-mk-guard`,
  * on ne fait rien (un tiers ne peut donc pas fausser le compteur).
  */
+/** Comparaison en temps constant, sur des empreintes de taille fixe : la
+ *  longueur du secret ne fuit pas par chronométrage. */
+function sameSecret(received: string, expected: string): boolean {
+  const a = createHash("sha256").update(received).digest();
+  const b = createHash("sha256").update(expected).digest();
+  return timingSafeEqual(a, b);
+}
+
 export async function POST(request: Request) {
-  const secret = process.env.SECURITY_REPORT_SECRET;
-  if (secret && request.headers.get("x-mk-guard") !== secret) {
+  /* FERMÉ par défaut : auparavant, un secret absent laissait passer tout le
+     monde — et chaque signalement fait monter le cadenas, qui peut suspendre
+     les réservations. Un tiers aurait eu un bouton « éteindre la boutique »
+     (relevé par l'audit du 18/09). Sans secret configuré, on n'accepte rien. */
+  const secret = process.env.SECURITY_REPORT_SECRET?.replace(/^﻿/, "").trim();
+  if (!secret || !sameSecret(request.headers.get("x-mk-guard") ?? "", secret)) {
     return new NextResponse(null, { status: 204 });
   }
 

@@ -24,7 +24,9 @@ function report(
   event: NextFetchEvent,
   detail: { path: string; reason: string; ip: string },
 ): void {
-  const secret = process.env.SECURITY_REPORT_SECRET;
+  /* Nettoyé exactement comme dans /api/security/report : un BOM ou un espace
+     collé avec la variable ferait échouer la comparaison sans bruit. */
+  const secret = process.env.SECURITY_REPORT_SECRET?.replace(/^﻿/, "").trim();
   const payload = {
     path: detail.path,
     reason: detail.reason,
