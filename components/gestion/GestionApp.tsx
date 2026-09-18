@@ -85,8 +85,6 @@ interface BlockedRow {
   start_time: string | null;
   end_time: string | null;
   reason: string | null;
-  /** null = les deux pôles (showroom fermé). */
-  brand: "kandylove" | "naftali" | null;
 }
 
 interface Slot {
@@ -557,12 +555,6 @@ function BlockedTab({ notify }: { notify: (message: string) => void }) {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [day, setDay] = useState("");
   const [wholeDay, setWholeDay] = useState(true);
-  /* Qui est indisponible. `null` ferme le showroom pour les deux — c'est le
-     cas le plus rare, donc pas la valeur par défaut : Nafi a signalé le
-     18/09 que bloquer ses cils fermait aussi les ongles de Kandy. */
-  const [brand, setBrand] = useState<"kandylove" | "naftali" | null>(
-    "kandylove",
-  );
   const [startTime, setStartTime] = useState(minutesToTime(OPENING.openMinutes));
   const [endTime, setEndTime] = useState(minutesToTime(OPENING.closeMinutes));
   const [reason, setReason] = useState("");
@@ -594,7 +586,6 @@ function BlockedTab({ notify }: { notify: (message: string) => void }) {
         method: "POST",
         body: JSON.stringify({
           day,
-          brand,
           ...(wholeDay ? {} : { startTime, endTime }),
           ...(reason.trim() ? { reason: reason.trim() } : {}),
         }),
@@ -649,38 +640,6 @@ function BlockedTab({ notify }: { notify: (message: string) => void }) {
               className="mt-2 w-full border border-sand-deep bg-ivory px-3 py-2.5 text-sm outline-none focus:border-bronze"
             />
           </div>
-          <div className="sm:col-span-2">
-            <span className="field-label">Qui est indisponible</span>
-            <div className="mt-2 flex flex-wrap gap-2">
-              {(
-                [
-                  ["kandylove", "Kandylove Beauty"],
-                  ["naftali", "Naftali"],
-                  [null, "Les deux (showroom fermé)"],
-                ] as const
-              ).map(([value, label]) => (
-                <button
-                  key={label}
-                  type="button"
-                  onClick={() => setBrand(value)}
-                  aria-pressed={brand === value}
-                  className={cn(
-                    "border px-3 py-2.5 text-sm",
-                    brand === value
-                      ? "border-bronze bg-bronze text-white"
-                      : "border-sand-deep bg-white",
-                  )}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-            <p className="text-taupe mt-2 text-xs leading-relaxed">
-              Seules les prestations du pôle choisi disparaîtront du site.
-              L'autre pôle continue de recevoir des réservations.
-            </p>
-          </div>
-
           <div>
             <span className="field-label">Étendue</span>
             <div className="mt-2 flex gap-2">
@@ -794,26 +753,12 @@ function BlockedTab({ notify }: { notify: (message: string) => void }) {
               className="flex flex-wrap items-center justify-between gap-2 border border-sand-deep bg-white px-4 py-3 text-sm"
             >
               <div>
-                <p className="text-espresso font-medium">
-                  {formatDateFr(row.day)}
-                </p>
-                <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1">
-                  <span
-                    className={cn(
-                      "px-2 py-0.5 text-[0.65rem] tracking-[0.1em] uppercase",
-                      row.brand
-                        ? BRAND_TONE[row.brand]
-                        : "bg-sand text-espresso",
-                    )}
-                  >
-                    {row.brand ? BRAND_LABEL[row.brand] : "Les deux pôles"}
-                  </span>
-                  <span className="text-taupe">
-                    {row.start_time
-                      ? `${formatTimeFr(hhmm(row.start_time))} – ${formatTimeFr(hhmm(row.end_time))}`
-                      : "Jour entier"}
-                    {row.reason ? ` · ${row.reason}` : ""}
-                  </span>
+                <p className="font-medium">{formatDateFr(row.day)}</p>
+                <p className="text-taupe">
+                  {row.start_time
+                    ? `${formatTimeFr(hhmm(row.start_time))} – ${formatTimeFr(hhmm(row.end_time))}`
+                    : "Jour entier"}
+                  {row.reason ? ` · ${row.reason}` : ""}
                 </p>
               </div>
               <button

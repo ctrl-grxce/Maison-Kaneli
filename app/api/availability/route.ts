@@ -50,26 +50,9 @@ export async function GET(request: Request) {
     );
   }
 
-  /* Occupation du PÔLE de la prestation : Kandy et Nafi reçoivent chacune
-     une cliente en parallèle, une réservation chez l'une ne doit pas fermer
-     le créneau chez l'autre (migration 2026-09-18_calendriers_par_pole).
-
-     Repli volontaire sur la version à un argument : si le site est déployé
-     avant que la migration ne soit appliquée, la réservation continue de
-     fonctionner — en calendrier partagé, comme avant. Mieux vaut des
-     créneaux trop prudents qu'une page de réservation en panne. */
-  let { data, error } = await supabase.rpc("get_taken_slots", {
+  const { data, error } = await supabase.rpc("get_taken_slots", {
     p_date: date,
-    p_brand: service.brand,
   });
-
-  if (error) {
-    console.warn(
-      "[availability] get_taken_slots par pôle indisponible, repli sur le calendrier partagé :",
-      error.message,
-    );
-    ({ data, error } = await supabase.rpc("get_taken_slots", { p_date: date }));
-  }
 
   if (error) {
     console.error("[availability] RPC get_taken_slots:", error);

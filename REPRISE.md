@@ -72,13 +72,15 @@ bloc se fait dans le dashboard Vercel, par Gradi.
      **rembourser depuis le dashboard Stripe**
    - `/gestion` : connexion avec le vrai `ADMIN_CODE`
 5. [ ] Donner à Kandy & Nafi l'adresse `maisonkanali.fr/gestion` + le code.
-6. [ ] ⚠️ **APPLIQUER LA MIGRATION `2026-09-18_calendriers_par_pole.sql`
-   AVANT le prochain déploiement** — sans la colonne `brand`, enregistrer une
-   indisponibilité échouerait. Point sensible : elle remplace la contrainte
-   anti-chevauchement de `bookings`, dont la définition n'était pas
-   versionnée ; le script la retrouve dynamiquement et refuse de laisser la
-   table sans protection. À tester juste après : deux réservations sur le
-   même créneau chez le MÊME pôle doivent toujours être refusées (409).
+6. [ ] **Calendriers par pôle : code RETIRÉ du déploiement du 18/09** — la
+   migration n'a pas été appliquée (pas d'accord explicite de Gradi, et MCP
+   Supabase non autorisé dans la session). Sans elle, le code cassait
+   l'onglet Indisponibilités et le déplacement de rendez-vous. Tout est
+   sauvegardé dans le commit `768e0da`. Pour le remettre :
+   ① appliquer `supabase/migrations/2026-09-18_calendriers_par_pole.sql`
+   (récupérable avec `git show 768e0da:supabase/migrations/2026-09-18_calendriers_par_pole.sql`),
+   ② `git cherry-pick 768e0da`, ③ déployer, ④ vérifier que deux réservations
+   sur le même créneau chez le MÊME pôle sont toujours refusées (409).
 7. [ ] Vérifier que `SECURITY_REPORT_SECRET` est bien défini en Production :
    s'il est vide, n'importe qui peut faire monter le cadenas et **suspendre
    les réservations**.

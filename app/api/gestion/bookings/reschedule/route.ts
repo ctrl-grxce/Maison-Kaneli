@@ -92,13 +92,10 @@ export async function POST(request: Request) {
   const endTime = minutesToTime(endMin);
 
   /* Plage bloquée par la maison ? */
-  /* Un blocage ne s'oppose qu'aux prestations de SON pôle ; `brand` à NULL
-     ferme tout le showroom et vaut donc pour les deux. */
   const { data: blocked, error: blockedError } = await supabase
     .from("blocked_slots")
     .select("id, start_time, end_time")
-    .eq("day", date)
-    .or(`brand.is.null,brand.eq.${booking.brand}`);
+    .eq("day", date);
   if (blockedError) {
     console.error("[gestion] Lecture des indisponibilités:", blockedError);
     return NextResponse.json(

@@ -25,7 +25,7 @@ export async function GET(request: Request) {
 
   const { data, error } = await supabase
     .from("blocked_slots")
-    .select("id, day, start_time, end_time, reason, brand, created_at")
+    .select("id, day, start_time, end_time, reason, created_at")
     .gte("day", parisNow().date)
     .order("day", { ascending: true })
     .order("start_time", { ascending: true, nullsFirst: true });
@@ -46,8 +46,6 @@ const createSchema = z
     startTime: timeString.optional(),
     endTime: timeString.optional(),
     reason: z.string().trim().max(120).optional(),
-    /* Absent ou null = les deux pôles (showroom fermé). */
-    brand: z.enum(["kandylove", "naftali"]).nullish(),
   })
   .refine((value) => (value.startTime === undefined) === (value.endTime === undefined), {
     message: "Heures incomplètes",
@@ -70,7 +68,7 @@ export async function POST(request: Request) {
   if (!parsed.success) {
     return NextResponse.json({ error: "Requête invalide." }, { status: 400 });
   }
-  const { day, startTime, endTime, reason, brand } = parsed.data;
+  const { day, startTime, endTime, reason } = parsed.data;
 
   if (!isValidIsoDate(day) || day < parisNow().date) {
     return NextResponse.json(
@@ -106,9 +104,8 @@ export async function POST(request: Request) {
       start_time: startTime ?? null,
       end_time: endTime ?? null,
       reason: reason || null,
-      brand: brand ?? null,
     })
-    .select("id, day, start_time, end_time, reason, brand, created_at");
+    .select("id, day, start_time, end_time, reason, created_at");
   if (error) {
     console.error("[gestion] Création d'indisponibilité:", error);
     return NextResponse.json(
@@ -118,18 +115,14 @@ export async function POST(request: Request) {
   }
 
   /* Réservations déjà posées sur la plage : signalées à l'écran pour que
-     les filles les annulent ou les déplacent — le blocage n'y touche pas.
-     Seuls les rendez-vous du pôle bloqué comptent, sauf si le blocage ferme
-     tout le showroom. */
-  let conflictQuery = supabase
+     les filles les annulent ou les déplacent — le blocage n'y touche pas. */
+  const { data: conflicts } = await supabase
     .from("bookings")
     .select("id")
     .eq("booking_date", day)
     .in("status", ["pending", "confirmed"])
     .lt("start_time", endTime ?? "23:59")
     .gt("end_time", startTime ?? "00:00");
-  if (brand) conflictQuery = conflictQuery.eq("brand", brand);
-  const { data: conflicts } = await conflictQuery;
 
   return NextResponse.json(
     { blocked: data?.[0] ?? null, conflictCount: conflicts?.length ?? 0 },
