@@ -72,6 +72,18 @@ bloc se fait dans le dashboard Vercel, par Gradi.
      **rembourser depuis le dashboard Stripe**
    - `/gestion` : connexion avec le vrai `ADMIN_CODE`
 5. [ ] Donner à Kandy & Nafi l'adresse `maisonkanali.fr/gestion` + le code.
+6. [ ] ⚠️ **APPLIQUER LA MIGRATION `2026-09-18_calendriers_par_pole.sql`
+   AVANT le prochain déploiement** — sans la colonne `brand`, enregistrer une
+   indisponibilité échouerait. Point sensible : elle remplace la contrainte
+   anti-chevauchement de `bookings`, dont la définition n'était pas
+   versionnée ; le script la retrouve dynamiquement et refuse de laisser la
+   table sans protection. À tester juste après : deux réservations sur le
+   même créneau chez le MÊME pôle doivent toujours être refusées (409).
+7. [ ] Vérifier que `SECURITY_REPORT_SECRET` est bien défini en Production :
+   s'il est vide, n'importe qui peut faire monter le cadenas et **suspendre
+   les réservations**.
+8. [ ] Supprimer la prestation de test à 1 € (`test-paiement-1-euro` dans
+   `lib/services.ts`) une fois les tests de paiement terminés.
 
 ### ② Conformité — ✅ TERMINÉE le 18/09 (commit `5309bda`)
 
@@ -239,6 +251,24 @@ automatiques à la cliente quand la maison annule ou déplace.
 - Renommer le repo GitHub `Maison-Kaneli` → `Maison-Kanali` (optionnel)
 
 ## 📖 Journal de progression
+
+- **18/09 (soir) — retours de Gradi et de Nafi, tout codé et poussé, RIEN
+  DÉPLOYÉ depuis le déploiement du paiement** :
+  · `5ada19f` /gestion — barre de recherche, fiches restructurées pour être
+    parcourues, œil « afficher le code » ; **prestation de test à 1 €** dans
+    le tunnel (invisible sur les vitrines) — ⚠️ À SUPPRIMER après les tests.
+  · `1d59f7b` sécurité — faille GRAVE corrigée : le verrou « 5 essais » du
+    login était contournable en falsifiant `x-forwarded-for`, donc brute
+    force illimité sur la seule serrure du site. Plafond global, cadenas
+    d'urgence qui ferme enfin /gestion, `no-store` sur les données clientes.
+  · `768e0da` **calendriers par pôle** — bug signalé par Nafi, en réalité
+    plus large : les RENDEZ-VOUS aussi étaient partagés (une cliente chez
+    Kandy à 14h fermait 14h chez Naftali). Gradi a confirmé qu'elles
+    travaillent en parallèle. **Migration écrite, PAS APPLIQUÉE.**
+  · `d44b0c9` cartes — le prix était l'élément le MOINS contrasté des cartes
+    (2,39:1 chez Naftali) ; 0 échec AA sur les trois pages après correction.
+  → **Remboursement Stripe : PAS automatique**, mais deux clics dans le
+    dashboard, sans avoir besoin du RIB de la cliente.
 
 - **18/09 (jour du lancement)** : statut tranché — **association loi 1901**
   (RNA W023006110, SIRET 98294433200013, siège 19 chemin d'Harly à 02100
