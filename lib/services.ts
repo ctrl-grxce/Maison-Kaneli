@@ -24,6 +24,12 @@ export interface Service {
    *  `endsOn` (AAAA-MM-JJ, heure de Paris) : dernier jour de validité — passé
    *  cette date, la promo disparaît toute seule de l'affichage. */
   promo?: { price: string; until: string; endsOn: string };
+  /** Acompte imposé pour cette prestation, en centimes — prime sur le montant
+   *  de la catégorie. Sert à la prestation de test à 1 €. */
+  depositCentsOverride?: number;
+  /** Prestation de test interne : réservable dans le tunnel, mais JAMAIS
+   *  affichée sur les pages vitrines (cf. `servicesByCategory`). */
+  isTest?: boolean;
 }
 
 export interface CategoryInfo {
@@ -76,6 +82,23 @@ export const CATEGORIES: CategoryInfo[] = [
 
 export const SERVICES: Service[] = [
   /* ── Onglerie — Kandylove Beauty (carte août 2026) ───────────────────── */
+  /* Prestation de TEST — demandée par Gradi le 18/09/2026 pour vérifier le
+   *  paiement réel de bout en bout sans dépenser 20 € à chaque essai.
+   *  `isTest` la garde hors des pages vitrines : elle n'apparaît que dans le
+   *  tunnel de réservation.
+   *  ⚠️ À SUPPRIMER une fois les tests terminés — effacer ce bloc suffit. */
+  {
+    id: "test-paiement-1-euro",
+    brand: "kandylove",
+    category: "ongles",
+    name: "Test technique (équipe Maison Kanali)",
+    description:
+      "Créneau de test réservé à l'équipe pour vérifier le paiement en ligne. Merci de ne pas le réserver.",
+    durationMin: 30,
+    price: "1 €",
+    depositCentsOverride: 100,
+    isTest: true,
+  },
   {
     id: "manucure-semi",
     brand: "kandylove",
@@ -337,7 +360,9 @@ export function getFormation(id: string): Formation | undefined {
 }
 
 export function servicesByCategory(category: Category): Service[] {
-  return SERVICES.filter((s) => s.category === category);
+  /* `isTest` est exclue ici et pas dans le tunnel : la cliente ne doit jamais
+   *  voir la prestation de test sur les pages vitrines. */
+  return SERVICES.filter((s) => s.category === category && !s.isTest);
 }
 
 export const BRAND_LABELS: Record<Brand, string> = {
@@ -403,6 +428,9 @@ const NO_DEPOSIT_SERVICE_IDS = new Set([
 
 /** Acompte à régler en ligne pour une prestation, en centimes. */
 export function depositCentsFor(service: Service): number {
+  if (service.depositCentsOverride !== undefined) {
+    return service.depositCentsOverride;
+  }
   if (NO_DEPOSIT_SERVICE_IDS.has(service.id)) return 0;
   return DEPOSIT_CENTS[service.category] ?? 0;
 }
@@ -436,5 +464,7 @@ export function remainderLabelFor(
 ): string | null {
   const priceCents = parsePriceCents(priceLabel);
   if (priceCents === null || priceCents < depositCents) return null;
+  /* Acompte égal au tarif (prestation de test) : rien à régler sur place. */
+  if (priceCents === depositCents) return null;
   return formatEuros(priceCents - depositCents);
 }

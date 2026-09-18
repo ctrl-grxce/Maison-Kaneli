@@ -14,6 +14,46 @@ import { OPENING } from "@/lib/config";
 import { minutesToTime } from "@/lib/availability";
 import { Calendar } from "@/components/booking/Calendar";
 
+/* ── Icônes locales ──────────────────────────────────────────── */
+/* Définies ici plutôt que dans components/ui/icons.tsx : elles ne servent
+ * qu'à cet écran privé, inutile de les exposer à tout le site. */
+
+const iconBase = {
+  width: 18,
+  height: 18,
+  viewBox: "0 0 24 24",
+  fill: "none",
+  stroke: "currentColor",
+  strokeWidth: 1.4,
+  strokeLinecap: "round" as const,
+  strokeLinejoin: "round" as const,
+  "aria-hidden": true,
+};
+
+const EyeIcon = () => (
+  <svg {...iconBase}>
+    <path d="M2.5 12S6 5.8 12 5.8 21.5 12 21.5 12 18 18.2 12 18.2 2.5 12 2.5 12Z" />
+    <circle cx="12" cy="12" r="3.1" />
+  </svg>
+);
+
+const EyeOffIcon = () => (
+  <svg {...iconBase}>
+    <path d="M9.9 5.2A9.6 9.6 0 0 1 12 5c6 0 9.5 6.2 9.5 6.2a17 17 0 0 1-3 3.7" />
+    <path d="M6.4 7.3A17 17 0 0 0 2.5 11.2S6 17.4 12 17.4a9.4 9.4 0 0 0 3.7-.73" />
+    <path d="M10.1 9.6a3.1 3.1 0 0 0 4.2 4.4" />
+    <path d="m3.5 3.5 17 17" />
+  </svg>
+);
+
+const SearchIcon = () => (
+  <svg {...iconBase}>
+    <circle cx="11" cy="11" r="6.2" />
+    <path d="m15.6 15.6 4.2 4.2" />
+  </svg>
+);
+
+
 /* ── Types renvoyés par /api/gestion ─────────────────────────────────────── */
 
 interface BookingRow {
@@ -55,6 +95,13 @@ interface Slot {
 const BRAND_LABEL: Record<BookingRow["brand"], string> = {
   kandylove: "Kandylove Beauty",
   naftali: "Naftali",
+};
+
+/* Pastille colorée par pôle : sur une journée chargée, c'est ce qui permet
+ *  de repérer « mes » rendez-vous sans lire chaque ligne. */
+const BRAND_TONE: Record<BookingRow["brand"], string> = {
+  kandylove: "bg-blush text-bronze-dark",
+  naftali: "bg-[#f4ecdc] text-[#8a6d2f]",
 };
 
 function statusLabel(row: BookingRow): { text: string; tone: string } {
@@ -103,6 +150,9 @@ async function api<T>(
 
 function LoginCard({ onSuccess }: { onSuccess: () => void }) {
   const [code, setCode] = useState("");
+  /* Le code est long et tapé sur téléphone : pouvoir le relire évite
+   *  trois tentatives ratées et le verrou du rate limiting. */
+  const [codeVisible, setCodeVisible] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -134,14 +184,25 @@ function LoginCard({ onSuccess }: { onSuccess: () => void }) {
         <label htmlFor="gestion-code" className="field-label">
           Code d&apos;accès
         </label>
-        <input
-          id="gestion-code"
-          type="password"
-          autoComplete="current-password"
-          value={code}
-          onChange={(event) => setCode(event.target.value)}
-          className="mt-2 w-full border border-sand-deep bg-ivory px-4 py-3 text-sm outline-none focus:border-bronze"
-        />
+        <div className="relative mt-2">
+          <input
+            id="gestion-code"
+            type={codeVisible ? "text" : "password"}
+            autoComplete="current-password"
+            value={code}
+            onChange={(event) => setCode(event.target.value)}
+            className="w-full border border-sand-deep bg-ivory py-3 pr-12 pl-4 text-sm outline-none focus:border-bronze"
+          />
+          <button
+            type="button"
+            onClick={() => setCodeVisible((visible) => !visible)}
+            aria-label={codeVisible ? "Masquer le code" : "Afficher le code"}
+            aria-pressed={codeVisible}
+            className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-taupe transition-colors duration-200 hover:text-espresso"
+          >
+            {codeVisible ? <EyeOffIcon /> : <EyeIcon />}
+          </button>
+        </div>
         {error && <p className="mt-3 text-sm text-[#b3543f]">{error}</p>}
         <button
           type="submit"
@@ -326,57 +387,86 @@ function BookingCard({
   }
 
   return (
-    <article className="border border-sand-deep bg-white p-5">
-      <div className="flex flex-wrap items-start justify-between gap-2">
-        <div>
-          <p className="font-display text-lg font-medium">
-            {formatTimeFr(hhmm(booking.start_time))} –{" "}
-            {formatTimeFr(hhmm(booking.end_time))}
-            <span className="ml-2 text-sm font-normal text-taupe">
-              · {formatDuration(booking.duration_min)}
-            </span>
+    <article className="border border-sand-deep bg-white">
+      {/* Colonne horaire à gauche : c'est l'information qu'on cherche en
+          premier quand on parcourt une journée. */}
+      <div className="flex items-stretch">
+        {/* Largeur confortable volontairement : à w-20 il ne restait que ~8 px
+            de marge autour de l'heure sur un écran de 375 px — trop juste pour
+            un rendu de police légèrement différent. */}
+        <div className="flex w-[5.5rem] shrink-0 flex-col justify-center border-r border-sand-deep bg-sand/50 px-2 py-4 text-center">
+          <p className="font-display text-espresso text-2xl leading-none font-medium">
+            {formatTimeFr(hhmm(booking.start_time))}
           </p>
-          <p className="mt-1 text-sm">
-            {booking.service_name}{" "}
-            <span className="text-taupe">· {BRAND_LABEL[booking.brand]}</span>
+          <p className="text-taupe mt-1.5 text-[0.7rem] leading-tight">
+            → {formatTimeFr(hhmm(booking.end_time))}
+          </p>
+          <p className="text-taupe mt-0.5 text-[0.7rem] leading-tight">
+            {formatDuration(booking.duration_min)}
           </p>
         </div>
-        <div className="flex flex-col items-end gap-1">
-          <span
-            className={cn(
-              "px-2.5 py-1 text-[0.6875rem] tracking-[0.14em] uppercase",
-              status.tone,
-            )}
-          >
-            {status.text}
-          </span>
-          {depositPaid && (
-            <span className="bg-[#eef3ee] px-2.5 py-1 text-[0.6875rem] tracking-[0.14em] text-[#3e6b4a] uppercase">
-              Acompte réglé
+
+        <div className="min-w-0 flex-1 px-4 py-3.5">
+          <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-1.5">
+            <p className="text-espresso text-[1.0625rem] leading-snug font-semibold">
+              {booking.first_name} {booking.last_name}
+            </p>
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span
+                className={cn(
+                  "px-2 py-0.5 text-[0.65rem] tracking-[0.12em] uppercase",
+                  status.tone,
+                )}
+              >
+                {status.text}
+              </span>
+              {depositPaid && (
+                <span className="bg-[#eef3ee] px-2 py-0.5 text-[0.65rem] tracking-[0.12em] text-[#3e6b4a] uppercase">
+                  Acompte réglé
+                </span>
+              )}
+            </div>
+          </div>
+
+          <p className="text-espresso mt-1.5 text-sm font-medium">
+            {booking.service_name}
+          </p>
+
+          <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-[0.7rem]">
+            <span
+              className={cn(
+                "px-2 py-0.5 tracking-[0.1em] uppercase",
+                BRAND_TONE[booking.brand],
+              )}
+            >
+              {BRAND_LABEL[booking.brand]}
             </span>
-          )}
+            <span className="text-espresso font-medium">
+              {booking.price_label}
+            </span>
+            <span className="text-taupe">· {booking.reference}</span>
+          </div>
         </div>
       </div>
 
-      <div className="mt-3 border-t border-sand pt-3 text-sm leading-relaxed">
-        <p>
-          <strong className="font-medium">
-            {booking.first_name} {booking.last_name}
-          </strong>
-          <span className="text-taupe"> · {booking.reference}</span>
-        </p>
-        <p className="mt-1">
-          <a href={`tel:${booking.phone.replace(/[^+\d]/g, "")}`} className="text-bronze-dark">
+      <div className="border-sand border-t px-4 py-3 text-sm leading-relaxed">
+        <p className="flex flex-wrap items-center gap-x-2 gap-y-1">
+          <a
+            href={`tel:${booking.phone.replace(/[^+\d]/g, "")}`}
+            className="text-bronze-dark font-medium"
+          >
             {booking.phone}
           </a>
-          <span className="text-taupe"> · </span>
-          <a href={`mailto:${booking.email}`} className="text-bronze-dark break-all">
+          <span className="text-sand-deep">·</span>
+          <a
+            href={`mailto:${booking.email}`}
+            className="text-bronze-dark break-all"
+          >
             {booking.email}
           </a>
         </p>
-        <p className="mt-1 text-taupe">Tarif : {booking.price_label}</p>
         {booking.notes && (
-          <p className="mt-2 border-l-2 border-sand-deep pl-3 text-taupe italic">
+          <p className="border-bronze/40 text-espresso/80 mt-2 border-l-2 pl-3 italic">
             {booking.notes}
           </p>
         )}
@@ -692,6 +782,7 @@ export function GestionApp() {
   const [authed, setAuthed] = useState<boolean | null>(null);
   const [tab, setTab] = useState<"bookings" | "blocked">("bookings");
   const [scope, setScope] = useState<"upcoming" | "past">("upcoming");
+  const [query, setQuery] = useState("");
   const [bookings, setBookings] = useState<BookingRow[] | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
@@ -729,15 +820,42 @@ export function GestionApp() {
     return () => clearTimeout(timer);
   }, [toast]);
 
+  /* Recherche côté navigateur : la liste tient largement en mémoire, inutile
+   *  de repasser par le serveur à chaque lettre tapée. Accents et casse sont
+   *  neutralisés — on cherche « lea » et on trouve « Léa ». */
+  const normalize = (value: string) =>
+    value
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[̀-ͯ]/g, "");
+
+  const filtered = useMemo(() => {
+    const needle = normalize(query.trim());
+    if (!needle) return bookings ?? [];
+    return (bookings ?? []).filter((booking) =>
+      normalize(
+        [
+          booking.first_name,
+          booking.last_name,
+          booking.reference,
+          booking.phone,
+          booking.email,
+          booking.service_name,
+          BRAND_LABEL[booking.brand],
+        ].join(" "),
+      ).includes(needle),
+    );
+  }, [bookings, query]);
+
   const grouped = useMemo(() => {
     const map = new Map<string, BookingRow[]>();
-    for (const booking of bookings ?? []) {
+    for (const booking of filtered) {
       const list = map.get(booking.booking_date) ?? [];
       list.push(booking);
       map.set(booking.booking_date, list);
     }
     return [...map.entries()];
-  }, [bookings]);
+  }, [filtered]);
 
   async function logout() {
     await api("/api/gestion/login", { method: "DELETE" });
@@ -834,13 +952,45 @@ export function GestionApp() {
             ))}
           </div>
 
+          <div className="relative mt-3">
+            <span className="text-taupe pointer-events-none absolute inset-y-0 left-0 flex w-10 items-center justify-center">
+              <SearchIcon />
+            </span>
+            <input
+              type="search"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Rechercher : nom, téléphone, référence, prestation…"
+              aria-label="Rechercher une réservation"
+              className="border-sand-deep bg-ivory focus:border-bronze w-full border py-2.5 pr-10 pl-10 text-sm outline-none"
+            />
+            {query && (
+              <button
+                type="button"
+                onClick={() => setQuery("")}
+                aria-label="Effacer la recherche"
+                className="text-taupe hover:text-espresso absolute inset-y-0 right-0 flex w-10 items-center justify-center text-lg transition-colors duration-200"
+              >
+                ×
+              </button>
+            )}
+          </div>
+
+          {query && bookings && (
+            <p className="text-taupe mt-2 text-sm">
+              {filtered.length === 0
+                ? "Aucun résultat."
+                : `${filtered.length} résultat${filtered.length > 1 ? "s" : ""} sur ${bookings.length}.`}
+            </p>
+          )}
+
           {loadError && (
             <p className="mt-5 text-sm text-[#b3543f]">{loadError}</p>
           )}
           {!bookings && !loadError && (
             <p className="mt-8 text-center text-sm text-taupe">Chargement…</p>
           )}
-          {bookings && bookings.length === 0 && (
+          {bookings && bookings.length === 0 && !query && (
             <p className="mt-8 text-center text-sm text-taupe">
               {scope === "upcoming"
                 ? "Aucune réservation à venir pour le moment."
@@ -851,8 +1001,13 @@ export function GestionApp() {
           <div className="mt-5 space-y-7">
             {grouped.map(([date, list]) => (
               <section key={date}>
-                <h2 className="field-label">{formatDateFr(date)}</h2>
-                <div className="mt-2 space-y-3">
+                <h2 className="border-bronze/30 text-espresso flex items-baseline justify-between gap-3 border-b pb-1.5 text-sm font-medium">
+                  <span className="capitalize">{formatDateFr(date)}</span>
+                  <span className="text-taupe text-[0.7rem] tracking-[0.12em] uppercase">
+                    {list.length} rendez-vous
+                  </span>
+                </h2>
+                <div className="mt-3 space-y-3">
                   {list.map((booking) => (
                     <BookingCard
                       key={booking.id}

@@ -5,6 +5,7 @@ import {
   formatEuros,
   parsePriceCents,
   remainderLabelFor,
+  servicesByCategory,
 } from "../lib/services";
 
 /**
@@ -15,11 +16,25 @@ import {
 
 describe("depositCentsFor", () => {
   it("demande 20 € d'acompte pour les prestations ongles", () => {
-    const ongles = SERVICES.filter((s) => s.category === "ongles");
+    /* La prestation de test à 1 € porte un acompte imposé : elle est exclue. */
+    const ongles = SERVICES.filter((s) => s.category === "ongles" && !s.isTest);
     expect(ongles.length).toBeGreaterThan(0);
     for (const service of ongles) {
       expect(depositCentsFor(service)).toBe(2000);
     }
+  });
+
+  it("respecte l'acompte imposé de la prestation de test (1 €)", () => {
+    const test = SERVICES.find((s) => s.id === "test-paiement-1-euro");
+    expect(test).toBeDefined();
+    expect(depositCentsFor(test!)).toBe(100);
+    /* Acompte = tarif : aucun reste à régler sur place. */
+    expect(remainderLabelFor(test!.price, 100)).toBeNull();
+  });
+
+  it("garde la prestation de test hors des pages vitrines", () => {
+    expect(servicesByCategory("ongles").some((s) => s.isTest)).toBe(false);
+    expect(SERVICES.some((s) => s.isTest)).toBe(true);
   });
 
   it("demande 30 € d'acompte pour le maquillage (hors mariée)", () => {
