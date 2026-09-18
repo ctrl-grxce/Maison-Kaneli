@@ -3,7 +3,8 @@
  *
  * ✏️  C'est LE fichier à modifier pour ajuster tarifs, durées ou descriptions.
  * Sources : carte ongles Kandylove (août 2026), flyer TARIF (maquillage),
- * flyer FORMATION Kandylove Beauty (650 € / 720 €, août 2026) et promo cils
+ * formation onglerie Kandylove Beauty (350 € sans kit / 420 € avec kit depuis
+ * le 18/09/2026 — avant : 650 € / 720 €) et promo cils
  * Naftali — toutes les poses à 40 € jusqu'à fin octobre 2026. La dépose,
  * elle, est à 20 € en prix normal, hors promo (décision Gradi du 29/08/2026).
  */
@@ -285,13 +286,13 @@ export const FORMATIONS: Formation[] = [
     tagline:
       "En deux jours, repartez avec les bases solides pour gagner vos premières clientes.",
     durationLabel: "2 jours · en privé",
-    priceLabel: "650 € – 720 €",
+    priceLabel: "350 € – 420 €",
     kitOptions: [
-      { id: "sans-kit", label: "Sans kit", price: "650 €" },
+      { id: "sans-kit", label: "Sans kit", price: "350 €" },
       {
         id: "avec-kit",
         label: "Avec kit professionnel (valeur 220 €)",
-        price: "720 €",
+        price: "420 €",
       },
     ],
     program: [
