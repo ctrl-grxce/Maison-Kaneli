@@ -2,25 +2,31 @@
 
 *Fichier de bord demandé par Gradi (29/08/2026). **Claude : lis ce fichier en
 premier à chaque reprise d'une conversation sur Maison Kanali**, et mets-le à
-jour à chaque avancée. Dernière mise à jour : **30/08/2026**.*
+jour à chaque avancée. Dernière mise à jour : **18/09/2026**.*
 
 ## 🚦 En ce moment
 
-**SPRINT DE LANCEMENT (plan fixé par Gradi le 03/09)** :
-- **03/09 avant 17h** : espace de gestion des rendez-vous (✅ CODÉ, voir
-  chantier ci-dessous) + retouches design (⏳ liste attendue de Gradi).
-- **03/09, appel fondatrices FAIT** : adresse confirmée (02100) ; SIRET 14
-  chiffres à venir (Gradi le donnera) ; **⚠️ elles passent en ASSOCIATION
-  loi 1901 — en cours de validation** (Gradi transmettra nom/RNA/adresse).
-  Conséquence actée : lancement possible sous le statut actuel (compte Stripe
-  vérifié), bascule des mentions légales + factures vers l'association quand
-  elle existera. Email de vérification Stripe non reçu mais compte annoncé bon.
-- **03/09 soir / 04/09** : cookies + mentions légales/CGV (conformité), puis
-  référencement. Objectif : le 04/09 il ne reste QUE juridique + référencement.
-- **Ensuite : LANCEMENT** (déploiement final sur accord de Gradi).
-- La démo préview pour les sœurs est ABANDONNÉE (décision Gradi 03/09 —
-  inutile de toucher à Vercel Authentication). Compression vidéo hero :
-  reportée (« on ne touche pas à la vidéo »).
+**JOUR DU LANCEMENT — 18/09/2026, objectif : site complet à 20h.**
+
+✅ **Statut tranché le 18/09 par Gradi** : les fondatrices sont passées en
+**association loi 1901 à but non lucratif**. Numéros transmis :
+**RNA W023006110** · **SIRET 98294433200013** · siège **19 chemin d'Harly,
+02100 Saint-Quentin** · représentante **Viminde Kandy** · **TVA non
+applicable (art. 293 B du CGI)** · **droit français**. Gradi veut aussi le
+**paiement des acomptes ACTIF au lancement**.
+
+✅ **Conformité TERMINÉE le 18/09** (commit `5309bda`) — voir ② ci-dessous.
+
+⏳ **Il ne reste que des actions côté Gradi** (secrets Vercel + déploiement),
+puis le référencement. Voir « ① Mise en ligne ».
+
+⚠️ **Point non tranché** : le SIREN du SIRET fourni (982944332) est celui
+noté le 30/08 sous le statut *entrepreneur individuel*. Une association
+immatriculée reçoit normalement son propre SIREN. Gradi a confirmé le choix
+« association » malgré cette alerte — à revérifier auprès des fondatrices
+(si le SIRET est bien celui de l'entreprise individuelle, il faudra soit le
+remplacer par celui de l'association, soit rebasculer les mentions vers le
+statut entrepreneur : **une seule constante `LEGAL` dans `lib/config.ts`**).
 
 ## ✅ État du site — tout est en prod et fonctionne
 
@@ -38,12 +44,73 @@ jour à chaque avancée. Dernière mise à jour : **30/08/2026**.*
 
 ## 📋 À faire
 
-### ① Finalisation (EN COURS)
+### ① Mise en ligne — CE QUI RESTE (actions de Gradi, 18/09)
 
-- [ ] **Paiement / acomptes** → voir chantier détaillé ci-dessous
+Claude ne touche **jamais** aux secrets ni à la prod sans accord : tout ce
+bloc se fait dans le dashboard Vercel, par Gradi.
+
+1. [ ] **Stripe LIVE** — compte officiel « Maison Kanali » :
+   vérifier qu'il est **activé** (pas « en cours de vérification »), puis en
+   mode **Live** : Développeurs → Webhooks → ajouter l'endpoint
+   `https://maisonkanali.fr/api/stripe/webhook` (événement
+   `checkout.session.completed`) → récupérer `whsec_…` et `sk_live_…`.
+2. [ ] **Variables Vercel, environnement Production** (Settings →
+   Environment Variables) :
+   `STRIPE_SECRET_KEY` = `sk_live_…` · `STRIPE_WEBHOOK_SECRET` = `whsec_…` ·
+   `PAYMENTS_ENABLED` = `1` · `SUPABASE_SERVICE_ROLE_KEY` = la clé secrète
+   Supabase · `ADMIN_CODE` = le vrai code de Kandy & Nafi.
+   ⚠️ Coller à la main dans le dashboard — jamais par pipe PowerShell (BOM),
+   jamais dans le dépôt.
+3. [ ] **Déployer** : `npx vercel deploy --prod --yes --scope gradipalaba28-7081s-projects`
+4. [ ] **Vérifier en prod après déploiement** :
+   - `/cgv`, `/mentions-legales`, `/confidentialite` affichent bien
+     **maisonkanali.fr** (et non `maison-kanali.vercel.app` : signifierait
+     que `NEXT_PUBLIC_SITE_URL` manque en Production)
+   - une vraie réservation avec acompte, carte réelle → email reçu +
+     **facture PDF complète** (le pied avec RNA/SIRET doit être ENTIER :
+     la mise en page débordait avant le 18/09) → puis annuler et
+     **rembourser depuis le dashboard Stripe**
+   - `/gestion` : connexion avec le vrai `ADMIN_CODE`
+5. [ ] Donner à Kandy & Nafi l'adresse `maisonkanali.fr/gestion` + le code.
+
+### ② Conformité — ✅ TERMINÉE le 18/09 (commit `5309bda`)
+
+- [x] Identité légale complète dans `LEGAL` (`lib/config.ts`) : association
+      loi 1901, RNA, SIRET, siège, TVA non applicable, représentante.
+      **Source unique** — les trois pages et la facture PDF en dérivent.
+- [x] **Mentions légales** réécrites (éditeur, hébergeurs, Stripe et Supabase
+      comme sous-traitants, maisonkanali.fr, droit français).
+- [x] **CGV** créées (`/cgv`) : acomptes, annulation 48 h, remboursement,
+      pas de droit de rétractation (art. L221-28), médiation, droit français.
+      Montants et délai dérivés du code — la page ne peut pas mentir.
+- [x] **Confidentialité** corrigée : elle affirmait « aucune donnée de
+      paiement » et « aucun cookie », faux dès Stripe allumé. Ajout du
+      transport Gmail réel (et non Resend), des cookies strictement
+      nécessaires, et des 10 ans de conservation comptable des factures.
+- [x] Durée de conservation « 3 ans » validée (+ exception 10 ans factures).
+- [x] Lien CGV en pied de page · rappel des 48 h + acceptation des CGV avant
+      le paiement (`StepConfirm`) et sur la page de confirmation.
+- [x] Cookies : **aucune bannière nécessaire** — pas de traceur non
+      essentiel ; Stripe dépose sur **son** domaine, le cookie `/gestion` est
+      strictement nécessaire et jamais posé chez les visiteuses.
+
+**Restes juridiques non bloquants (après le lancement)** :
+- [ ] **Médiateur de la consommation** : légalement, un professionnel doit
+      adhérer à un médiateur et **le nommer** dans ses CGV (art. L616-1).
+      Les CGV disent pour l'instant que ses coordonnées sont communiquées
+      sur demande. → adhésion à prévoir (quelques dizaines d'euros/an),
+      puis écrire son nom et son adresse dans l'article 9.
+- [ ] Confirmer auprès des fondatrices que le **SIRET est bien celui de
+      l'association** (cf. alerte en haut de fichier).
+- [ ] Vérifier que le **compte Stripe est au nom de l'association** (et non
+      de l'entreprise individuelle) — sinon l'encaissement et la facture ne
+      désignent pas la même entité.
+
+### ③ Autres chantiers ouverts
+
 - [ ] Retouches design (liste à préciser par Gradi)
-- [x] **Gestion des rendez-vous pour Kandy & Nafi — CODÉE le 03/09** → voir chantier ci-dessous
-- [ ] (reporté par Gradi) Compresser `public/videos/hero.mp4` 11 MB → ~3 MB (ffmpeg-static dans le scratchpad, comme le 04/08)
+- [ ] (reporté par Gradi) Compresser `public/videos/hero.mp4` 11 MB → ~3 MB
+- [x] **Gestion des rendez-vous** — codée et testée le 03/09 (ci-dessous)
 
 ### 📅 Chantier gestion des rendez-vous (état au 03/09)
 
@@ -172,6 +239,18 @@ automatiques à la cliente quand la maison annule ou déplace.
 - Renommer le repo GitHub `Maison-Kaneli` → `Maison-Kanali` (optionnel)
 
 ## 📖 Journal de progression
+
+- **18/09 (jour du lancement)** : statut tranché — **association loi 1901**
+  (RNA W023006110, SIRET 98294433200013, siège 19 chemin d'Harly à 02100
+  Saint-Quentin, TVA non applicable, droit français). **Toute la conformité
+  bouclée** (commit `5309bda`) : `LEGAL` complété comme source unique, CGV
+  créées, mentions légales réécrites, confidentialité corrigée (elle niait
+  le paiement en ligne et les cookies), rappel des 48 h + acceptation des
+  CGV avant paiement. **Bug découvert et corrigé** : la facture d'acompte A5
+  débordait déjà de la page AVANT ce commit (dernière ligne à y = -7) — les
+  trois factures de test du 30/08 étaient tronquées ; rythme vertical
+  resserré, le pied légal tient désormais à y = 23. 43 tests, typecheck et
+  build OK. Reste : secrets Vercel + déploiement (Gradi), puis référencement.
 
 - **30/08 (suite)** : chantier paiement CODÉ de bout en bout (base, Stripe,
   facture d'acompte PDF, emails, tunnel, pages de retour) — 24 tests verts,
