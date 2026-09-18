@@ -78,10 +78,10 @@ bloc se fait dans le dashboard Vercel, par Gradi.
    refusé (SLOT_TAKEN) ; chevauchement partiel → refusé ; même créneau autre
    pôle → accepté ; indisponibilité Naftali → Kandylove reste libre ;
    ancienne fonction à 1 argument toujours en service. Base nettoyée.
-7. [ ] Vérifier que `SECURITY_REPORT_SECRET` est bien défini en Production :
+7. [x] (vérifié le 18/09 : présent en Production ; la route est désormais FERMÉE par défaut) Vérifier que `SECURITY_REPORT_SECRET` est bien défini en Production :
    s'il est vide, n'importe qui peut faire monter le cadenas et **suspendre
    les réservations**.
-8. [ ] Supprimer la prestation de test à 1 € (`test-paiement-1-euro` dans
+8. [x] (fait et déployé le 18/09 après paiement réel validé par Gradi) Supprimer la prestation de test à 1 € (`test-paiement-1-euro` dans
    `lib/services.ts`) une fois les tests de paiement terminés.
 
 ### ② Conformité — ✅ TERMINÉE le 18/09 (commit `5309bda`)
@@ -251,6 +251,7 @@ automatiques à la cliente quand la maison annule ou déplace.
 
 ## 📖 Journal de progression
 
+- **18/09 ~20h — LANCEMENT** : paiement réel testé de bout en bout par Gradi (« tout marche »), prestation à 1 € retirée, signalement de sécurité fermé par défaut. **Reste après lancement** : référencement (Search Console + Bing), médiateur de la consommation, tarifs de la page d'accueil à contraster (3,96:1), débordement de 5 px sur /formations en mobile, rate limit partagé entre instances.
 - **18/09 (soir) — retours de Gradi et de Nafi, tout codé et poussé, RIEN
   DÉPLOYÉ depuis le déploiement du paiement** :
   · `5ada19f` /gestion — barre de recherche, fiches restructurées pour être
