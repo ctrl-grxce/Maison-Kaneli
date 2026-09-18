@@ -45,14 +45,14 @@ export default function FormationsPage() {
                       <p
                         className={cn(
                           "overline-label",
-                          gold && "text-gold",
+                          gold && "text-gold-deep",
                         )}
                       >
                         {gold
                           ? "Pôle regard · Naftali"
                           : "Pôle beauté · Kandylove Beauty"}
                       </p>
-                      <h2 className="font-display mt-3 text-[1.7rem] leading-tight font-medium md:text-3xl">
+                      <h2 className="font-display mt-3 text-[1.7rem] leading-tight font-semibold md:text-3xl">
                         {formation.name}
                       </h2>
                     </div>
@@ -60,7 +60,7 @@ export default function FormationsPage() {
                       className={cn(
                         "flex h-13 w-13 shrink-0 items-center justify-center rounded-t-full border",
                         gold
-                          ? "border-gold/40 bg-[#f7f0e2] text-gold"
+                          ? "border-gold/40 bg-[#f7f0e2] text-gold-deep"
                           : "border-sand-deep bg-blush text-bronze",
                       )}
                     >
@@ -72,14 +72,22 @@ export default function FormationsPage() {
                     {formation.tagline}
                   </p>
 
-                  <div className="mt-6 flex flex-wrap items-baseline justify-between gap-3 border-y border-sand-deep/80 py-4">
-                    <span className="text-[0.7rem] tracking-[0.2em] text-taupe uppercase">
+                  <div
+                    className={cn(
+                      "mt-6 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 rounded-[2px] border px-4 py-3.5",
+                      gold
+                        ? "border-gold/35 bg-[#f7f0e2]"
+                        : "border-sand-deep bg-sand",
+                    )}
+                  >
+                    <span className="text-[0.7rem] tracking-[0.16em] text-taupe uppercase">
                       {formation.durationLabel}
                     </span>
                     <span
                       className={cn(
-                        "font-display text-2xl",
-                        gold ? "text-gold" : "text-bronze",
+                        "tarif",
+                        /* « Sur demande » : même encre, corps plus mesuré. */
+                        !/\d/.test(formation.priceLabel) && "tarif-mention",
                       )}
                     >
                       {formation.priceLabel}
@@ -91,10 +99,12 @@ export default function FormationsPage() {
                       {formation.kitOptions.map((option) => (
                         <div
                           key={option.id}
-                          className="flex items-center justify-between border border-sand-deep bg-ivory px-4 py-3"
+                          className="flex items-center justify-between gap-3 rounded-[2px] border border-sand-deep bg-ivory px-4 py-3"
                         >
-                          <span className="text-sm">{option.label}</span>
-                          <span className="font-display text-lg text-bronze">
+                          <span className="text-[0.8125rem] leading-snug">
+                            {option.label}
+                          </span>
+                          <span className="tarif text-[1.25rem]">
                             {option.price}
                           </span>
                         </div>
@@ -104,7 +114,7 @@ export default function FormationsPage() {
 
                   <div className="mt-7 grid gap-8 sm:grid-cols-2">
                     <div>
-                      <h3 className="overline-label text-[0.62rem] text-espresso/70">
+                      <h3 className="overline-label text-[0.68rem] text-espresso/80">
                         Au programme
                       </h3>
                       <ul className="mt-4 space-y-2.5">
@@ -115,7 +125,7 @@ export default function FormationsPage() {
                               height={15}
                               className={cn(
                                 "mt-0.5 shrink-0",
-                                gold ? "text-gold" : "text-bronze",
+                                gold ? "text-gold-deep" : "text-bronze-dark",
                               )}
                             />
                             {item}
@@ -124,7 +134,7 @@ export default function FormationsPage() {
                       </ul>
                     </div>
                     <div>
-                      <h3 className="overline-label text-[0.62rem] text-espresso/70">
+                      <h3 className="overline-label text-[0.68rem] text-espresso/80">
                         Inclus
                       </h3>
                       <ul className="mt-4 space-y-2.5">
@@ -135,7 +145,7 @@ export default function FormationsPage() {
                               height={15}
                               className={cn(
                                 "mt-0.5 shrink-0",
-                                gold ? "text-gold" : "text-bronze",
+                                gold ? "text-gold-deep" : "text-bronze-dark",
                               )}
                             />
                             {item}

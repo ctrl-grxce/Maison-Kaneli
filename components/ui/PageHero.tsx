@@ -31,7 +31,9 @@ export function PageHero({
           <p
             className={cn(
               "overline-label",
-              tone === "gold" && "text-gold",
+              /* Or profond : l'or du fil (#c2a05f) tombe à 2,4:1 sur le halo,
+                 très loin de l'AA pour une étiquette de 11 px. */
+              tone === "gold" && "text-gold-deep",
             )}
           >
             {overline}

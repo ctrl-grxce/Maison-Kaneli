@@ -12,8 +12,17 @@ interface ServiceMenuProps {
 }
 
 /**
- * Carte tarifaire — lecture immédiate : nom + description à gauche,
- * prix bien visible et bouton Réserver à droite.
+ * Carte tarifaire — la cliente doit trouver « quelle prestation, combien,
+ * combien de temps » en deux secondes, pouce sur l'écran.
+ *
+ * Trois niveaux de lecture, dans cet ordre :
+ *   1. la ligne NOM ————— TARIF, alignée sur une même ligne de base, les deux
+ *      à l'encre espresso : c'est elle qu'on balaie ;
+ *   2. la description, en taupe et d'un corps inférieur — présente, jamais
+ *      concurrente ;
+ *   3. le pied de bloc, durée à gauche et bouton à droite.
+ * Chaque prestation est posée sur sa propre carte blanche cernée d'un filet :
+ * l'ancienne liste divisée fondait les prestations les unes dans les autres.
  */
 export function ServiceMenu({
   services,
@@ -23,77 +32,69 @@ export function ServiceMenu({
   const gold = accent === "gold";
 
   return (
-    <ul
-      className={cn(
-        "divide-y divide-sand-deep/80 border-y border-sand-deep",
-        className,
-      )}
-    >
+    <ul className={cn("space-y-3", className)}>
       {services.map((service, index) => {
         const promo = activePromo(service);
-        return (
-        <Reveal key={service.id} delay={Math.min(index, 4) * 70}>
-          <li className="flex items-start justify-between gap-5 py-6 sm:gap-8">
-            <div className="min-w-0">
-              <h3 className="font-display text-xl leading-snug font-medium md:text-[1.4rem]">
-                {service.name}
-              </h3>
-              <p className="mt-1.5 max-w-md text-sm leading-relaxed text-taupe">
-                {service.description}
-              </p>
-              <span className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-sand-deep bg-white px-3 py-1 text-[0.62rem] tracking-[0.14em] text-taupe uppercase">
-                <ClockIcon width={13} height={13} aria-hidden />
-                {formatDuration(service.durationMin)}
-              </span>
-            </div>
+        const prix = promo ? promo.price : service.price;
+        /* « Sur devis », « Sur demande » : un tarif en toutes lettres tient la
+           même encre mais un corps plus mesuré, sinon il mange le nom. */
+        const tarifEnLettres = !/\d/.test(prix);
 
-            <div className="flex shrink-0 flex-col items-end gap-3 text-right">
+        return (
+          <Reveal key={service.id} delay={Math.min(index, 4) * 70}>
+            <li
+              className={cn("carte-tarif", gold && "carte-tarif-or")}
+            >
+              {/* Le bandeau promo prend toute la largeur : à 375 px, collé au
+                  tarif, il n'aurait plus laissé de place au nom. */}
               {promo ? (
-                <div className="flex flex-col items-end gap-2">
-                  <span
-                    className={cn(
-                      "inline-flex items-center rounded-full border px-3 py-1 text-[0.56rem] tracking-[0.16em] whitespace-nowrap uppercase",
-                      gold
-                        ? "border-gold/50 bg-gold/10 text-gold"
-                        : "border-bronze/50 bg-bronze/10 text-bronze",
-                    )}
-                  >
-                    Promo · {promo.until}
-                  </span>
-                  <p
-                    className={cn(
-                      "font-display text-xl leading-none whitespace-nowrap md:text-2xl",
-                      gold ? "text-gold" : "text-bronze",
-                    )}
-                  >
-                    {promo.price}
-                  </p>
-                </div>
-              ) : (
                 <p
                   className={cn(
-                    "font-display text-xl leading-none whitespace-nowrap md:text-2xl",
-                    gold ? "text-gold" : "text-bronze",
+                    "mb-2.5 inline-flex items-center rounded-full border px-3 py-1 text-[0.65rem] font-normal tracking-[0.14em] uppercase",
+                    gold
+                      ? "border-gold-deep/40 bg-gold/15 text-gold-deep"
+                      : "border-bronze-dark/40 bg-bronze/12 text-bronze-dark",
                   )}
                 >
-                  {service.price}
+                  Promo · {promo.until}
                 </p>
-              )}
-              <Link
-                href={`/rendez-vous?service=${service.id}`}
-                aria-label={`Réserver : ${service.name}`}
-                className={cn(
-                  "inline-flex h-10 items-center justify-center rounded-[2px] border px-5 text-[0.66rem] tracking-[0.18em] uppercase transition-colors duration-300",
-                  gold
-                    ? "border-gold/55 text-gold hover:bg-gold hover:text-ivory"
-                    : "border-bronze/50 text-bronze hover:bg-bronze hover:text-ivory",
-                )}
-              >
-                Réserver
-              </Link>
-            </div>
-          </li>
-        </Reveal>
+              ) : null}
+
+              {/* Ligne de balayage : nom et tarif sur la même ligne de base. */}
+              <div className="flex items-baseline justify-between gap-4">
+                <h3 className="font-display min-w-0 text-[1.22rem] leading-tight font-semibold md:text-[1.35rem]">
+                  {service.name}
+                </h3>
+                <p className={cn("tarif", tarifEnLettres && "tarif-mention")}>
+                  {prix}
+                </p>
+              </div>
+
+              <p className="mt-2 max-w-md text-[0.875rem] leading-relaxed text-taupe">
+                {service.description}
+              </p>
+
+              <div className="mt-4 flex items-center justify-between gap-3">
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-sand-deep bg-ivory px-3 py-1.5 text-[0.68rem] tracking-[0.12em] text-taupe uppercase">
+                  <ClockIcon width={13} height={13} aria-hidden />
+                  {formatDuration(service.durationMin)}
+                </span>
+                <Link
+                  href={`/rendez-vous?service=${service.id}`}
+                  aria-label={`Réserver : ${service.name}`}
+                  /* h-11 = 44 px : la cible tactile minimale de la charte. */
+                  className={cn(
+                    "inline-flex h-11 shrink-0 items-center justify-center rounded-[2px] border px-5 text-[0.66rem] tracking-[0.18em] uppercase transition-colors duration-300",
+                    gold
+                      ? "border-gold-deep/45 text-gold-deep hover:bg-gold-deep hover:text-ivory"
+                      : "border-bronze-dark/45 text-bronze-dark hover:bg-bronze-dark hover:text-ivory",
+                  )}
+                >
+                  Réserver
+                </Link>
+              </div>
+            </li>
+          </Reveal>
         );
       })}
     </ul>

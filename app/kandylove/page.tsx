@@ -24,7 +24,7 @@ const MAQUILLAGE_GROUPES = [
 ] as const;
 
 const CHIP_CLASS =
-  "inline-flex h-10 items-center rounded-full border border-bronze/40 bg-white/80 px-5 text-[0.66rem] tracking-[0.18em] text-bronze uppercase transition-colors duration-300 hover:bg-bronze hover:text-ivory";
+  "inline-flex h-11 items-center rounded-full border border-bronze-dark/40 bg-white/80 px-5 text-[0.66rem] tracking-[0.18em] text-bronze-dark uppercase transition-colors duration-300 hover:bg-bronze-dark hover:text-ivory";
 
 export default function KandylovePage() {
   return (
@@ -134,7 +134,7 @@ export default function KandylovePage() {
                 href="https://instagram.com/kandylovebeauty"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-bronze hover:underline"
+                className="text-bronze-dark hover:underline"
               >
                 @kandylovebeauty
               </a>
@@ -171,8 +171,9 @@ export default function KandylovePage() {
           <div>
             {MAQUILLAGE_GROUPES.map((groupe, index) => (
               <div key={groupe.label} className={index > 0 ? "mt-10" : undefined}>
-                <Reveal>
-                  <p className="overline-label mb-3">{groupe.label}</p>
+                <Reveal className="mb-4 flex items-center gap-4">
+                  <p className="overline-label shrink-0">{groupe.label}</p>
+                  <span aria-hidden className="hairline flex-1" />
                 </Reveal>
                 <ServiceMenu
                   services={groupe.ids

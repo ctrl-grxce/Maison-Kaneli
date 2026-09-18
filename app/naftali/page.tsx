@@ -46,7 +46,7 @@ export default function NaftaliPage() {
         title={
           <>
             L&apos;art du regard, signé{" "}
-            <em className="text-gold">Naftali</em>
+            <em className="text-gold-deep">Naftali</em>
           </>
         }
         intro="Le pôle regard de Maison Kanali, dirigé par sa fondatrice Viminde Nafi : du cil à cil le plus naturel au volume russe le plus couture."
@@ -68,13 +68,13 @@ export default function NaftaliPage() {
           </Reveal>
           <div className="text-center md:text-left">
             <Reveal>
-              <p className="overline-label text-gold">
+              <p className="overline-label text-gold-deep">
                 Offre spéciale · jusqu&apos;à fin octobre
               </p>
             </Reveal>
             <Reveal delay={90}>
               <h2 className="font-display mt-4 text-3xl leading-[1.12] font-medium md:text-[2.4rem]">
-                Toutes les poses à <em className="text-gold">40 €</em>
+                Toutes les poses à <em className="text-gold-deep">40 €</em>
               </h2>
             </Reveal>
             <Reveal delay={180}>
@@ -103,7 +103,7 @@ export default function NaftaliPage() {
             overline="Extensions de cils"
             title={
               <>
-                La carte <em className="text-gold">des poses</em>
+                La carte <em className="text-gold-deep">des poses</em>
               </>
             }
             intro="Toutes les poses sont à 40 € jusqu'à fin octobre, la dépose est à 20 € en prix normal — l'effet, lui, se dessine avec vous à la réservation."
@@ -130,7 +130,7 @@ export default function NaftaliPage() {
           overline="Dans l'atelier regard"
           title={
             <>
-              Le geste, <em className="text-gold">en précision</em>
+              Le geste, <em className="text-gold-deep">en précision</em>
             </>
           }
           intro="Cil après cil, à la pince, dans le plus grand calme : la pose Naftali est un travail d'orfèvre."
@@ -193,7 +193,7 @@ export default function NaftaliPage() {
             {RITUAL.map((step, index) => (
               <Reveal key={step.title} delay={index * 120}>
                 <div className="flex flex-col items-center text-center">
-                  <span className="flex h-14 w-14 items-center justify-center rounded-t-full border border-gold/40 bg-ivory text-gold">
+                  <span className="flex h-14 w-14 items-center justify-center rounded-t-full border border-gold/40 bg-ivory text-gold-deep">
                     <step.icon width={24} height={24} />
                   </span>
                   <h3 className="font-display mt-4 text-xl font-medium">
@@ -214,10 +214,10 @@ export default function NaftaliPage() {
         <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 px-4 py-12 md:flex-row md:items-center md:px-8 md:py-16">
           <Reveal>
             <div>
-              <p className="overline-label text-gold">Formation professionnelle</p>
+              <p className="overline-label text-gold-deep">Formation professionnelle</p>
               <h2 className="font-display mt-3 text-2xl font-medium md:text-3xl">
                 Apprenez l&apos;extension de cils{" "}
-                <em className="text-gold">auprès de Naftali</em>
+                <em className="text-gold-deep">auprès de Naftali</em>
               </h2>
             </div>
           </Reveal>

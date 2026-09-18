@@ -54,7 +54,7 @@ function validateFields(values: FieldValues): FieldErrors {
 /** Pastille d'étape — l'arche signature de la maison. */
 function StepBadge({ number }: { number: number }) {
   return (
-    <span className="flex h-8 w-8 items-center justify-center rounded-t-full border border-bronze/60 bg-blush text-[0.7rem] text-bronze">
+    <span className="flex h-8 w-8 items-center justify-center rounded-t-full border border-bronze-dark/60 bg-blush text-[0.7rem] text-bronze-dark">
       {number}
     </span>
   );
@@ -218,7 +218,7 @@ export function InscriptionForm() {
                   }}
                   aria-pressed={active}
                   className={cn(
-                    "flex w-full items-center gap-4 border p-5 text-left transition-all duration-300",
+                    "flex w-full flex-col items-start gap-2 border p-5 text-left transition-all duration-300 sm:flex-row sm:items-center sm:gap-4",
                     active
                       ? gold
                         ? "border-gold bg-[#f7f0e2]"
@@ -226,8 +226,8 @@ export function InscriptionForm() {
                       : "border-sand-deep bg-white hover:border-bronze/40",
                   )}
                 >
-                  <span className="flex-1">
-                    <span className="font-display block text-lg leading-tight font-medium md:text-xl">
+                  <span className="w-full sm:flex-1">
+                    <span className="font-display block text-lg leading-tight font-semibold md:text-xl">
                       {item.name}
                     </span>
                     <span className="mt-1 block text-sm text-taupe">
@@ -236,8 +236,8 @@ export function InscriptionForm() {
                   </span>
                   <span
                     className={cn(
-                      "font-display text-lg whitespace-nowrap md:text-xl",
-                      gold ? "text-gold" : "text-bronze",
+                      "tarif text-[1.25rem]",
+                      !/\d/.test(item.priceLabel) && "tarif-mention",
                     )}
                   >
                     {item.priceLabel}
@@ -277,7 +277,7 @@ export function InscriptionForm() {
                     )}
                   >
                     <span className="text-sm">{option.label}</span>
-                    <span className="font-display text-lg text-bronze">
+                    <span className="tarif text-[1.25rem]">
                       {option.price}
                     </span>
                   </button>

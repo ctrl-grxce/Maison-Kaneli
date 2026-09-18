@@ -11,6 +11,11 @@
   --color-bronze-dark: #8a5c3d;
   --color-gold: #c2a05f;
   --color-gold-soft: #d9c294;
+  /* Or profond — le fil d'or Naftali (#c2a05f) ne dépasse pas 2,4:1 sur nos
+     fonds clairs : illisible dès qu'il porte une information. Cette
+     déclinaison assombrie tient l'AA (≥ 4,8:1 partout) et reste dorée ;
+     elle sert pour TOUT texte or, le #c2a05f restant aux filets et bordures. */
+  --color-gold-deep: #7d6426;
   --color-espresso: #2e241c;
   /* Taupe assombri d'un cheveu (ex-#80705f) : lisible sur sable ET ivoire (WCAG AA). */
   --color-taupe: #776858;
@@ -208,6 +213,79 @@
 
   .field-error {
     border-color: #b3543f;
+  }
+
+  /* ── Carte tarifaire ───────────────────────────────────────
+     Une prestation = un bloc blanc cerné. En liste simplement divisée,
+     les prestations se fondaient les unes dans les autres : au pouce,
+     sur un téléphone, l'œil n'avait aucun repère pour isoler « la ligne
+     qu'il cherche ». Un fond et un filet propres à chaque prestation
+     règlent ça avant même la question des couleurs. */
+  .carte-tarif {
+    background-color: #fff;
+    border: 1px solid var(--color-sand-deep);
+    border-radius: 2px;
+    padding: 1.15rem 1.15rem 1.05rem;
+    transition: border-color 0.35s var(--ease-lux);
+  }
+
+  .carte-tarif:hover {
+    border-color: color-mix(
+      in srgb,
+      var(--color-bronze) 50%,
+      var(--color-sand-deep)
+    );
+  }
+
+  /* Variante Naftali : le filet d'or signe le pôle regard. */
+  .carte-tarif-or {
+    border-color: color-mix(in srgb, var(--color-gold) 45%, #fff);
+  }
+
+  .carte-tarif-or:hover {
+    border-color: color-mix(in srgb, var(--color-gold) 80%, #fff);
+  }
+
+  @media (min-width: 768px) {
+    .carte-tarif {
+      padding: 1.4rem 1.5rem 1.3rem;
+    }
+  }
+
+  /* ── Tarif ─────────────────────────────────────────────────
+     Ce que la cliente cherche en premier avec le nom. Il était en bronze
+     clair (3,8:1) ou en or (2,4:1) — plus pâle que la description juste
+     à côté, donc invisible au balayage. Désormais à l'encre espresso
+     (≥ 13:1 sur tous nos fonds), en graisse 600 et d'un corps supérieur
+     au nom : c'est le point d'ancrage du bloc. */
+  .tarif {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: var(--color-espresso);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (min-width: 768px) {
+    .tarif {
+      font-size: 1.7rem;
+    }
+  }
+
+  /* « Sur devis », « Sur demande » : même encre, corps plus mesuré —
+     un tarif écrit en toutes lettres ne doit pas écraser le nom de la
+     prestation à 375 px de large. */
+  .tarif-mention {
+    font-size: 1.1rem;
+    letter-spacing: 0.01em;
+  }
+
+  @media (min-width: 768px) {
+    .tarif-mention {
+      font-size: 1.2rem;
+    }
   }
 
   /* ── Apparitions au scroll ─────────────────────────────── */
