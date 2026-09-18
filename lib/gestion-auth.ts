@@ -32,12 +32,17 @@ function sign(payload: string, code: string): string {
   return createHmac("sha256", signingKey(code)).update(payload).digest("hex");
 }
 
-/** Comparaison en temps constant (évite les attaques par chronométrage). */
+/**
+ * Comparaison en temps constant (évite les attaques par chronométrage).
+ * On compare les empreintes plutôt que les chaînes : elles font toujours la
+ * même taille, donc le chronomètre ne trahit plus non plus la LONGUEUR du
+ * code secret — premier renseignement utile à qui veut le deviner.
+ */
 export function safeEqual(a: string, b: string): boolean {
-  const bufA = Buffer.from(a);
-  const bufB = Buffer.from(b);
-  if (bufA.length !== bufB.length) return false;
-  return timingSafeEqual(bufA, bufB);
+  return timingSafeEqual(
+    createHash("sha256").update(a).digest(),
+    createHash("sha256").update(b).digest(),
+  );
 }
 
 /** true si le code soumis est le bon. */
@@ -73,6 +78,19 @@ export function verifySessionValue(
 
 /** Durée de vie du cookie, en secondes (pour l'en-tête Set-Cookie). */
 export const SESSION_MAX_AGE_SECONDS = SESSION_DAYS * 24 * 60 * 60;
+
+/**
+ * Attributs du cookie, au même endroit pour la pose et pour l'effacement.
+ * `strict` est tenable ici : l'écran de gestion charge tout en JavaScript
+ * depuis le site lui-même, donc aucune requête légitime ne vient d'ailleurs —
+ * et un site tiers ne peut plus déclencher d'annulation au nom des filles.
+ */
+export const SESSION_COOKIE_OPTIONS = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "strict",
+  path: "/",
+} as const;
 
 /** Extrait la valeur du cookie de gestion d'une requête. */
 export function sessionFromRequest(request: Request): string | undefined {

@@ -41,11 +41,27 @@ const securityHeaders = [
   },
 ];
 
+/*
+ * L'espace de gestion sert des noms, téléphones et emails de clientes. Ces
+ * réponses ne doivent dormir dans aucun cache (navigateur laissé ouvert, CDN,
+ * proxy d'entreprise ou de FAI) ni finir dans un moteur de recherche — le
+ * `noindex` de la page ne couvre pas les réponses de l'API.
+ */
+const adminHeaders = [
+  { key: "Cache-Control", value: "no-store, max-age=0" },
+  { key: "X-Robots-Tag", value: "noindex, nofollow, noarchive" },
+];
+
+const adminSources = ["/gestion", "/gestion/:path*", "/api/gestion/:path*"];
+
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   async headers() {
-    return [{ source: "/(.*)", headers: securityHeaders }];
+    return [
+      { source: "/(.*)", headers: securityHeaders },
+      ...adminSources.map((source) => ({ source, headers: adminHeaders })),
+    ];
   },
 };
 

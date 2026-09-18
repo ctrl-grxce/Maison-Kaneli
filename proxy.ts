@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest, type NextFetchEvent } from "next/server";
 import { classifyThreat, decoyPayload } from "@/lib/honeypots";
+import { allBlocked } from "@/lib/lockdown";
 
 /*
  * Proxy Edge (ex-middleware) — première ligne de défense, exécutée AVANT
@@ -50,8 +51,40 @@ function report(
   );
 }
 
+const MESSAGE_CADENAS =
+  "L'espace de gestion est temporairement fermé (cadenas de sécurité).";
+
+/** true pour /gestion et tout ce qui sert ses données. */
+function estEspaceDeGestion(pathname: string): boolean {
+  return (
+    pathname === "/gestion" ||
+    pathname.startsWith("/gestion/") ||
+    pathname.startsWith("/api/gestion")
+  );
+}
+
 export function proxy(request: NextRequest, event: NextFetchEvent) {
   const { pathname, search } = request.nextUrl;
+
+  /* Cadenas total (SECURITY_LOCKDOWN=3) : l'espace de gestion est la porte la
+     plus fournie en données de clientes, il se ferme donc avec le reste — et
+     dès la bordure, sans même réveiller la base. */
+  if (allBlocked() && estEspaceDeGestion(pathname)) {
+    const estApi = pathname.startsWith("/api/");
+    return new NextResponse(
+      estApi ? JSON.stringify({ error: MESSAGE_CADENAS }) : MESSAGE_CADENAS,
+      {
+        status: 503,
+        headers: {
+          "content-type": estApi
+            ? "application/json"
+            : "text/plain; charset=utf-8",
+          "cache-control": "no-store",
+        },
+      },
+    );
+  }
+
   const verdict = classifyThreat(pathname, pathname + search);
 
   if (verdict.hit) {

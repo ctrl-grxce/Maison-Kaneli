@@ -23,8 +23,29 @@ function prune(now: number): void {
 
 /** Adresse IP de la cliente (en-tête posé par Vercel / le proxy). */
 export function clientIp(request: Request): string {
-  const forwarded = request.headers.get("x-forwarded-for");
-  return forwarded?.split(",")[0]?.trim() || "unknown";
+  /* `x-forwarded-for` est écrit librement par le client : s'en contenter
+     offrirait une adresse neuve à chaque essai, donc un nombre illimité de
+     tentatives. On préfère les en-têtes que Vercel pose (et réécrit) lui-même,
+     et on ne retombe sur le premier saut qu'en développement local. */
+  const trusted =
+    request.headers.get("x-vercel-forwarded-for") ??
+    request.headers.get("x-real-ip") ??
+    request.headers.get("x-forwarded-for");
+  return trusted?.split(",")[0]?.trim() || "unknown";
+}
+
+/** Incrémente le compteur d'une clé et renvoie son total dans la fenêtre. */
+function bump(scope: string, id: string, windowMs: number): number {
+  const now = Date.now();
+  prune(now);
+  const key = `${scope}:${id}`;
+  const bucket = buckets.get(key);
+  if (!bucket || bucket.resetAt <= now) {
+    buckets.set(key, { count: 1, resetAt: now + windowMs });
+    return 1;
+  }
+  bucket.count += 1;
+  return bucket.count;
 }
 
 /** true si la requête passe, false si la limite est atteinte. */
@@ -34,16 +55,35 @@ export function rateLimit(
   limit: number,
   windowMs: number,
 ): boolean {
-  const now = Date.now();
-  prune(now);
-  const key = `${scope}:${id}`;
-  const bucket = buckets.get(key);
-  if (!bucket || bucket.resetAt <= now) {
-    buckets.set(key, { count: 1, resetAt: now + windowMs });
-    return true;
-  }
-  bucket.count += 1;
-  return bucket.count <= limit;
+  return bump(scope, id, windowMs) <= limit;
+}
+
+/*
+ * Compteurs d'échecs — pour les formulaires à secret (le code de /gestion).
+ * Là, seule une tentative RATÉE doit coûter : une saisie juste ne doit jamais
+ * rapprocher Kandy & Nafi du verrou, alors qu'une rafale de codes faux doit
+ * s'arrêter net.
+ */
+
+/** Nombre d'échecs déjà enregistrés, sans faire monter le compteur. */
+export function failureCount(scope: string, id: string): number {
+  const bucket = buckets.get(`${scope}:${id}`);
+  if (!bucket || bucket.resetAt <= Date.now()) return 0;
+  return bucket.count;
+}
+
+/** Enregistre un échec et renvoie le total dans la fenêtre. */
+export function recordFailure(
+  scope: string,
+  id: string,
+  windowMs: number,
+): number {
+  return bump(scope, id, windowMs);
+}
+
+/** Remet le compteur à zéro après une réussite. */
+export function clearFailures(scope: string, id: string): void {
+  buckets.delete(`${scope}:${id}`);
 }
 
 /**
