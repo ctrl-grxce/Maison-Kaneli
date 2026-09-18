@@ -251,6 +251,7 @@ automatiques à la cliente quand la maison annule ou déplace.
 
 ## 📖 Journal de progression
 
+- **18/09 (après lancement)** : accueil « Nos services » (cartes titrées « Ongles & maquillage » / « Extensions de cils », pastilles de prestations) ; **formation onglerie 350 € sans kit / 420 € avec kit** (avant 650/720). Déployé et vérifié en ligne.
 - **18/09 ~20h — LANCEMENT** : paiement réel testé de bout en bout par Gradi (« tout marche »), prestation à 1 € retirée, signalement de sécurité fermé par défaut. **Reste après lancement** : référencement (Search Console + Bing), médiateur de la consommation, tarifs de la page d'accueil à contraster (3,96:1), débordement de 5 px sur /formations en mobile, rate limit partagé entre instances.
 - **18/09 (soir) — retours de Gradi et de Nafi, tout codé et poussé, RIEN
   DÉPLOYÉ depuis le déploiement du paiement** :
