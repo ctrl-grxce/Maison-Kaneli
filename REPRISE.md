@@ -2,7 +2,7 @@
 
 *Fichier de bord demandé par Gradi (29/08/2026). **Claude : lis ce fichier en
 premier à chaque reprise d'une conversation sur Maison Kanali**, et mets-le à
-jour à chaque avancée. Dernière mise à jour : **18/09/2026**.*
+jour à chaque avancée. Dernière mise à jour : **19/09/2026**.*
 
 ## 🚦 En ce moment
 
@@ -33,8 +33,8 @@ statut entrepreneur : **une seule constante `LEGAL` dans `lib/config.ts`**).
 | Élément | État |
 |---|---|
 | Production | ✅ **https://maisonkanali.fr** (HTTPS, redirections 308 depuis www et maison-kanali.vercel.app) |
-| Dernier déploiement | ✅ 29/08 — dépose cils **20 € prix normal** (commit `40f7f1f`), vérifié en prod le 30/08 |
-| Réservation en ligne | ✅ Wizard 4 étapes, anti-chevauchement testé (409), créneaux 10h–18h (une prestation doit *finir* à 18h) |
+| Dernier déploiement | ✅ 19/09 — créneaux jusqu'à 17h (commit `ba47f09`), vérifié en ligne |
+| Réservation en ligne | ✅ Wizard 4 étapes, anti-chevauchement testé (409), **créneaux de 10h à 17h pour toutes les prestations** (dernier départ 17h, même si la prestation finit après 18h) |
 | Emails | ✅ Notification maison + ticket cliente (PDF A5 + invitation .ics) via Gmail `gradipalaba28@gmail.com`, reply-to maisonkanali@gmail.com |
 | Promo cils | ✅ Les 4 poses à 40 € jusqu'au 31/10 (expiration automatique) ; la dépose est HORS promo (20 € définitif) |
 | Base | ✅ Supabase `aatzhqzntpzubkvnriop` (eu-west-3, gratuit) + cron Vercel 6h UTC → `/api/health` (anti-pause) |
@@ -121,6 +121,11 @@ bloc se fait dans le dashboard Vercel, par Gradi.
 
 - [ ] Retouches design (liste à préciser par Gradi)
 - [ ] (reporté par Gradi) Compresser `public/videos/hero.mp4` 11 MB → ~3 MB
+- [ ] (proposé le 19/09, pas encore validé) /gestion — deux pièges relevés :
+      ① Indisponibilités : le pôle par défaut est Kandylove Beauty, donc Nafi
+      ferme l'agenda de Kandy si elle oublie d'appuyer sur « Naftali » →
+      obliger à choisir ; ② les rendez-vous sans acompte (dépose, mariée)
+      restent « À confirmer » à vie, aucun bouton « Confirmer ».
 - [x] **Gestion des rendez-vous** — codée et testée le 03/09 (ci-dessous)
 
 ### 📅 Chantier gestion des rendez-vous (état au 03/09)
@@ -251,6 +256,7 @@ automatiques à la cliente quand la maison annule ou déplace.
 
 ## 📖 Journal de progression
 
+- **19/09** : demande des fondatrices : **on réserve jusqu'à 17h00 pour TOUTES les prestations**, même quand la prestation finit après 18h (volume russe à 17h → 19h30). Avant, le dernier départ était 18h − durée (15h30 pour un volume russe). Seule la dépose perd un créneau (17h30 → 17h00). Nouveau réglage `OPENING.lastStartMinutes` dans `lib/config.ts` et règle unique `isBookableStart` pour le site, la réservation et le déplacement dans /gestion. La fermeture affichée reste 10h–18h. 7 tests ajoutés (52 au total), typecheck et build OK. Vérifié en local : 15 créneaux de 10h à 17h pour chaque prestation, 17h30 refusé par le serveur. **Déployé (commit `ba47f09`) et vérifié en ligne** : 15 créneaux de 10h à 17h pour chaque prestation sur maisonkanali.fr.
 - **18/09 (après lancement)** : accueil « Nos services » (cartes titrées « Ongles & maquillage » / « Extensions de cils », pastilles de prestations) ; **formation onglerie 350 € sans kit / 420 € avec kit** (avant 650/720). Déployé et vérifié en ligne.
 - **18/09 ~20h — LANCEMENT** : paiement réel testé de bout en bout par Gradi (« tout marche »), prestation à 1 € retirée, signalement de sécurité fermé par défaut. **Reste après lancement** : référencement (Search Console + Bing), médiateur de la consommation, tarifs de la page d'accueil à contraster (3,96:1), débordement de 5 px sur /formations en mobile, rate limit partagé entre instances.
 - **18/09 (soir) — retours de Gradi et de Nafi, tout codé et poussé, RIEN
@@ -314,5 +320,5 @@ npx vercel deploy --prod --yes --scope gradipalaba28-7081s-projects   # déploye
 ## 🧠 Rappels de contenu (validés par les fondatrices)
 
 - **UNE maison, DEUX pôles** — jamais « deux maisons » ni « deux entreprises ». Les DEUX sœurs sont **co-fondatrices de Maison Kanali** ; chacune est fondatrice de SA marque : Viminde Kandy → **Kandylove Beauty** (ongles, maquillage, formations) ; Viminde Nafi → **Naftali** (cils).
-- Horaires : lundi–samedi, 10h–18h, sur rendez-vous uniquement.
+- Horaires : lundi–samedi, 10h–18h, sur rendez-vous uniquement. **Dernier rendez-vous à 17h, quelle que soit la prestation** (fondatrices, 19/09).
 - Réservations : pas de 30 min, 90 min de délai minimum le jour même, horizon 60 jours, heure de Paris.
