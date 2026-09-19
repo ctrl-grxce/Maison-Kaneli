@@ -79,10 +79,24 @@ export function isBookableDate(isoDate: string, today = parisNow().date): boolea
 }
 
 /**
+ * true si un rendez-vous peut commencer à cette heure : sur la grille des
+ * 30 min, entre l'ouverture et le dernier départ (17h00), quelle que soit la
+ * durée de la prestation. Même règle pour la réservation et le déplacement.
+ */
+export function isBookableStart(startMin: number): boolean {
+  return (
+    startMin >= OPENING.openMinutes &&
+    startMin <= OPENING.lastStartMinutes &&
+    (startMin - OPENING.openMinutes) % OPENING.slotStepMinutes === 0
+  );
+}
+
+/**
  * Construit la grille des créneaux d'une journée pour une prestation donnée :
- * départs tous les 30 min, la prestation doit se terminer avant la fermeture
- * et ne chevaucher aucune réservation existante. Pour aujourd'hui, un délai
- * minimal de préparation est appliqué.
+ * départs tous les 30 min jusqu'au dernier départ (17h00) — une prestation
+ * longue peut donc finir après la fermeture — sans chevaucher aucune
+ * réservation existante. Pour aujourd'hui, un délai minimal de préparation
+ * est appliqué.
  */
 export function buildSlots(
   isoDate: string,
@@ -91,11 +105,10 @@ export function buildSlots(
   now = parisNow(),
 ): Slot[] {
   const slots: Slot[] = [];
-  const lastStart = OPENING.closeMinutes - durationMin;
 
   for (
     let start = OPENING.openMinutes;
-    start <= lastStart;
+    start <= OPENING.lastStartMinutes;
     start += OPENING.slotStepMinutes
   ) {
     const end = start + durationMin;

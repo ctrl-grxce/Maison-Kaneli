@@ -24,6 +24,7 @@ import {
 import { writesBlocked, throttleFactor, LOCKDOWN_MESSAGE } from "@/lib/lockdown";
 import {
   isBookableDate,
+  isBookableStart,
   minutesToTime,
   parisNow,
   timeToMinutes,
@@ -96,14 +97,8 @@ export async function POST(request: Request) {
 
   const startMin = timeToMinutes(input.time);
   const endMin = startMin + service.durationMin;
-  const misaligned =
-    (startMin - OPENING.openMinutes) % OPENING.slotStepMinutes !== 0;
 
-  if (
-    startMin < OPENING.openMinutes ||
-    endMin > OPENING.closeMinutes ||
-    misaligned
-  ) {
+  if (!isBookableStart(startMin)) {
     return NextResponse.json(
       { error: "Ce créneau est en dehors des horaires d'ouverture." },
       { status: 400 },

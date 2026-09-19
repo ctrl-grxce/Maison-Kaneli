@@ -9,9 +9,13 @@ export const OPENING = {
   openDays: [1, 2, 3, 4, 5, 6],
   /** Ouverture, en minutes depuis minuit (10h00). */
   openMinutes: 10 * 60,
-  /** Fermeture, en minutes depuis minuit (18h00). Une prestation doit se
-   *  terminer au plus tard à cette heure (cf. lib/availability.ts). */
+  /** Fermeture affichée, en minutes depuis minuit (18h00). Borne aussi les
+   *  indisponibilités posées dans /gestion. */
   closeMinutes: 18 * 60,
+  /** Dernier départ de rendez-vous (17h00), pour TOUTES les prestations,
+   *  même si la prestation finit après la fermeture (décision des
+   *  fondatrices du 19/09/2026 — cf. lib/availability.ts). */
+  lastStartMinutes: 17 * 60,
   /** Pas entre deux débuts de créneaux, en minutes. */
   slotStepMinutes: 30,
   /** Délai minimal avant un rendez-vous (réservation le jour même), en minutes. */

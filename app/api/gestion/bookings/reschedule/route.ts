@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { OPENING } from "@/lib/config";
 import { guardGestion, adminClientOr503, bookingReference } from "@/lib/gestion-api";
 import { sendRescheduleEmail } from "@/lib/email";
 import { BRAND_LABELS, formatEuros, remainderLabelFor, type Brand } from "@/lib/services";
 import {
   isBookableDate,
+  isBookableStart,
   minutesToTime,
   timeToMinutes,
 } from "@/lib/availability";
@@ -77,13 +77,7 @@ export async function POST(request: Request) {
   const durationMin = Number(booking.duration_min);
   const startMin = timeToMinutes(time);
   const endMin = startMin + durationMin;
-  const misaligned =
-    (startMin - OPENING.openMinutes) % OPENING.slotStepMinutes !== 0;
-  if (
-    startMin < OPENING.openMinutes ||
-    endMin > OPENING.closeMinutes ||
-    misaligned
-  ) {
+  if (!isBookableStart(startMin)) {
     return NextResponse.json(
       { error: "Ce créneau est en dehors des horaires d'ouverture." },
       { status: 400 },
