@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { FORMATIONS } from "@/lib/services";
 import { cn } from "@/lib/utils";
+import { PAGES, pageMetadata } from "@/lib/seo";
 import { PageHero } from "@/components/ui/PageHero";
 import { Reveal } from "@/components/ui/Reveal";
 import { SectionHeading } from "@/components/ui/SectionHeading";
@@ -9,11 +10,7 @@ import { MobileBookBar } from "@/components/layout/MobileBookBar";
 import { CheckIcon, DiplomaIcon } from "@/components/ui/icons";
 import { InscriptionForm } from "@/components/formations/InscriptionForm";
 
-export const metadata: Metadata = {
-  title: "Formations professionnelles",
-  description:
-    "Formations professionnelles Maison Kanali : coaching privé onglerie (2 jours, certificat inclus) par Kandylove Beauty et formation extensions de cils par Naftali.",
-};
+export const metadata: Metadata = pageMetadata(PAGES.formations);
 
 export default function FormationsPage() {
   return (

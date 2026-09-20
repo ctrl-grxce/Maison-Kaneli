@@ -1,20 +1,13 @@
 import type { MetadataRoute } from "next";
 import { SITE } from "@/lib/config";
+import { PAGES } from "@/lib/seo";
 
+/* Les pages publiques de lib/seo.ts, et elles seules. */
 export default function sitemap(): MetadataRoute.Sitemap {
-  const routes = [
-    "",
-    "/kandylove",
-    "/naftali",
-    "/formations",
-    "/rendez-vous",
-    "/a-propos",
-  ];
-
-  return routes.map((route) => ({
-    url: `${SITE.url}${route}`,
+  return Object.values(PAGES).map(({ path }) => ({
+    url: `${SITE.url}${path === "/" ? "" : path}`,
     lastModified: new Date(),
     changeFrequency: "monthly",
-    priority: route === "" ? 1 : route === "/rendez-vous" ? 0.9 : 0.7,
+    priority: path === "/" ? 1 : path === "/rendez-vous" ? 0.9 : 0.7,
   }));
 }

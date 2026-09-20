@@ -39,6 +39,7 @@ export const OPENING_HOURS_ISO = {
 
 export const CONTACT = {
   city: "Saint-Quentin",
+  postalCode: "02100",
   region: "Hauts-de-France",
   /** Email public de la maison — affiché pour les questions et demandes de
    *  remboursement (page de confirmation de paiement, facture d'acompte). */

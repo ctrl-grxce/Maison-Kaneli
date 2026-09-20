@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { CONTACT } from "@/lib/config";
+import { PAGES, pageMetadata } from "@/lib/seo";
 import { PageHero } from "@/components/ui/PageHero";
 import { Reveal } from "@/components/ui/Reveal";
 import { SectionHeading } from "@/components/ui/SectionHeading";
@@ -16,11 +17,7 @@ import {
   DiplomaIcon,
 } from "@/components/ui/icons";
 
-export const metadata: Metadata = {
-  title: "À propos",
-  description:
-    "L'histoire de Maison Kanali : un showroom beauté sur rendez-vous fondé à Saint-Quentin par Viminde Kandy et Viminde Nafi, autour de Kandylove Beauty et Naftali.",
-};
+export const metadata: Metadata = pageMetadata(PAGES.aPropos);
 
 const VALUES = [
   {

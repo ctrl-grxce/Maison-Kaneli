@@ -2,12 +2,9 @@ import type { Metadata } from "next";
 import { BookingWizard } from "@/components/booking/BookingWizard";
 import { Reveal } from "@/components/ui/Reveal";
 import { paymentsEnabled } from "@/lib/stripe";
+import { PAGES, pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Prendre rendez-vous",
-  description:
-    "Réservez votre prestation Maison Kanali en ligne : ongles et maquillage par Kandylove Beauty, extensions de cils par Naftali. Choisissez votre créneau en quelques instants.",
-};
+export const metadata: Metadata = pageMetadata(PAGES.rendezVous);
 
 interface PageProps {
   searchParams: Promise<{ service?: string; formation?: string }>;

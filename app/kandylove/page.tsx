@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { getService, servicesByCategory } from "@/lib/services";
+import { PAGES, pageMetadata } from "@/lib/seo";
 import { PageHero } from "@/components/ui/PageHero";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { ServiceMenu } from "@/components/ui/ServiceMenu";
@@ -10,11 +11,7 @@ import { MobileBookBar } from "@/components/layout/MobileBookBar";
 import { CtaBand } from "@/components/home/CtaBand";
 import { ArrowRightIcon, SparkleIcon } from "@/components/ui/icons";
 
-export const metadata: Metadata = {
-  title: "Kandylove Beauty — Onglerie & Maquillage",
-  description:
-    "Prothésie ongulaire (pose gel, remplissage, nail art) et maquillage professionnel (mariée, naturel, full face) par Kandylove Beauty, le pôle beauté de Maison Kanali à Saint-Quentin.",
-};
+export const metadata: Metadata = pageMetadata(PAGES.kandylove);
 
 /* Regroupement du maquillage — même logique que le flyer TARIF. */
 const MAQUILLAGE_GROUPES = [

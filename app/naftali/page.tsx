@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { servicesByCategory } from "@/lib/services";
+import { PAGES, pageMetadata } from "@/lib/seo";
 import { PageHero } from "@/components/ui/PageHero";
 import { ServiceMenu } from "@/components/ui/ServiceMenu";
 import { Reveal } from "@/components/ui/Reveal";
@@ -13,11 +14,7 @@ import { ArrowRightIcon, EyeIcon, PetalIcon, SparkleIcon } from "@/components/ui
 /* Regénéré chaque jour : la promo cils expire ainsi toute seule fin octobre. */
 export const revalidate = 86400;
 
-export const metadata: Metadata = {
-  title: "Naftali — Extensions de cils",
-  description:
-    "Naftali, by Maison Kanali : extensions de cils cil à cil, pose mixte et volume russe à Saint-Quentin. Un regard signé, sur rendez-vous.",
-};
+export const metadata: Metadata = pageMetadata(PAGES.naftali);
 
 const RITUAL = [
   {

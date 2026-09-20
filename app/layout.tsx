@@ -2,7 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Jost } from "next/font/google";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { CONTACT, OPENING_HOURS_ISO, SITE } from "@/lib/config";
+import { SITE } from "@/lib/config";
+import { OPEN_GRAPH, STRUCTURED_DATA, TITLE_SUFFIX } from "@/lib/seo";
 import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
@@ -24,69 +25,20 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
   title: {
     default: `${SITE.name} — ${SITE.tagline}`,
-    template: `%s — ${SITE.name}`,
+    template: `%s${TITLE_SUFFIX}`,
   },
   description: SITE.description,
+  /* Repli des pages sans aperçu propre ; les pages publiques ont le leur
+     (pageMetadata, lib/seo.ts). */
   openGraph: {
-    type: "website",
-    locale: "fr_FR",
-    siteName: SITE.name,
+    ...OPEN_GRAPH,
     title: `${SITE.name} — ${SITE.tagline}`,
     description: SITE.description,
-    images: [{ url: "/images/og.jpg", width: 1200, height: 630 }],
   },
   /* Code de validation Google Search Console — via variable Vercel. */
   verification: process.env.GOOGLE_SITE_VERIFICATION
     ? { google: process.env.GOOGLE_SITE_VERIFICATION }
     : undefined,
-};
-
-/**
- * Données structurées schema.org — la carte d'identité du salon pour Google :
- * qui est « Maison Kanali », où, quels horaires, quels réseaux. Renforce le
- * référencement de marque et prépare la fiche d'établissement.
- */
-const JSON_LD = {
-  "@context": "https://schema.org",
-  "@type": "BeautySalon",
-  "@id": `${SITE.url}/#maison`,
-  name: SITE.name,
-  description: SITE.description,
-  url: SITE.url,
-  image: `${SITE.url}/images/og.jpg`,
-  logo: `${SITE.url}/images/logo-maison-kanali.jpg`,
-  address: {
-    "@type": "PostalAddress",
-    addressLocality: CONTACT.city,
-    addressRegion: CONTACT.region,
-    addressCountry: "FR",
-  },
-  openingHoursSpecification: [
-    {
-      "@type": "OpeningHoursSpecification",
-      dayOfWeek: [
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-        "Saturday",
-      ],
-      opens: OPENING_HOURS_ISO.opens,
-      closes: OPENING_HOURS_ISO.closes,
-    },
-  ],
-  priceRange: "€€",
-  sameAs: [
-    `https://www.instagram.com/${CONTACT.instagramKandylove}/`,
-    `https://www.instagram.com/${CONTACT.instagramNaftali}/`,
-    `https://www.facebook.com/${CONTACT.facebookKandylove}`,
-  ],
-  potentialAction: {
-    "@type": "ReserveAction",
-    target: `${SITE.url}/rendez-vous`,
-    name: "Prendre rendez-vous",
-  },
 };
 
 export const viewport: Viewport = {
@@ -101,7 +53,7 @@ export default function RootLayout({
       <body>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(STRUCTURED_DATA) }}
         />
         <noscript>
           <style>{`.reveal{opacity:1!important;transform:none!important}`}</style>
