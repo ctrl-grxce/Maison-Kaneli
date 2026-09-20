@@ -33,7 +33,7 @@ statut entrepreneur : **une seule constante `LEGAL` dans `lib/config.ts`**).
 | Élément | État |
 |---|---|
 | Production | ✅ **https://maisonkanali.fr** (HTTPS, redirections 308 depuis www et maison-kanali.vercel.app) |
-| Dernier déploiement | ✅ 20/09 — référencement (`b409ec9`) + réservation ouverte jusqu'en 2030 (`55b4db0`), vérifié en ligne |
+| Dernier déploiement | ✅ 20/09 — référencement (`dc63f85`) + réservation ouverte jusqu'en 2030 (`55b4db0`), vérifié en ligne |
 | Réservation en ligne | ✅ Wizard 4 étapes, anti-chevauchement testé (409), **créneaux de 10h à 17h pour toutes les prestations** (dernier départ 17h, même si la prestation finit après 18h) |
 | Emails | ✅ Notification maison + ticket cliente (PDF A5 + invitation .ics) via Gmail `gradipalaba28@gmail.com`, reply-to maisonkanali@gmail.com |
 | Promo cils | ✅ Les 4 poses à 40 € jusqu'au 31/10 (expiration automatique) ; la dépose est HORS promo (20 € définitif) |
@@ -242,7 +242,7 @@ Constat du 19/09 : les moteurs ne connaissent pas encore le site — une
 recherche « Maison Kanali Saint-Quentin » ne fait sortir que le dépôt
 GitHub public, pas maisonkanali.fr.
 
-- [x] **Codé le 19/09, EN LIGNE le 20/09** (commit `b409ec9`) : titres « prestation + ville »,
+- [x] **Codé le 19/09, EN LIGNE le 20/09** (commit `dc63f85`) : titres « prestation + ville »,
       descriptions de 160 caractères au plus, aperçu de partage propre à chaque
       page (avant : toutes affichaient le titre de l'accueil), adresse
       canonique, nom du site (WebSite) et code postal dans les données
@@ -289,7 +289,7 @@ GitHub public, pas maisonkanali.fr.
   plage. 3 tests ajoutés (63 au total), typecheck et build OK. Vérifié en local : calendrier jusqu'à **septembre 2031** (flèche
   grisée au 20/09/2031), mardi 11 juin 2030 → 15 créneaux de 10h à 17h ; l'API
   ouvre 2030-12-31 et refuse 2031-09-22. **Déployé (commit `55b4db0`) avec le
-  référencement du 19/09 (`b409ec9`), et vérifié en ligne** : sur
+  référencement du 19/09 (`dc63f85`), et vérifié en ligne** : sur
   maisonkanali.fr la liste « année » va de 2026 à 2031, juin 2030 s'atteint en
   deux clics, mardi 11 juin 2030 rend 15 créneaux, l'API refuse le 22/09/2031
   et les titres de pages sont bien les nouveaux.
