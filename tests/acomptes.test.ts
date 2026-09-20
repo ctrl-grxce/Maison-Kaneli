@@ -11,7 +11,8 @@ import {
 
 /**
  * Tests des calculs d'acompte (docs/PAIEMENT.md).
- * Montants décidés le 30/08/2026 : ongles 20 € · maquillage 30 € · cils 20 €,
+ * Montants : ongles 20 € · maquillage 20 € (30 € jusqu'au 20/09/2026,
+ * changement d'avis de Kandy) · cils 20 €,
  * et la dépose sans acompte.
  */
 
@@ -38,13 +39,13 @@ describe("depositCentsFor", () => {
     expect(SERVICES.some((s) => s.isTest)).toBe(false);
   });
 
-  it("demande 30 € d'acompte pour le maquillage (hors mariée)", () => {
+  it("demande 20 € d'acompte pour le maquillage (hors mariée)", () => {
     const maquillage = SERVICES.filter(
       (s) => s.category === "maquillage" && !s.id.startsWith("mariee-"),
     );
     expect(maquillage.length).toBeGreaterThan(0);
     for (const service of maquillage) {
-      expect(depositCentsFor(service)).toBe(3000);
+      expect(depositCentsFor(service)).toBe(2000);
     }
   });
 

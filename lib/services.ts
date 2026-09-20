@@ -393,11 +393,12 @@ export function bookingPriceLabel(service: Service): string {
 /* ── Acomptes (paiement en ligne — docs/PAIEMENT.md) ─────────────────────── */
 
 /** Montants d'acompte par catégorie, en CENTIMES (jamais de virgule
- *  flottante pour de l'argent). Décision Gradi du 30/08/2026 :
- *  ongles 20 € · maquillage 30 € · cils 20 €. */
+ *  flottante pour de l'argent). Décision Gradi du 30/08/2026, maquillage
+ *  ramené de 30 € à 20 € le 20/09/2026 (Kandy) :
+ *  ongles 20 € · maquillage 20 € · cils 20 €. */
 export const DEPOSIT_CENTS: Record<Category, number> = {
   ongles: 2000,
-  maquillage: 3000,
+  maquillage: 2000,
   cils: 2000,
 };
 

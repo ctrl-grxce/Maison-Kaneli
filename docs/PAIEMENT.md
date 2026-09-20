@@ -9,7 +9,7 @@ modification de périmètre se note ici.*
 | Sujet | Décision |
 |---|---|
 | Prestataire | **Stripe**, page de paiement hébergée (Checkout) + webhook signé |
-| Montants d'acompte | **Ongles 20 €** · **Maquillage 30 €** · **Poses de cils 20 €** · **Dépose 0 €** (paiement intégral sur place) |
+| Montants d'acompte | **Ongles 20 €** · **Maquillage 20 €** (30 € jusqu'au 20/09/2026) · **Poses de cils 20 €** · **Dépose 0 €** (paiement intégral sur place) |
 | Prestations mariées | Sur devis — remis à plus tard (Gradi reviendra avec les détails) |
 | Emails | **AUCUN email tant que l'acompte n'est pas payé** (ni maison, ni cliente). Tout part à la confirmation du paiement. La dépose (sans acompte) garde ses emails immédiats actuels |
 | Pièces jointes cliente | Message + ticket de réservation PDF + fichier agenda .ics + **facture d'acompte PDF** (nouveau) |
@@ -64,7 +64,7 @@ modification de périmètre se note ici.*
 ## Montants
 
 `depositCentsFor(service)` dans `lib/services.ts` : table par catégorie
-(`ongles: 2000, maquillage: 3000, cils: 2000`), la dépose renvoie 0. Un
+(`ongles: 2000, maquillage: 2000, cils: 2000`), la dépose renvoie 0. Un
 montant se change en UNE ligne, comme les tarifs. Les montants sont stockés en
 centimes (jamais de virgule flottante pour de l'argent).
 

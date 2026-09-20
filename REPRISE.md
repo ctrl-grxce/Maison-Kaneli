@@ -275,6 +275,19 @@ GitHub public, pas maisonkanali.fr.
 
 ## 📖 Journal de progression
 
+- **20/09 (soir)** : **acompte maquillage ramené de 30 € à 20 €** (Kandy a
+  changé d'avis) — ongles, maquillage et cils demandent désormais tous 20 €.
+  Un seul endroit à changer : `DEPOSIT_CENTS` dans `lib/services.ts` ; le
+  tunnel, la page de paiement, les emails et la facture suivent. 65 tests
+  verts, typecheck et build OK.
+- **Question de Kandy (20/09)** : pour le **maquillage mariée**, qui est sur
+  devis, comment encaisser elle-même depuis Stripe ? → Réponse donnée :
+  **liens de paiement Stripe** (Dashboard → Paiements → Liens de paiement →
+  « Créer un lien »), un lien pour l'acompte, un pour le solde, envoyés par
+  WhatsApp/email. Rien à coder, rien à déployer. ⚠️ Toujours interdit :
+  saisir soi-même le numéro de carte d'une cliente dans le dashboard
+  (« débiter un client manuellement »). Si le besoin revient souvent, on
+  pourra ajouter un écran dans /gestion — pas nécessaire aujourd'hui.
 - **20/09 (suite)** : remarque de Gradi — « on ne se rend pas forcément compte
   qu'on ne paie que l'acompte et le reste sur place ». C'était vrai : au
   moment de payer, « Acompte en ligne » et « Reste sur place » étaient deux
