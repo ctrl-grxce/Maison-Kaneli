@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { buildSlots, isBookableStart, timeToMinutes } from "../lib/availability";
+import {
+  addDays,
+  buildSlots,
+  isBookableDate,
+  isBookableStart,
+  timeToMinutes,
+} from "../lib/availability";
+import { OPENING } from "../lib/config";
 
 /**
  * Grille des créneaux (lib/availability.ts).
@@ -56,5 +63,32 @@ describe("isBookableStart", () => {
 
   it("refuse un horaire hors de la grille de 30 min", () => {
     expect(isBookableStart(timeToMinutes("10:15"))).toBe(false);
+  });
+});
+
+/**
+ * Horizon de réservation (lib/config.ts).
+ * Demande de Gradi du 20/09/2026 : le calendrier s'arrêtait en novembre
+ * (60 jours). La fenêtre est désormais glissante sur ~5 ans, donc toute
+ * l'année 2030 est réservable.
+ */
+describe("isBookableDate — horizon", () => {
+  /* Un dimanche : la fenêtre part de « aujourd'hui », jour fermé ou non. */
+  const AUJOURD_HUI = "2026-09-20";
+
+  it("ouvre la réservation sur toute l'année 2030", () => {
+    expect(isBookableDate("2030-01-07", AUJOURD_HUI)).toBe(true); // lundi
+    expect(isBookableDate("2030-12-31", AUJOURD_HUI)).toBe(true); // mardi
+  });
+
+  it("accepte le dernier jour de la fenêtre et refuse le lendemain", () => {
+    const dernier = addDays(AUJOURD_HUI, OPENING.horizonDays); // samedi
+    expect(isBookableDate(dernier, AUJOURD_HUI)).toBe(true);
+    expect(isBookableDate(addDays(dernier, 2), AUJOURD_HUI)).toBe(false); // lundi
+  });
+
+  it("refuse toujours le passé et les dimanches", () => {
+    expect(isBookableDate("2026-09-19", AUJOURD_HUI)).toBe(false);
+    expect(isBookableDate("2030-01-06", AUJOURD_HUI)).toBe(false); // dimanche
   });
 });

@@ -20,8 +20,11 @@ export const OPENING = {
   slotStepMinutes: 30,
   /** Délai minimal avant un rendez-vous (réservation le jour même), en minutes. */
   minLeadMinutes: 90,
-  /** Horizon de réservation, en jours. */
-  horizonDays: 60,
+  /** Horizon de réservation, en jours : fenêtre GLISSANTE d'environ 5 ans
+   *  (demande de Gradi du 20/09/2026 — le calendrier s'arrêtait en novembre,
+   *  soit 60 jours). Depuis le 20/09/2026 elle va jusqu'au 20/09/2031 :
+   *  toute l'année 2030 est réservable, et la fenêtre avance chaque jour. */
+  horizonDays: 5 * 365 + 1,
 } as const;
 
 /** 600 → « 10h00 » (affichage français). */
