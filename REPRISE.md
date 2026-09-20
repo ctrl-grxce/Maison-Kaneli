@@ -2,7 +2,7 @@
 
 *Fichier de bord demandé par Gradi (29/08/2026). **Claude : lis ce fichier en
 premier à chaque reprise d'une conversation sur Maison Kanali**, et mets-le à
-jour à chaque avancée. Dernière mise à jour : **19/09/2026**.*
+jour à chaque avancée. Dernière mise à jour : **20/09/2026**.*
 
 ## 🚦 En ce moment
 
@@ -33,7 +33,7 @@ statut entrepreneur : **une seule constante `LEGAL` dans `lib/config.ts`**).
 | Élément | État |
 |---|---|
 | Production | ✅ **https://maisonkanali.fr** (HTTPS, redirections 308 depuis www et maison-kanali.vercel.app) |
-| Dernier déploiement | ✅ 19/09 — créneaux jusqu'à 17h (commit `ba47f09`), vérifié en ligne |
+| Dernier déploiement | ✅ 20/09 — référencement (`b409ec9`) + réservation ouverte jusqu'en 2030 (`55b4db0`), vérifié en ligne |
 | Réservation en ligne | ✅ Wizard 4 étapes, anti-chevauchement testé (409), **créneaux de 10h à 17h pour toutes les prestations** (dernier départ 17h, même si la prestation finit après 18h) |
 | Emails | ✅ Notification maison + ticket cliente (PDF A5 + invitation .ics) via Gmail `gradipalaba28@gmail.com`, reply-to maisonkanali@gmail.com |
 | Promo cils | ✅ Les 4 poses à 40 € jusqu'au 31/10 (expiration automatique) ; la dépose est HORS promo (20 € définitif) |
@@ -236,11 +236,30 @@ automatiques à la cliente quand la maison annule ou déplace.
 - [ ] Valider la durée de conservation « 3 ans » écrite dans /confidentialite
 - [ ] CGV/CGU dès que le paiement en ligne est actif + revoir la question cookies (Stripe en dépose)
 
-### ③ Référencement (après ②)
+### ③ Référencement — démarré le 19/09
 
-- [ ] Search Console : propriété Domaine (TXT chez LWS — Gradi sait éditer la zone) ou hook `GOOGLE_SITE_VERIFICATION` déjà dans le code
-- [ ] Bing et autres moteurs
-- [ ] Optionnel : `alternates.canonical` dans le metadata (les 308 compensent déjà)
+Constat du 19/09 : les moteurs ne connaissent pas encore le site — une
+recherche « Maison Kanali Saint-Quentin » ne fait sortir que le dépôt
+GitHub public, pas maisonkanali.fr.
+
+- [x] **Codé le 19/09, EN LIGNE le 20/09** (commit `b409ec9`) : titres « prestation + ville »,
+      descriptions de 160 caractères au plus, aperçu de partage propre à chaque
+      page (avant : toutes affichaient le titre de l'accueil), adresse
+      canonique, nom du site (WebSite) et code postal dans les données
+      structurées. Source unique : `lib/seo.ts` (le sitemap en dérive).
+- [ ] **Gradi** — Search Console : propriété « Domaine » maisonkanali.fr,
+      enregistrement TXT chez LWS. **Le déploiement est fait (20/09) — c'est
+      la prochaine action, plus rien ne bloque** : envoyer
+      `sitemap.xml`, demander l'indexation de /, /kandylove, /naftali, /formations.
+- [ ] **Gradi** — Bing Webmaster Tools : « Importer depuis Google Search Console ».
+- [ ] **Fondatrices** — fiche Google (Google Business Profile) : premier levier
+      pour « extension de cils Saint-Quentin » (carte Google). À trancher :
+      adresse affichée ou simple zone desservie.
+- [ ] Liens vers le site : bios Instagram (@kandylovebeauty, @naf.lashes),
+      page Facebook, fiche PagesJaunes gratuite ; dépôt GitHub : ajouter
+      maisonkanali.fr dans « About », ou le passer en privé.
+- [ ] Plus tard : avis Google des clientes ; vidéo d'accueil de 11 Mo à
+      compresser (vitesse sur mobile).
 
 ### 📆 Rappels datés
 
@@ -256,6 +275,24 @@ automatiques à la cliente quand la maison annule ou déplace.
 
 ## 📖 Journal de progression
 
+- **20/09** : demande de Gradi — « le planning s'arrête seulement jusqu'en
+  novembre ». C'était l'horizon de réservation de 60 jours (`OPENING.horizonDays`,
+  `lib/config.ts`) : au-delà du 19/11, la flèche « mois suivant » était grisée.
+  Horizon passé à une **fenêtre glissante d'environ 5 ans** (`5 * 365 + 1`), donc
+  toute l'année 2030 est réservable et la fenêtre avance chaque jour. Un seul
+  réglage : le calendrier public, l'API `/api/availability`, la réservation et le
+  déplacement dans /gestion en dérivent. Dans la foulée, le calendrier gagne
+  **deux listes « mois » et « année »** (l'en-tête figé devient cliquable) :
+  sans elles, atteindre 2030 demandait une cinquantaine de clics sur la
+  flèche. Les listes ne proposent que la fenêtre autorisée (pas de mois
+  passé, rien après l'horizon) et changer d'année ramène le mois dans la
+  plage. 3 tests ajoutés (63 au total), typecheck et build OK. Vérifié en local : calendrier jusqu'à **septembre 2031** (flèche
+  grisée au 20/09/2031), mardi 11 juin 2030 → 15 créneaux de 10h à 17h ; l'API
+  ouvre 2030-12-31 et refuse 2031-09-22. **Déployé (commit `55b4db0`) avec le
+  référencement du 19/09 (`b409ec9`), et vérifié en ligne** : sur
+  maisonkanali.fr la liste « année » va de 2026 à 2031, juin 2030 s'atteint en
+  deux clics, mardi 11 juin 2030 rend 15 créneaux, l'API refuse le 22/09/2031
+  et les titres de pages sont bien les nouveaux.
 - **19/09** : demande des fondatrices : **on réserve jusqu'à 17h00 pour TOUTES les prestations**, même quand la prestation finit après 18h (volume russe à 17h → 19h30). Avant, le dernier départ était 18h − durée (15h30 pour un volume russe). Seule la dépose perd un créneau (17h30 → 17h00). Nouveau réglage `OPENING.lastStartMinutes` dans `lib/config.ts` et règle unique `isBookableStart` pour le site, la réservation et le déplacement dans /gestion. La fermeture affichée reste 10h–18h. 7 tests ajoutés (52 au total), typecheck et build OK. Vérifié en local : 15 créneaux de 10h à 17h pour chaque prestation, 17h30 refusé par le serveur. **Déployé (commit `ba47f09`) et vérifié en ligne** : 15 créneaux de 10h à 17h pour chaque prestation sur maisonkanali.fr.
 - **18/09 (après lancement)** : accueil « Nos services » (cartes titrées « Ongles & maquillage » / « Extensions de cils », pastilles de prestations) ; **formation onglerie 350 € sans kit / 420 € avec kit** (avant 650/720). Déployé et vérifié en ligne.
 - **18/09 ~20h — LANCEMENT** : paiement réel testé de bout en bout par Gradi (« tout marche »), prestation à 1 € retirée, signalement de sécurité fermé par défaut. **Reste après lancement** : référencement (Search Console + Bing), médiateur de la consommation, tarifs de la page d'accueil à contraster (3,96:1), débordement de 5 px sur /formations en mobile, rate limit partagé entre instances.
@@ -321,4 +358,4 @@ npx vercel deploy --prod --yes --scope gradipalaba28-7081s-projects   # déploye
 
 - **UNE maison, DEUX pôles** — jamais « deux maisons » ni « deux entreprises ». Les DEUX sœurs sont **co-fondatrices de Maison Kanali** ; chacune est fondatrice de SA marque : Viminde Kandy → **Kandylove Beauty** (ongles, maquillage, formations) ; Viminde Nafi → **Naftali** (cils).
 - Horaires : lundi–samedi, 10h–18h, sur rendez-vous uniquement. **Dernier rendez-vous à 17h, quelle que soit la prestation** (fondatrices, 19/09).
-- Réservations : pas de 30 min, 90 min de délai minimum le jour même, horizon 60 jours, heure de Paris.
+- Réservations : pas de 30 min, 90 min de délai minimum le jour même, **horizon glissant d'environ 5 ans** (le calendrier va aujourd'hui jusqu'au 20/09/2031 — avant : 60 jours, il s'arrêtait en novembre), heure de Paris.
