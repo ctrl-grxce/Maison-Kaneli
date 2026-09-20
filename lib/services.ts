@@ -429,6 +429,12 @@ export function formatEuros(cents: number): string {
     : `${euros},${String(rest).padStart(2, "0")} €`;
 }
 
+/** Le même montant, mais insécable : « 20 € » ne se coupe jamais entre le
+ *  chiffre et l'euro en bout de ligne (libellé du bouton de paiement). */
+export function formatEurosTight(cents: number): string {
+  return formatEuros(cents).replace(" ", " ");
+}
+
 /** Montant en centimes lu dans un libellé de tarif (« 40 € », « 40 € · offre
  *  jusqu'à fin octobre »…). `null` si le tarif n'est pas un montant fixe
  *  (« Sur demande », « À partir de 50 € »). */
@@ -452,4 +458,21 @@ export function remainderLabelFor(
   /* Acompte égal au tarif (prestation de test) : rien à régler sur place. */
   if (priceCents === depositCents) return null;
   return formatEuros(priceCents - depositCents);
+}
+
+/**
+ * Ce qu'on paie en ligne, ce qui reste sur place — une seule phrase, écrite
+ * une seule fois (demande de Gradi du 20/09/2026 : au moment de payer, on ne
+ * comprenait pas assez vite qu'il ne s'agissait que de l'acompte).
+ * Le récapitulatif avant paiement, la page Stripe et la page de confirmation
+ * en dérivent : les trois disent donc exactement la même chose.
+ */
+export function depositNotice(
+  depositCents: number,
+  remainderLabel: string | null,
+): string {
+  const acompte = `Vous payez seulement l'acompte de ${formatEuros(depositCents)} aujourd'hui.`;
+  return remainderLabel
+    ? `${acompte} Les ${remainderLabel} restants se règlent sur place, le jour du rendez-vous.`
+    : `${acompte} Le reste se règle sur place, le jour du rendez-vous.`;
 }

@@ -275,6 +275,23 @@ GitHub public, pas maisonkanali.fr.
 
 ## 📖 Journal de progression
 
+- **20/09 (suite)** : remarque de Gradi — « on ne se rend pas forcément compte
+  qu'on ne paie que l'acompte et le reste sur place ». C'était vrai : au
+  moment de payer, « Acompte en ligne » et « Reste sur place » étaient deux
+  lignes grises noyées parmi huit, de la même taille que le téléphone. Une
+  seule phrase est désormais écrite une seule fois dans le code
+  (`depositNotice`, `lib/services.ts`) et répétée aux trois moments qui
+  comptent : ① **étape 4** — un encadré « Ce que vous payez maintenant » avec
+  l'acompte en gros et le reste juste en dessous ; ② **page Stripe** — le
+  titre s'ouvre sur « Acompte », la phrase est sous la ligne ET juste au-dessus
+  du bouton « Payer » (`custom_text`) ; ③ **retour de paiement** — « le reste
+  se règle sur place » en gras. Le bouton dit « Payer l'acompte de 20 € et
+  réserver », et les montants ne se coupent plus en fin de ligne
+  (`formatEurosTight`). 2 tests ajoutés (65 au total), typecheck et build OK.
+  Vérifié : parcours complet en local (ongles 35 € → 20 € + 15 € ; volume
+  russe en promo 40 € → 20 € + 20 €), rien qui déborde en 375 px, et **une
+  vraie page Stripe en mode test** ouverte pour lire le rendu (session
+  expirée ensuite, aucune écriture en base).
 - **20/09** : demande de Gradi — « le planning s'arrête seulement jusqu'en
   novembre ». C'était l'horizon de réservation de 60 jours (`OPENING.horizonDays`,
   `lib/config.ts`) : au-delà du 19/11, la flèche « mois suivant » était grisée.

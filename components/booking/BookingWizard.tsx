@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
   depositCentsFor,
-  formatEuros,
+  formatEurosTight,
   getFormation,
   getService,
   type Category,
@@ -348,7 +348,7 @@ export function BookingWizard({
                     : "Envoi en cours…"
                   : mode === "prestation"
                     ? depositCents > 0
-                      ? `Payer l'acompte (${formatEuros(depositCents)}) et réserver`
+                      ? `Payer l'acompte de ${formatEurosTight(depositCents)} et réserver`
                       : "Confirmer le rendez-vous"
                     : "Envoyer ma demande"}
               </button>

@@ -1,5 +1,6 @@
 import Stripe from "stripe";
 import { SITE } from "./config";
+import { depositNotice } from "./services";
 
 /**
  * Connexion Stripe — paiement des acomptes (docs/PAIEMENT.md).
@@ -62,6 +63,9 @@ export interface DepositCheckoutArgs {
   serviceName: string;
   brandLabel: string;
   depositCents: number;
+  /** Reste à régler sur place (« 15 € »), ou null si le tarif n'est pas un
+   *  montant fixe. Sert à l'afficher noir sur blanc sur la page de paiement. */
+  remainderLabel?: string | null;
   customerEmail: string;
   /** Origine absolue du site pour les retours (ex. https://maisonkanali.fr). */
   origin: string;
@@ -88,6 +92,12 @@ export async function createDepositCheckoutSession(
   });
   const cancelParams = new URLSearchParams({ bid: args.bookingId });
 
+  /* La page de paiement affiche un gros montant : sans un mot d'explication,
+     on peut croire qu'on règle la prestation entière. Le titre de la ligne
+     s'ouvre donc sur « Acompte », et la phrase du récapitulatif est reprise
+     mot pour mot deux fois : sous la ligne, et juste au-dessus du bouton. */
+  const notice = depositNotice(args.depositCents, args.remainderLabel ?? null);
+
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
     locale: "fr",
@@ -104,7 +114,7 @@ export async function createDepositCheckoutSession(
           unit_amount: args.depositCents,
           product_data: {
             name: `Acompte — ${args.serviceName}`,
-            description: `${args.brandLabel} · réservation ${args.reference} — le reste se règle sur place.`,
+            description: `${notice} (${args.brandLabel} · réservation ${args.reference})`,
           },
         },
       },
@@ -112,6 +122,8 @@ export async function createDepositCheckoutSession(
     payment_intent_data: {
       description: `Acompte réservation ${args.reference} — Maison Kanali`,
     },
+    /* Affiché juste au-dessus du bouton de paiement, chez Stripe. */
+    custom_text: { submit: { message: notice } },
     success_url: `${args.origin}/rendez-vous/confirmation?${successParams.toString()}`,
     cancel_url: `${args.origin}/rendez-vous/annule?${cancelParams.toString()}`,
   });

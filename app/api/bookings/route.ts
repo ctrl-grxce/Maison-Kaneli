@@ -4,6 +4,7 @@ import {
   getService,
   bookingPriceLabel,
   depositCentsFor,
+  remainderLabelFor,
   BRAND_LABELS,
 } from "@/lib/services";
 import { getSupabase } from "@/lib/supabase-server";
@@ -192,6 +193,9 @@ export async function POST(request: Request) {
         serviceName: service.name,
         brandLabel: BRAND_LABELS[service.brand],
         depositCents,
+        /* Même calcul que l'email et la facture : le reste annoncé sur la
+           page de paiement est celui qu'on retrouvera partout ensuite. */
+        remainderLabel: remainderLabelFor(priceLabel, depositCents),
         customerEmail: input.email,
         origin: requestOrigin(request),
         date: input.date,

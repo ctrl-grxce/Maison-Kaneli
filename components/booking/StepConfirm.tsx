@@ -5,6 +5,7 @@ import { formatDateFr, formatDuration, formatTimeFr } from "@/lib/utils";
 import {
   BRAND_LABELS,
   bookingPriceLabel,
+  depositNotice,
   effectivePrice,
   formatEuros,
   remainderLabelFor,
@@ -65,16 +66,7 @@ export function StepConfirm({
               <Row label="Pôle" value={BRAND_LABELS[service.brand]} />
               <Row label="Prestation" value={service.name} />
               <Row label="Durée" value={formatDuration(service.durationMin)} />
-              <Row label="Tarif" value={bookingPriceLabel(service)} />
-              {depositCents > 0 && (
-                <Row
-                  label="Acompte en ligne"
-                  value={formatEuros(depositCents)}
-                />
-              )}
-              {depositCents > 0 && remainderLabel && (
-                <Row label="Reste sur place" value={remainderLabel} />
-              )}
+              <Row label="Tarif de la prestation" value={bookingPriceLabel(service)} />
               {date && <Row label="Date" value={formatDateFr(date)} />}
               {time && <Row label="Heure" value={formatTimeFr(time)} />}
             </>
@@ -97,10 +89,41 @@ export function StepConfirm({
         </dl>
       </div>
 
+      {mode === "prestation" && depositCents > 0 && (
+        <div className="mt-5 border border-bronze/45 bg-blush/60 p-5">
+          <p className="overline-label text-[0.62rem] text-bronze-dark">
+            Ce que vous payez maintenant
+          </p>
+          <div className="mt-3 flex items-baseline justify-between gap-4">
+            <span className="text-sm leading-snug">
+              Acompte, à payer en ligne
+            </span>
+            <span className="font-display text-3xl leading-none font-medium whitespace-nowrap text-bronze-dark">
+              {formatEuros(depositCents)}
+            </span>
+          </div>
+          <div className="mt-3 flex items-baseline justify-between gap-4 border-t border-sand-deep pt-3">
+            <span className="text-sm leading-snug">
+              {remainderLabel
+                ? "Reste à régler sur place, le jour du rendez-vous"
+                : "Le reste se règle sur place, le jour du rendez-vous"}
+            </span>
+            {remainderLabel && (
+              <span className="font-display text-2xl leading-none font-medium whitespace-nowrap">
+                {remainderLabel}
+              </span>
+            )}
+          </div>
+          <p className="mt-4 border-t border-sand-deep pt-3 text-xs leading-relaxed text-taupe">
+            {depositNotice(depositCents, remainderLabel)}
+          </p>
+        </div>
+      )}
+
       <p className="mt-5 text-sm leading-relaxed text-taupe">
         {mode === "prestation"
           ? depositCents > 0
-            ? `En confirmant, vous réglez l'acompte de ${formatEuros(depositCents)} sur la page de paiement sécurisée (carte bancaire, Apple Pay ou Google Pay). Votre créneau est bloqué pendant le paiement${remainderLabel ? `, et le reste (${remainderLabel}) se règle sur place le jour du rendez-vous` : ", et le reste se règle sur place le jour du rendez-vous"}. Votre confirmation et vos documents arrivent par email dès le paiement validé.`
+            ? `En confirmant, vous êtes conduite vers la page de paiement sécurisée (carte bancaire, Apple Pay ou Google Pay) pour régler l'acompte. Votre créneau y est bloqué le temps du paiement. Votre confirmation et vos documents arrivent par email dès le paiement validé.`
             : "En confirmant, votre créneau est réservé et Maison Kanali reçoit immédiatement votre demande. Vous recevrez la confirmation définitive par email ou téléphone."
           : "En envoyant votre demande, Maison Kanali est immédiatement notifiée et vous recontacte pour convenir des dates et modalités de votre formation."}
       </p>

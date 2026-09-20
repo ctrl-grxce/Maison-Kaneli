@@ -59,17 +59,23 @@ export function Summary({
               </p>
             )}
             {depositCents > 0 && (
-              <p className="mt-2 text-[0.8rem] leading-relaxed text-taupe">
-                Acompte en ligne :{" "}
-                <span className="text-bronze">{formatEuros(depositCents)}</span>
-                {remainderLabelFor(effectivePrice(service).label, depositCents) && (
-                  <>
-                    {" "}
-                    · Reste sur place :{" "}
-                    {remainderLabelFor(effectivePrice(service).label, depositCents)}
-                  </>
-                )}
-              </p>
+              <div className="mt-4 border border-sand-deep bg-ivory p-3">
+                <p className="flex items-baseline justify-between gap-3 text-[0.8rem]">
+                  <span>Acompte, en ligne</span>
+                  <span className="text-bronze-dark">
+                    {formatEuros(depositCents)}
+                  </span>
+                </p>
+                <p className="mt-1.5 flex items-baseline justify-between gap-3 text-[0.8rem] text-taupe">
+                  <span>Reste sur place, le jour J</span>
+                  <span>
+                    {remainderLabelFor(
+                      effectivePrice(service).label,
+                      depositCents,
+                    ) ?? "à régler sur place"}
+                  </span>
+                </p>
+              </div>
             )}
           </div>
         ) : (

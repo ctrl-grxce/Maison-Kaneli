@@ -72,9 +72,11 @@ export function PaymentStatus({ bookingId }: PaymentStatusProps) {
         className="mt-7 max-w-md text-sm leading-relaxed text-taupe"
         role="status"
       >
-        <span className="text-bronze">Votre acompte est bien reçu</span> — le
-        rendez-vous est confirmé. Votre ticket de réservation, votre facture
-        d&apos;acompte et l&apos;invitation calendrier arrivent par email dans
+        <span className="text-bronze-dark">Votre acompte est bien reçu</span> —
+        le rendez-vous est confirmé. <strong className="font-medium">Le reste
+        se règle sur place, le jour du rendez-vous</strong> ; le montant exact
+        figure sur votre facture d&apos;acompte. Votre ticket de réservation,
+        cette facture et l&apos;invitation calendrier arrivent par email dans
         un instant.
       </p>
     );

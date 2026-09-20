@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   SERVICES,
   depositCentsFor,
+  depositNotice,
   formatEuros,
   parsePriceCents,
   remainderLabelFor,
@@ -117,5 +118,29 @@ describe("remainderLabelFor", () => {
 
   it("renvoie null si le tarif est inférieur à l'acompte (garde-fou)", () => {
     expect(remainderLabelFor("15 €", 2000)).toBeNull();
+  });
+});
+
+/**
+ * Phrase unique qui dit ce qu'on paie en ligne et ce qui reste sur place
+ * (demande de Gradi du 20/09/2026 : au moment de payer, on ne comprenait pas
+ * assez vite qu'il s'agissait seulement de l'acompte). Le récapitulatif, la
+ * page de paiement Stripe et la page de confirmation en dérivent.
+ */
+describe("depositNotice", () => {
+  it("annonce l'acompte payé en ligne ET le reste à régler sur place", () => {
+    const texte = depositNotice(2000, "15 €");
+    expect(texte).toContain("acompte");
+    expect(texte).toContain("20 €");
+    expect(texte).toContain("15 €");
+    expect(texte).toContain("sur place");
+  });
+
+  it("dit quand même « sur place » quand le tarif n'est pas un montant fixe", () => {
+    /* Cils « Sur demande » : on connaît l'acompte, pas le total. */
+    const texte = depositNotice(2000, null);
+    expect(texte).toContain("acompte");
+    expect(texte).toContain("20 €");
+    expect(texte).toContain("sur place");
   });
 });
