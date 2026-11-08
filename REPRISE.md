@@ -36,7 +36,7 @@ statut entrepreneur : **une seule constante `LEGAL` dans `lib/config.ts`**).
 | Dernier déploiement | ✅ 20/09 — référencement (`dc63f85`) + réservation ouverte jusqu'en 2030 (`55b4db0`), vérifié en ligne |
 | Réservation en ligne | ✅ Wizard 4 étapes, anti-chevauchement testé (409), **créneaux de 10h à 17h pour toutes les prestations** (dernier départ 17h, même si la prestation finit après 18h) |
 | Emails | ✅ Notification maison + ticket cliente (PDF A5 + invitation .ics) via Gmail `gradipalaba28@gmail.com`, reply-to maisonkanali@gmail.com |
-| Promo cils | ✅ Les 4 poses à 40 € jusqu'au 31/10 (expiration automatique) ; la dépose est HORS promo (20 € définitif) |
+| Tarifs cils | ✅ Depuis le 08/11/2026 (promo terminée) : cil à cil 50 € · mixte 55 € · volume russe léger 60 € · volume russe 65 € · intense 70 € · méga volume 80 € · remplissage à partir de 35 € · dépose 15 € (sans acompte) |
 | Base | ✅ Supabase `aatzhqzntpzubkvnriop` (eu-west-3, gratuit) + cron Vercel 6h UTC → `/api/health` (anti-pause) |
 | Domaine | ✅ maisonkanali.fr chez LWS (compte LWS-822560), expire 21/08/2027, renouvellement auto |
 | Sécurité | ✅ CSP/HSTS, rate limiting, anti-CSRF, honeypots, lockdown 3 étages (`SECURITY_LOCKDOWN`), RLS sans policy anonyme |

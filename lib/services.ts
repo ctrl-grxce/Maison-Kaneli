@@ -4,9 +4,9 @@
  * ✏️  C'est LE fichier à modifier pour ajuster tarifs, durées ou descriptions.
  * Sources : carte ongles Kandylove (août 2026), flyer TARIF (maquillage),
  * formation onglerie Kandylove Beauty (350 € sans kit / 420 € avec kit depuis
- * le 18/09/2026 — avant : 650 € / 720 €) et promo cils
- * Naftali — toutes les poses à 40 € jusqu'à fin octobre 2026. La dépose,
- * elle, est à 20 € en prix normal, hors promo (décision Gradi du 29/08/2026).
+ * le 18/09/2026 — avant : 650 € / 720 €) et grille cils Naftali du
+ * 08/11/2026 (fin de la promo à 40 €) : de 50 € (cil à cil) à 80 € (méga
+ * volume), remplissage à partir de 35 €, dépose 15 €.
  */
 
 export type Brand = "kandylove" | "naftali";
@@ -222,8 +222,7 @@ export const SERVICES: Service[] = [
   },
 
   /* ── Extensions de cils — Naftali ────────────────────────────────────── */
-  /*    Promo en cours : toutes les poses à 40 € — jusqu'à fin octobre.     */
-  /*    La dépose est à 20 € en prix normal (définitif, hors promo).        */
+  /*    Nouveaux tarifs depuis le 08/11/2026 (fin de la promo à 40 €).      */
   {
     id: "cil-a-cil",
     brand: "naftali",
@@ -232,47 +231,77 @@ export const SERVICES: Service[] = [
     description:
       "Une extension par cil naturel — l'effet mascara, en plus raffiné.",
     durationMin: 120,
-    price: "Sur demande",
-    promo: { price: "40 €", until: "jusqu'à fin octobre", endsOn: "2026-10-31" },
+    price: "50 €",
   },
   {
     id: "pose-mixte",
     brand: "naftali",
     category: "cils",
     name: "Pose mixte",
-    description: "Entre cil à cil et volume — densité maîtrisée, regard velours.",
+    description:
+      "Entre cil à cil et volume — densité maîtrisée, regard velours.",
     durationMin: 135,
-    price: "Sur demande",
-    promo: { price: "40 €", until: "jusqu'à fin octobre", endsOn: "2026-10-31" },
+    price: "55 €",
+  },
+  {
+    id: "volume-russe-leger",
+    brand: "naftali",
+    category: "cils",
+    name: "Volume russe léger",
+    description:
+      "Des bouquets fins pour un volume doux et naturel.",
+    durationMin: 140,
+    price: "60 €",
   },
   {
     id: "volume-russe",
     brand: "naftali",
     category: "cils",
     name: "Volume russe",
-    description: "Bouquets faits main pour un regard intense et aérien.",
+    description:
+      "Bouquets faits main pour un regard intense et aérien.",
     durationMin: 150,
-    price: "Sur demande",
-    promo: { price: "40 €", until: "jusqu'à fin octobre", endsOn: "2026-10-31" },
+    price: "65 €",
+  },
+  {
+    id: "volume-russe-intense",
+    brand: "naftali",
+    category: "cils",
+    name: "Volume russe intense",
+    description:
+      "Des bouquets plus fournis pour un regard dense et charbonneux.",
+    durationMin: 165,
+    price: "70 €",
+  },
+  {
+    id: "mega-volume",
+    brand: "naftali",
+    category: "cils",
+    name: "Méga volume",
+    description:
+      "Le volume maximal — un regard spectaculaire, toujours léger.",
+    durationMin: 180,
+    price: "80 €",
   },
   {
     id: "remplissage-cils",
     brand: "naftali",
     category: "cils",
     name: "Remplissage cils",
-    description: "L'entretien de votre pose, idéalement toutes les 3 semaines.",
+    description:
+      "L'entretien de votre pose, idéalement toutes les 3 semaines.",
     durationMin: 90,
-    price: "Sur demande",
-    promo: { price: "40 €", until: "jusqu'à fin octobre", endsOn: "2026-10-31" },
+    price: "À partir de 35 €",
   },
   {
     id: "depose-cils",
     brand: "naftali",
     category: "cils",
     name: "Dépose",
-    description: "Retrait tout en douceur, dans le respect du cil naturel.",
+    description:
+      "Retrait tout en douceur, dans le respect du cil naturel.",
     durationMin: 30,
-    price: "20 €",
+    price: "15 €",
   },
 ];
 
