@@ -33,7 +33,7 @@ statut entrepreneur : **une seule constante `LEGAL` dans `lib/config.ts`**).
 | Élément | État |
 |---|---|
 | Production | ✅ **https://maisonkanali.fr** (HTTPS, redirections 308 depuis www et maison-kanali.vercel.app) |
-| Dernier déploiement | ✅ 20/09 — référencement (`dc63f85`) + réservation ouverte jusqu'en 2030 (`55b4db0`), vérifié en ligne |
+| Dernier déploiement | ✅ 08/11/2026 — nouveaux tarifs cils (`fd19e81`) + créneaux du soir et plusieurs prestations (`1acc3ca`), vérifié en ligne |
 | Réservation en ligne | ✅ Wizard 4 étapes, anti-chevauchement testé (409), **créneaux de 10h à 17h pour toutes les prestations** (dernier départ 17h, même si la prestation finit après 18h) |
 | Emails | ✅ Notification maison + ticket cliente (PDF A5 + invitation .ics) via Gmail `gradipalaba28@gmail.com`, reply-to maisonkanali@gmail.com |
 | Tarifs cils | ✅ Depuis le 08/11/2026 (promo terminée) : cil à cil 50 € · mixte 55 € · volume russe léger 60 € · volume russe 65 € · intense 70 € · méga volume 80 € · remplissage à partir de 35 € · dépose 15 € (sans acompte) |
