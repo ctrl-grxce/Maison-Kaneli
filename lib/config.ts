@@ -16,6 +16,13 @@ export const OPENING = {
    *  même si la prestation finit après la fermeture (décision des
    *  fondatrices du 19/09/2026 — cf. lib/availability.ts). */
   lastStartMinutes: 17 * 60,
+  /** Créneaux tardifs (demande de Gradi du 08/11/2026) : départs à partir de
+   *  18h00, du lundi au samedi, à condition que la prestation soit finie à
+   *  20h00 au plus tard. Supplément de 10 €, réglé sur place (l'acompte en
+   *  ligne ne change pas). */
+  lateStartMinutes: 18 * 60,
+  lateEndMinutes: 20 * 60,
+  lateFeeCents: 1000,
   /** Pas entre deux débuts de créneaux, en minutes. */
   slotStepMinutes: 30,
   /** Délai minimal avant un rendez-vous (réservation le jour même), en minutes. */

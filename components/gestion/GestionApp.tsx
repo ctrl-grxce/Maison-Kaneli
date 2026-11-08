@@ -725,7 +725,7 @@ function BlockedTab({ notify }: { notify: (message: string) => void }) {
               >
                 {timeOptions(
                   OPENING.openMinutes,
-                  OPENING.closeMinutes - OPENING.slotStepMinutes,
+                  OPENING.lateEndMinutes - OPENING.slotStepMinutes,
                 ).map((value) => (
                   <option key={value} value={value}>
                     {formatTimeFr(value)}
@@ -745,7 +745,7 @@ function BlockedTab({ notify }: { notify: (message: string) => void }) {
               >
                 {timeOptions(
                   OPENING.openMinutes + OPENING.slotStepMinutes,
-                  OPENING.closeMinutes,
+                  OPENING.lateEndMinutes,
                 ).map((value) => (
                   <option key={value} value={value}>
                     {formatTimeFr(value)}

@@ -75,8 +75,16 @@ function drawRight(
   size: number,
   color: RGB,
 ): void {
-  const w = font.widthOfTextAtSize(text, size);
-  page.drawText(text, { x: xRight - w, y, size, font, color });
+  /* Valeur trop longue (plusieurs prestations enchaînées, supplément de
+     créneau tardif) : on réduit la taille pour ne jamais mordre sur
+     l'intitulé de la ligne, à gauche. */
+  const maxWidth = xRight - (INSET + 22) - 140;
+  let fitted = size;
+  while (fitted > 7 && font.widthOfTextAtSize(text, fitted) > maxWidth) {
+    fitted -= 0.5;
+  }
+  const w = font.widthOfTextAtSize(text, fitted);
+  page.drawText(text, { x: xRight - w, y, size: fitted, font, color });
 }
 
 /** Espace les lettres à la main (pdf-lib n'a pas de letter-spacing). */

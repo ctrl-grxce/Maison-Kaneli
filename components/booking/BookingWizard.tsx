@@ -4,6 +4,9 @@ import { useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
+  CATEGORIES,
+  combineServices,
+  comboProblem,
   depositCentsFor,
   formatEurosTight,
   getFormation,
@@ -12,6 +15,7 @@ import {
   type Formation,
   type Service,
 } from "@/lib/services";
+import { isLateStart, timeToMinutes } from "@/lib/availability";
 import { Progress } from "./Progress";
 import { StepService, type BookingMode } from "./StepService";
 import { StepSchedule } from "./StepSchedule";
@@ -74,7 +78,17 @@ export function BookingWizard({
   const [category, setCategory] = useState<Category | null>(
     initialService?.category ?? null,
   );
-  const [service, setService] = useState<Service | null>(initialService);
+  /* Une ou plusieurs prestations, enchaînées dans le même rendez-vous. */
+  const [selected, setSelected] = useState<Service[]>(
+    initialService ? [initialService] : [],
+  );
+  const service = useMemo<Service | null>(
+    () =>
+      selected.length > 0 && comboProblem(selected) === null
+        ? combineServices(selected)
+        : null,
+    [selected],
+  );
   const [formation, setFormation] = useState<Formation | null>(initialFormation);
   const [kitOptionId, setKitOptionId] = useState<string | null>(null);
   const [date, setDate] = useState<string | null>(null);
@@ -97,6 +111,9 @@ export function BookingWizard({
   }, [formation, kitOptionId]);
 
   /** Acompte à régler en ligne (0 = circuit sans paiement, comme avant). */
+  /** Créneau tardif (18h ou plus) : +10 €, réglés sur place. */
+  const late = time !== null && isLateStart(timeToMinutes(time));
+
   const depositCents =
     paymentsEnabled && mode === "prestation" && service
       ? depositCentsFor(service)
@@ -248,13 +265,17 @@ export function BookingWizard({
               category={category}
               onCategoryChange={(next) => {
                 setCategory(next);
-                setService(null);
-                setDate(null);
-                setTime(null);
+                /* Même pôle (ongles ↔ maquillage chez Kandylove) : la
+                   sélection est gardée, on peut les enchaîner. */
+                const brand = CATEGORIES.find((c) => c.id === next)?.brand;
+                if (selected.some((item) => item.brand !== brand)) {
+                  setSelected([]);
+                  setTime(null);
+                }
               }}
-              service={service}
-              onServiceChange={(next) => {
-                setService(next);
+              selected={selected}
+              onSelectedChange={(next) => {
+                setSelected(next);
                 setTime(null);
               }}
               formation={formation}
@@ -302,6 +323,7 @@ export function BookingWizard({
               time={time}
               details={details}
               depositCents={depositCents}
+              late={late}
             />
           )}
 
@@ -364,6 +386,7 @@ export function BookingWizard({
           date={date}
           time={time}
           depositCents={depositCents}
+          late={late}
         />
       </div>
     </div>

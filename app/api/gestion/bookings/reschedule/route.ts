@@ -77,7 +77,7 @@ export async function POST(request: Request) {
   const durationMin = Number(booking.duration_min);
   const startMin = timeToMinutes(time);
   const endMin = startMin + durationMin;
-  if (!isBookableStart(startMin)) {
+  if (!isBookableStart(startMin, durationMin)) {
     return NextResponse.json(
       { error: "Ce créneau est en dehors des horaires d'ouverture." },
       { status: 400 },

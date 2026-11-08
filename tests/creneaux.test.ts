@@ -23,20 +23,33 @@ function departs(durationMin: number): string[] {
   return buildSlots(LUNDI, durationMin, [], LA_VEILLE).map((slot) => slot.time);
 }
 
-describe("buildSlots", () => {
+/* Départs de JOURNÉE seulement (sans les créneaux tardifs). */
+function departsJournee(durationMin: number): string[] {
+  return buildSlots(LUNDI, durationMin, [], LA_VEILLE)
+    .filter((slot) => !slot.late)
+    .map((slot) => slot.time);
+}
+
+function departsTardifs(durationMin: number): string[] {
+  return buildSlots(LUNDI, durationMin, [], LA_VEILLE)
+    .filter((slot) => slot.late)
+    .map((slot) => slot.time);
+}
+
+describe("buildSlots — journée", () => {
   it("propose un départ toutes les 30 min, de 10h00 à 17h00", () => {
-    const slots = departs(60);
+    const slots = departsJournee(60);
     expect(slots[0]).toBe("10:00");
     expect(slots.at(-1)).toBe("17:00");
     expect(slots).toHaveLength(15);
   });
 
   it("propose 17h00 même quand la prestation finit après 18h", () => {
-    expect(departs(150).at(-1)).toBe("17:00");
+    expect(departsJournee(150).at(-1)).toBe("17:00");
   });
 
-  it("ne propose rien après 17h00, même pour une prestation courte", () => {
-    expect(departs(30).at(-1)).toBe("17:00");
+  it("ne propose jamais 17h30", () => {
+    expect(departs(30)).not.toContain("17:30");
   });
 
   it("ferme les départs qui chevauchent un rendez-vous finissant après 18h", () => {
@@ -46,23 +59,67 @@ describe("buildSlots", () => {
     expect(libre("16:00")).toBe(true);
     expect(libre("16:30")).toBe(false);
     expect(libre("17:00")).toBe(false);
+    expect(libre("18:00")).toBe(false);
+    expect(libre("19:00")).toBe(false);
+  });
+});
+
+/* Demande de Gradi du 08/11/2026 : départs à partir de 18h, fin à 20h max,
+   supplément de 10 €. */
+describe("buildSlots — créneaux tardifs", () => {
+  it("propose 18h00 → 19h00 pour une prestation d'1 h", () => {
+    expect(departsTardifs(60)).toEqual(["18:00", "18:30", "19:00"]);
+  });
+
+  it("propose seulement 18h00 pour une prestation de 2 h", () => {
+    expect(departsTardifs(120)).toEqual(["18:00"]);
+  });
+
+  it("ne propose aucun créneau tardif si la prestation finirait après 20h", () => {
+    expect(departsTardifs(150)).toEqual([]);
+  });
+
+  it("marque les créneaux tardifs, et eux seuls", () => {
+    const slots = buildSlots(LUNDI, 60, [], LA_VEILLE);
+    expect(slots.find((s) => s.time === "17:00")?.late).toBeUndefined();
+    expect(slots.find((s) => s.time === "18:00")?.late).toBe(true);
+  });
+
+  it("ferme un créneau tardif déjà pris", () => {
+    const taken = [{ startMin: timeToMinutes("18:00"), endMin: timeToMinutes("19:00") }];
+    const slots = buildSlots(LUNDI, 60, taken, LA_VEILLE);
+    const libre = (time: string) => slots.find((slot) => slot.time === time)?.available;
+    expect(libre("18:00")).toBe(false);
+    expect(libre("18:30")).toBe(false);
+    expect(libre("19:00")).toBe(true);
   });
 });
 
 /* Règle appliquée par le serveur à la réservation et au déplacement. */
 describe("isBookableStart", () => {
   it("accepte l'ouverture et le dernier départ de 17h00", () => {
-    expect(isBookableStart(timeToMinutes("10:00"))).toBe(true);
-    expect(isBookableStart(timeToMinutes("17:00"))).toBe(true);
+    expect(isBookableStart(timeToMinutes("10:00"), 60)).toBe(true);
+    expect(isBookableStart(timeToMinutes("17:00"), 150)).toBe(true);
   });
 
-  it("refuse avant l'ouverture et après 17h00", () => {
-    expect(isBookableStart(timeToMinutes("09:30"))).toBe(false);
-    expect(isBookableStart(timeToMinutes("17:30"))).toBe(false);
+  it("refuse avant l'ouverture et 17h30", () => {
+    expect(isBookableStart(timeToMinutes("09:30"), 60)).toBe(false);
+    expect(isBookableStart(timeToMinutes("17:30"), 30)).toBe(false);
   });
 
   it("refuse un horaire hors de la grille de 30 min", () => {
-    expect(isBookableStart(timeToMinutes("10:15"))).toBe(false);
+    expect(isBookableStart(timeToMinutes("10:15"), 60)).toBe(false);
+    expect(isBookableStart(timeToMinutes("18:15"), 30)).toBe(false);
+  });
+
+  it("accepte un créneau tardif qui finit à 20h au plus tard", () => {
+    expect(isBookableStart(timeToMinutes("18:00"), 120)).toBe(true);
+    expect(isBookableStart(timeToMinutes("19:30"), 30)).toBe(true);
+  });
+
+  it("refuse un créneau tardif qui finirait après 20h", () => {
+    expect(isBookableStart(timeToMinutes("18:30"), 120)).toBe(false);
+    expect(isBookableStart(timeToMinutes("20:00"), 30)).toBe(false);
   });
 });
 

@@ -3,6 +3,7 @@ import { OPENING } from "@/lib/config";
 import {
   getService,
   bookingPriceLabel,
+  priceWithLateFee,
   depositCentsFor,
   remainderLabelFor,
   BRAND_LABELS,
@@ -26,6 +27,7 @@ import { writesBlocked, throttleFactor, LOCKDOWN_MESSAGE } from "@/lib/lockdown"
 import {
   isBookableDate,
   isBookableStart,
+  isLateStart,
   minutesToTime,
   parisNow,
   timeToMinutes,
@@ -99,7 +101,7 @@ export async function POST(request: Request) {
   const startMin = timeToMinutes(input.time);
   const endMin = startMin + service.durationMin;
 
-  if (!isBookableStart(startMin)) {
+  if (!isBookableStart(startMin, service.durationMin)) {
     return NextResponse.json(
       { error: "Ce créneau est en dehors des horaires d'ouverture." },
       { status: 400 },
@@ -129,7 +131,12 @@ export async function POST(request: Request) {
     );
   }
 
-  const priceLabel = bookingPriceLabel(service);
+  /* Créneau tardif (18h ou plus) : +10 €, réglés sur place — l'acompte en
+     ligne ne change pas. */
+  const priceLabel = priceWithLateFee(
+    bookingPriceLabel(service),
+    isLateStart(startMin),
+  );
 
   /* ── Aiguillage acompte (docs/PAIEMENT.md) ───────────────────────────────
      Acompte > 0 et paiements allumés → la réservation est créée en

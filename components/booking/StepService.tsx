@@ -5,7 +5,11 @@ import {
   CATEGORIES,
   FORMATIONS,
   SERVICES,
+  MAX_COMBO_SERVICES,
   activePromo,
+  combineServices,
+  comboProblem,
+  isCombinable,
   type Category,
   type Formation,
   type Service,
@@ -19,8 +23,9 @@ interface StepServiceProps {
   onModeChange: (mode: BookingMode) => void;
   category: Category | null;
   onCategoryChange: (category: Category) => void;
-  service: Service | null;
-  onServiceChange: (service: Service) => void;
+  /** Prestations choisies (plusieurs possibles, enchaînées). */
+  selected: Service[];
+  onSelectedChange: (services: Service[]) => void;
   formation: Formation | null;
   onFormationChange: (formation: Formation) => void;
   kitOptionId: string | null;
@@ -34,13 +39,24 @@ const CATEGORY_ICONS = {
 } as const;
 
 /** Étape 1 — choix de la prestation (ou de la formation). */
+/** Ajoute ou retire une prestation de la sélection. Une prestation « sur
+ *  devis » se réserve seule : elle remplace la sélection, et inversement. */
+function toggleService(selected: Service[], item: Service): Service[] {
+  if (selected.some((s) => s.id === item.id)) {
+    return selected.filter((s) => s.id !== item.id);
+  }
+  if (!isCombinable(item) || !selected.every(isCombinable)) return [item];
+  const next = [...selected, item];
+  return comboProblem(next) === null ? next : selected;
+}
+
 export function StepService({
   mode,
   onModeChange,
   category,
   onCategoryChange,
-  service,
-  onServiceChange,
+  selected,
+  onSelectedChange,
   formation,
   onFormationChange,
   kitOptionId,
@@ -126,26 +142,43 @@ export function StepService({
           {category && (
             <>
               <p className="field-label mt-8">Choisissez votre prestation</p>
+              <p className="-mt-1 mb-3 text-sm leading-relaxed text-taupe">
+                Envie de plusieurs soins ? Cochez jusqu&apos;à{" "}
+                {MAX_COMBO_SERVICES} prestations : elles s&apos;enchaînent
+                dans le même rendez-vous, avec un seul acompte.
+              </p>
               <ul className="divide-y divide-sand-deep/70 border border-sand-deep bg-white">
                 {SERVICES.filter((item) => item.category === category).map(
                   (item) => {
-                    const active = service?.id === item.id;
+                    const active = selected.some((s) => s.id === item.id);
+                    /* Sélection pleine (ou autre pôle) : la case reste
+                       cliquable mais ne s'ajoute pas — on la grise. */
+                    const blocked =
+                      !active &&
+                      selected.length > 0 &&
+                      isCombinable(item) &&
+                      selected.every(isCombinable) &&
+                      comboProblem([...selected, item]) !== null;
                     const promo = activePromo(item);
                     return (
                       <li key={item.id}>
                         <button
                           type="button"
-                          onClick={() => onServiceChange(item)}
+                          onClick={() =>
+                            onSelectedChange(toggleService(selected, item))
+                          }
+                          disabled={blocked}
                           aria-pressed={active}
                           className={cn(
                             "flex w-full items-center gap-4 px-4 py-4 text-left transition-colors duration-300 sm:px-5",
                             active ? "bg-blush/60" : "hover:bg-ivory",
+                            blocked && "cursor-not-allowed opacity-45 hover:bg-transparent",
                           )}
                         >
                           <span
                             aria-hidden
                             className={cn(
-                              "flex h-5 w-5 shrink-0 items-center justify-center rounded-full border transition-colors duration-300",
+                              "flex h-5 w-5 shrink-0 items-center justify-center rounded-[3px] border transition-colors duration-300",
                               active
                                 ? "border-bronze bg-bronze text-ivory"
                                 : "border-sand-deep",
@@ -181,6 +214,26 @@ export function StepService({
                   },
                 )}
               </ul>
+
+              {selected.length > 1 && (
+                <div className="mt-4 border border-bronze/40 bg-blush/50 px-4 py-3.5 sm:px-5">
+                  <p className="text-[0.68rem] tracking-[0.14em] text-taupe uppercase">
+                    Votre rendez-vous · {selected.length} prestations
+                  </p>
+                  <div className="mt-1.5 flex items-baseline justify-between gap-4">
+                    <span className="text-sm leading-snug">
+                      {selected.map((s) => s.name).join(" + ")}
+                    </span>
+                    <span className="font-display text-lg whitespace-nowrap text-bronze">
+                      {combineServices(selected).price}
+                    </span>
+                  </div>
+                  <p className="mt-1 text-[0.68rem] tracking-[0.14em] text-taupe uppercase">
+                    Durée totale :{" "}
+                    {formatDuration(combineServices(selected).durationMin)}
+                  </p>
+                </div>
+              )}
             </>
           )}
         </>

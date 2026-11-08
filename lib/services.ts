@@ -9,6 +9,8 @@
  * volume), remplissage à partir de 35 €, dépose 15 €.
  */
 
+import { OPENING } from "./config";
+
 export type Brand = "kandylove" | "naftali";
 export type Category = "ongles" | "maquillage" | "cils";
 
@@ -365,8 +367,138 @@ export const FORMATIONS: Formation[] = [
 
 /* ── Accès rapides ───────────────────────────────────────────────────────── */
 
+/** Une prestation du catalogue, ou un enchaînement de plusieurs prestations
+ *  (identifiant « id1+id2 », cf. `combineServices`). */
 export function getService(id: string): Service | undefined {
+  if (id.includes(COMBO_SEPARATOR)) return getCombo(id);
   return SERVICES.find((s) => s.id === id);
+}
+
+/* ── Plusieurs prestations dans un même rendez-vous ──────────────────────
+ * Demande de Gradi du 08/11/2026 : on peut prendre plusieurs prestations
+ * d'un coup, sans refaire tout le parcours. Elles s'enchaînent dans un seul
+ * créneau, avec la même personne — donc dans le MÊME pôle (Kandylove ou
+ * Naftali). Un seul acompte, au montant habituel, quel que soit le nombre de
+ * prestations. L'enchaînement est vu partout comme UNE prestation « A + B »
+ * (durées et tarifs additionnés) : la base, les emails, la facture et
+ * /gestion fonctionnent sans changement.                                    */
+
+export const COMBO_SEPARATOR = "+";
+export const MAX_COMBO_SERVICES = 3;
+/** Durée maximale d'un rendez-vous acceptée par la base (8 h). */
+export const MAX_COMBO_DURATION_MIN = 480;
+
+/** Fourchette lue dans un tarif : « 50 € », « À partir de 35 € », « 60 – 70 € ».
+ *  `null` pour « Sur devis », « Sur demande »… */
+interface PriceRange {
+  min: number;
+  max: number;
+  from: boolean;
+}
+
+function parsePriceRange(label: string): PriceRange | null {
+  const text = label.trim();
+  const from = /^à partir de\s+/i.test(text);
+  const body = text.replace(/^à partir de\s+/i, "");
+  const range = body.match(/^(\d+)\s*[–-]\s*(\d+)\s*€$/);
+  if (range) {
+    return { min: Number(range[1]) * 100, max: Number(range[2]) * 100, from };
+  }
+  const single = body.match(/^(\d+)(?:[.,](\d{1,2}))?\s*€$/);
+  if (!single) return null;
+  const cents =
+    Number(single[1]) * 100 + (single[2] ? Number(single[2].padEnd(2, "0")) : 0);
+  return { min: cents, max: cents, from };
+}
+
+function formatPriceRange({ min, max, from }: PriceRange): string {
+  const amount =
+    min === max ? formatEuros(min) : `${formatEuros(min).replace(" €", "")} – ${formatEuros(max)}`;
+  return from ? `À partir de ${amount}` : amount;
+}
+
+/** Une prestation peut s'ajouter à d'autres si son tarif est chiffré (les
+ *  prestations « Sur devis », comme la mariée, se réservent seules). */
+export function isCombinable(service: Service): boolean {
+  return !service.isTest && parsePriceRange(effectivePrice(service).label) !== null;
+}
+
+/** Les prestations qui composent un rendez-vous (une seule, ou plusieurs). */
+export function comboParts(service: Service): Service[] {
+  if (!service.id.includes(COMBO_SEPARATOR)) return [service];
+  return service.id
+    .split(COMBO_SEPARATOR)
+    .map((id) => SERVICES.find((s) => s.id === id))
+    .filter((s): s is Service => s !== undefined);
+}
+
+/** Pourquoi ces prestations ne peuvent pas être réservées ensemble, ou null. */
+export function comboProblem(services: Service[]): string | null {
+  if (services.length === 0) return "Choisissez au moins une prestation.";
+  if (services.length === 1) return null;
+  if (services.length > MAX_COMBO_SERVICES) {
+    return `${MAX_COMBO_SERVICES} prestations maximum par rendez-vous.`;
+  }
+  if (new Set(services.map((s) => s.id)).size !== services.length) {
+    return "Chaque prestation ne peut être choisie qu'une fois.";
+  }
+  if (new Set(services.map((s) => s.brand)).size > 1) {
+    return "Les prestations d'un même rendez-vous doivent être du même pôle.";
+  }
+  if (!services.every(isCombinable)) {
+    return "Cette prestation se réserve seule.";
+  }
+  const total = services.reduce((sum, s) => sum + s.durationMin, 0);
+  if (total > MAX_COMBO_DURATION_MIN) {
+    return "Ce rendez-vous serait trop long : retirez une prestation.";
+  }
+  return null;
+}
+
+/** Réunit plusieurs prestations en un seul rendez-vous « A + B ». Une seule
+ *  prestation est renvoyée telle quelle. */
+export function combineServices(services: Service[]): Service {
+  if (services.length === 1) return services[0];
+  const ranges = services.map((s) => parsePriceRange(effectivePrice(s).label)!);
+  const total: PriceRange = {
+    min: ranges.reduce((sum, r) => sum + r.min, 0),
+    max: ranges.reduce((sum, r) => sum + r.max, 0),
+    from: ranges.some((r) => r.from),
+  };
+  return {
+    id: services.map((s) => s.id).join(COMBO_SEPARATOR),
+    brand: services[0].brand,
+    category: services[0].category,
+    name: services.map((s) => s.name).join(" + "),
+    description: services.map((s) => s.name).join(", "),
+    durationMin: services.reduce((sum, s) => sum + s.durationMin, 0),
+    price: formatPriceRange(total),
+    /* UN seul acompte, au montant habituel, quel que soit le nombre de
+       prestations (dépose seule : toujours sans acompte). */
+    depositCentsOverride: Math.max(...services.map(depositCentsFor)),
+  };
+}
+
+function getCombo(id: string): Service | undefined {
+  const services = id.split(COMBO_SEPARATOR).map((part) =>
+    SERVICES.find((s) => s.id === part),
+  );
+  if (services.length < 2 || services.some((s) => s === undefined)) return undefined;
+  const list = services as Service[];
+  return comboProblem(list) === null ? combineServices(list) : undefined;
+}
+
+/** Tarif d'un rendez-vous, supplément de créneau tardif compris. */
+export function priceWithLateFee(label: string, late: boolean): string {
+  if (!late) return label;
+  const fee = OPENING.lateFeeCents;
+  const range = parsePriceRange(label);
+  if (!range) return `${label} + ${formatEuros(fee)} (créneau tardif)`;
+  return `${formatPriceRange({
+    ...range,
+    min: range.min + fee,
+    max: range.max + fee,
+  })} (dont ${formatEuros(fee)} créneau tardif)`;
 }
 
 export function getFormation(id: string): Formation | undefined {

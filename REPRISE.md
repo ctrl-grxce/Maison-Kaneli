@@ -38,6 +38,8 @@ statut entrepreneur : **une seule constante `LEGAL` dans `lib/config.ts`**).
 | Emails | ✅ Notification maison + ticket cliente (PDF A5 + invitation .ics) via Gmail `gradipalaba28@gmail.com`, reply-to maisonkanali@gmail.com |
 | Tarifs cils | ✅ Depuis le 08/11/2026 (promo terminée) : cil à cil 50 € · mixte 55 € · volume russe léger 60 € · volume russe 65 € · intense 70 € · méga volume 80 € · remplissage à partir de 35 € · dépose 15 € (sans acompte) |
 | Base | ✅ Supabase `aatzhqzntpzubkvnriop` (eu-west-3, gratuit) + cron Vercel 6h UTC → `/api/health` (anti-pause) |
+| Créneaux tardifs | ✅ (08/11/2026) Départs dès 18h, fin à 20h max, lundi–samedi, **+10 €** réglés sur place (acompte inchangé). Réglages : `OPENING.late*` dans `lib/config.ts` |
+| Plusieurs prestations | ✅ (08/11/2026) Jusqu'à 3 prestations d'un **même pôle**, enchaînées dans un seul rendez-vous « A + B » ; **un seul acompte de 20 €**. Les prestations « sur devis » se réservent seules. Code : `combineServices` dans `lib/services.ts` |
 | Domaine | ✅ maisonkanali.fr chez LWS (compte LWS-822560), expire 21/08/2027, renouvellement auto |
 | Sécurité | ✅ CSP/HSTS, rate limiting, anti-CSRF, honeypots, lockdown 3 étages (`SECURITY_LOCKDOWN`), RLS sans policy anonyme |
 | Code | ✅ github.com/ctrl-grxce/Maison-Kaneli · local `C:\Users\gradi\maison-kanali` — tout est commité/pushé |

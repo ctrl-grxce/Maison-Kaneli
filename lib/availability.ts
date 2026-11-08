@@ -10,6 +10,8 @@ export interface Slot {
   /** Heure de début « HH:MM ». */
   time: string;
   available: boolean;
+  /** Créneau tardif (départ à 18h ou plus) : supplément de 10 €. */
+  late?: boolean;
 }
 
 export function timeToMinutes(time: string): number {
@@ -78,12 +80,34 @@ export function isBookableDate(isoDate: string, today = parisNow().date): boolea
   return isoDate <= addDays(today, OPENING.horizonDays);
 }
 
+/** Départ en créneau tardif (18h ou plus) → supplément de 10 €. */
+export function isLateStart(startMin: number): boolean {
+  return startMin >= OPENING.lateStartMinutes;
+}
+
+/** Départs tardifs possibles pour une durée donnée : 18h00, 18h30… tant que
+ *  la prestation finit à 20h00 au plus tard. */
+function lateStarts(durationMin: number): number[] {
+  const starts: number[] = [];
+  for (
+    let start = OPENING.lateStartMinutes;
+    start + durationMin <= OPENING.lateEndMinutes;
+    start += OPENING.slotStepMinutes
+  ) {
+    starts.push(start);
+  }
+  return starts;
+}
+
 /**
- * true si un rendez-vous peut commencer à cette heure : sur la grille des
- * 30 min, entre l'ouverture et le dernier départ (17h00), quelle que soit la
- * durée de la prestation. Même règle pour la réservation et le déplacement.
+ * true si un rendez-vous peut commencer à cette heure. Deux cas :
+ *  · journée : sur la grille des 30 min, entre l'ouverture et le dernier
+ *    départ (17h00), quelle que soit la durée de la prestation ;
+ *  · soirée (créneau tardif) : à partir de 18h00, fin à 20h00 maximum.
+ * Même règle pour la réservation et le déplacement.
  */
-export function isBookableStart(startMin: number): boolean {
+export function isBookableStart(startMin: number, durationMin: number): boolean {
+  if (lateStarts(durationMin).includes(startMin)) return true;
   return (
     startMin >= OPENING.openMinutes &&
     startMin <= OPENING.lastStartMinutes &&
@@ -94,9 +118,9 @@ export function isBookableStart(startMin: number): boolean {
 /**
  * Construit la grille des créneaux d'une journée pour une prestation donnée :
  * départs tous les 30 min jusqu'au dernier départ (17h00) — une prestation
- * longue peut donc finir après la fermeture — sans chevaucher aucune
- * réservation existante. Pour aujourd'hui, un délai minimal de préparation
- * est appliqué.
+ * longue peut donc finir après la fermeture — puis les créneaux tardifs
+ * (18h00 et plus, fin à 20h00 maximum), sans chevaucher aucune réservation
+ * existante. Pour aujourd'hui, un délai minimal de préparation est appliqué.
  */
 export function buildSlots(
   isoDate: string,
@@ -104,19 +128,26 @@ export function buildSlots(
   taken: TakenRange[],
   now = parisNow(),
 ): Slot[] {
-  const slots: Slot[] = [];
-
+  const starts: number[] = [];
   for (
     let start = OPENING.openMinutes;
     start <= OPENING.lastStartMinutes;
     start += OPENING.slotStepMinutes
   ) {
+    starts.push(start);
+  }
+  starts.push(...lateStarts(durationMin));
+
+  return starts.map((start) => {
     const end = start + durationMin;
     const overlaps = taken.some((r) => start < r.endMin && end > r.startMin);
     const tooSoon =
       isoDate === now.date && start < now.minutes + OPENING.minLeadMinutes;
-    slots.push({ time: minutesToTime(start), available: !overlaps && !tooSoon });
-  }
-
-  return slots;
+    const slot: Slot = {
+      time: minutesToTime(start),
+      available: !overlaps && !tooSoon,
+    };
+    if (isLateStart(start)) slot.late = true;
+    return slot;
+  });
 }

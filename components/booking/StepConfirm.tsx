@@ -7,6 +7,7 @@ import {
   bookingPriceLabel,
   depositNotice,
   effectivePrice,
+  priceWithLateFee,
   formatEuros,
   remainderLabelFor,
   type Formation,
@@ -25,6 +26,8 @@ interface StepConfirmProps {
   details: ContactDetails;
   /** Acompte à régler en ligne, en centimes (0 = pas de paiement en ligne). */
   depositCents?: number;
+  /** Créneau tardif choisi : +10 € sur le tarif. */
+  late?: boolean;
 }
 
 function Row({ label, value }: { label: string; value: string }) {
@@ -48,10 +51,14 @@ export function StepConfirm({
   time,
   details,
   depositCents = 0,
+  late = false,
 }: StepConfirmProps) {
   const remainderLabel =
     service && depositCents > 0
-      ? remainderLabelFor(effectivePrice(service).label, depositCents)
+      ? remainderLabelFor(
+          priceWithLateFee(effectivePrice(service).label, late),
+          depositCents,
+        )
       : null;
 
   return (
@@ -64,9 +71,12 @@ export function StepConfirm({
           {mode === "prestation" && service ? (
             <>
               <Row label="Pôle" value={BRAND_LABELS[service.brand]} />
-              <Row label="Prestation" value={service.name} />
+              <Row
+                label={service.id.includes("+") ? "Prestations" : "Prestation"}
+                value={service.name}
+              />
               <Row label="Durée" value={formatDuration(service.durationMin)} />
-              <Row label="Tarif de la prestation" value={bookingPriceLabel(service)} />
+              <Row label="Tarif de la prestation" value={priceWithLateFee(bookingPriceLabel(service), late)} />
               {date && <Row label="Date" value={formatDateFr(date)} />}
               {time && <Row label="Heure" value={formatTimeFr(time)} />}
             </>

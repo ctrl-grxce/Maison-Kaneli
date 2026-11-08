@@ -90,7 +90,7 @@ export async function POST(request: Request) {
     if (
       startMin >= endMin ||
       startMin < OPENING.openMinutes ||
-      endMin > OPENING.closeMinutes
+      endMin > OPENING.lateEndMinutes
     ) {
       return NextResponse.json(
         { error: "La plage d'heures est invalide (entre l'ouverture et la fermeture)." },

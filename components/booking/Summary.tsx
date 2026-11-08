@@ -5,6 +5,7 @@ import { CONTACT } from "@/lib/config";
 import {
   BRAND_LABELS,
   effectivePrice,
+  priceWithLateFee,
   formatEuros,
   remainderLabelFor,
   type Formation,
@@ -22,6 +23,8 @@ interface SummaryProps {
   time: string | null;
   /** Acompte à régler en ligne, en centimes (0 = pas de paiement en ligne). */
   depositCents?: number;
+  /** Créneau tardif choisi : +10 € sur le tarif. */
+  late?: boolean;
 }
 
 /** Récapitulatif latéral (desktop) — se remplit au fil du parcours. */
@@ -33,7 +36,11 @@ export function Summary({
   date,
   time,
   depositCents = 0,
+  late = false,
 }: SummaryProps) {
+  const priceLabel = service
+    ? priceWithLateFee(effectivePrice(service).label, late)
+    : "";
   return (
     <aside className="sticky top-24 hidden h-fit border border-sand-deep bg-sand p-6 lg:block">
       <p className="overline-label text-[0.62rem]">Votre rendez-vous</p>
@@ -51,7 +58,7 @@ export function Summary({
               <ClockIcon width={15} height={15} />
               {formatDuration(service.durationMin)}
               <span aria-hidden>·</span>
-              <span className="text-bronze">{effectivePrice(service).label}</span>
+              <span className="text-bronze">{priceLabel}</span>
             </p>
             {effectivePrice(service).promo && (
               <p className="mt-2 inline-flex rounded-full border border-gold/50 bg-gold/10 px-2.5 py-0.5 text-[0.56rem] tracking-[0.14em] text-gold uppercase">
@@ -69,10 +76,8 @@ export function Summary({
                 <p className="mt-1.5 flex items-baseline justify-between gap-3 text-[0.8rem] text-taupe">
                   <span>Reste sur place, le jour J</span>
                   <span>
-                    {remainderLabelFor(
-                      effectivePrice(service).label,
-                      depositCents,
-                    ) ?? "à régler sur place"}
+                    {remainderLabelFor(priceLabel, depositCents) ??
+                      "à régler sur place"}
                   </span>
                 </p>
               </div>

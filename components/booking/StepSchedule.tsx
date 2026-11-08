@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { cn, formatDateFr, formatTimeFr } from "@/lib/utils";
-import type { Service } from "@/lib/services";
+import { formatEuros, type Service } from "@/lib/services";
+import { OPENING } from "@/lib/config";
 import { parisNow, type Slot } from "@/lib/availability";
 import { Calendar } from "./Calendar";
 
@@ -58,6 +59,40 @@ export function StepSchedule({
   }, [date, service.id]);
 
   const available = slots?.filter((slot) => slot.available) ?? [];
+  const daySlots = slots?.filter((slot) => !slot.late) ?? [];
+  const lateSlots = slots?.filter((slot) => slot.late) ?? [];
+
+  const renderGrid = (list: Slot[]) => (
+    <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
+      {list.map((slot) => {
+        const active = time === slot.time;
+        return (
+          <button
+            key={slot.time}
+            type="button"
+            disabled={!slot.available}
+            onClick={() => onTimeChange(slot.time)}
+            aria-pressed={active}
+            aria-label={
+              slot.available
+                ? `Créneau de ${formatTimeFr(slot.time)}${slot.late ? `, supplément de ${formatEuros(OPENING.lateFeeCents)}` : ""}`
+                : `${formatTimeFr(slot.time)} — indisponible`
+            }
+            className={cn(
+              "flex h-11 items-center justify-center rounded-[2px] border text-sm transition-all duration-300",
+              active
+                ? "border-bronze bg-bronze text-ivory"
+                : slot.available
+                  ? "border-sand-deep bg-white text-espresso hover:border-bronze/50 hover:bg-blush/50"
+                  : "cursor-not-allowed border-sand-deep/60 bg-sand/60 text-taupe/50 line-through",
+            )}
+          >
+            {formatTimeFr(slot.time)}
+          </button>
+        );
+      })}
+    </div>
+  );
 
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
@@ -125,35 +160,24 @@ export function StepSchedule({
                   disponible{available.length > 1 ? "s" : ""}
                 </span>
               </p>
-              <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
-                {slots?.map((slot) => {
-                  const active = time === slot.time;
-                  return (
-                    <button
-                      key={slot.time}
-                      type="button"
-                      disabled={!slot.available}
-                      onClick={() => onTimeChange(slot.time)}
-                      aria-pressed={active}
-                      aria-label={
-                        slot.available
-                          ? `Créneau de ${formatTimeFr(slot.time)}`
-                          : `${formatTimeFr(slot.time)} — indisponible`
-                      }
-                      className={cn(
-                        "flex h-11 items-center justify-center rounded-[2px] border text-sm transition-all duration-300",
-                        active
-                          ? "border-bronze bg-bronze text-ivory"
-                          : slot.available
-                            ? "border-sand-deep bg-white text-espresso hover:border-bronze/50 hover:bg-blush/50"
-                            : "cursor-not-allowed border-sand-deep/60 bg-sand/60 text-taupe/50 line-through",
-                      )}
-                    >
-                      {formatTimeFr(slot.time)}
-                    </button>
-                  );
-                })}
-              </div>
+              {daySlots.length > 0 && renderGrid(daySlots)}
+              {lateSlots.length > 0 && (
+                <div className="mt-5 border-t border-sand-deep pt-4">
+                  <p className="mb-1 flex items-baseline justify-between gap-3">
+                    <span className="text-[0.68rem] tracking-[0.14em] text-espresso uppercase">
+                      En soirée
+                    </span>
+                    <span className="text-[0.68rem] tracking-[0.14em] text-bronze uppercase">
+                      Supplément +{formatEuros(OPENING.lateFeeCents)}
+                    </span>
+                  </p>
+                  <p className="mb-3 text-xs leading-relaxed text-taupe">
+                    Départ à partir de 18h, fin à 20h au plus tard. Le
+                    supplément se règle sur place.
+                  </p>
+                  {renderGrid(lateSlots)}
+                </div>
+              )}
               <p className="mt-4 text-[0.68rem] tracking-[0.14em] text-taupe uppercase">
                 Les créneaux barrés sont déjà réservés
               </p>
